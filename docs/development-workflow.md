@@ -83,13 +83,13 @@ Linux PC の Emacs で利用している org ファイルを、Android でもシ
 | 項目 | 使用するバージョン |
 | --- | --- |
 | JDK | 17（`java` と `javac` を含む。ローカル検証は Temurin 17.0.21） |
-| Gradle | 8.13（同梱の Wrapper を使う） |
-| Android Gradle Plugin | 8.13.2 |
-| Kotlin | 2.2.21 |
-| Android SDK | Platform 36、Build Tools 35.0.0、Platform Tools |
-| Android API 設定 | minSdk 26、compileSdk / targetSdk 36 |
+| Gradle | 9.4.1（同梱の Wrapper を使う） |
+| Android Gradle Plugin | 9.2.1 |
+| Kotlin | AGP の内蔵 Kotlin を使う |
+| Android SDK | Platform 37.0、Build Tools 37.0.0、Platform Tools |
+| Android API 設定 | minSdk 26、compileSdk / targetSdk 37 |
 
-[AGP の互換性表](https://developer.android.com/build/releases/agp-8-13-0-release-notes)に合う組み合わせを固定する。Android 17 の新規 API は使用しておらず、Android 17 端末での動作は実機で別途確認する。
+[AGP の互換性表](https://developer.android.com/build/releases/agp-9-2-0-release-notes)に合う組み合わせを固定し、Android 17（API 37）を対象にする。[AGP の内蔵 Kotlin](https://developer.android.com/build/migrate-to-built-in-kotlin)を使うため、`org.jetbrains.kotlin.android` プラグインは追加しない。
 
 1. JDK 17 をインストールし、`JAVA_HOME` を JDK のディレクトリに設定する。`java -version` と `javac -version` を確認する。
 2. [Android Studio または Command-line Tools](https://developer.android.com/studio)で SDK を用意し、`ANDROID_HOME` を SDK のディレクトリに設定する。Command-line Tools の `bin` と SDK の `platform-tools` を `PATH` に追加する。JDK 17 と組み合わせて検証した CLI は Command-line Tools 19.0（Linux 用の [公式配布 ZIP](https://dl.google.com/android/repository/commandlinetools-linux-13114758_latest.zip)）であり、CI でもこの版を指定している。CLI で同じ環境を用意する場合は、この ZIP の `cmdline-tools` を SDK 内の `cmdline-tools/19.0` へ展開し、その `bin` を `PATH` に追加する。
@@ -97,7 +97,7 @@ Linux PC の Emacs で利用している org ファイルを、Android でもシ
 
 ```sh
 sdkmanager --licenses
-sdkmanager 'platforms;android-36' 'build-tools;35.0.0' 'platform-tools'
+sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' 'platform-tools'
 ```
 
 SDK の場所は、`ANDROID_HOME` の代わりに `local.properties` の `sdk.dir` でも指定できる。環境固有のパス、SDK、JDK、キャッシュ、署名鍵はコミットしない。初回のビルドと Robolectric の初回テスト実行には、公式配布元・Google Maven・Maven Central などへのネットワーク接続が必要になる。
@@ -111,6 +111,8 @@ SDK の場所は、`ANDROID_HOME` の代わりに `local.properties` の `sdk.di
 ```
 
 このコマンドで Debug / Release の JVM テスト、Android Lint、Debug APK の生成を行う。必要な検証を個別に実行する場合は次を使う。
+
+AGP 9 の既定で Release テストが省略されないよう、`app/build.gradle.kts` の `beforeVariants` で両ビルド種別のホストテストを明示的に有効にしている。
 
 ```sh
 ./gradlew :app:testDebugUnitTest
@@ -230,3 +232,7 @@ GitHub 上での CI 実行と、CI 生成 APK での実機確認は未実行。
 [PR #1](https://github.com/nagayasuu/org-mobile-android-sample/pull/1) を作成し、GitHub Actions の実行を開始した。初回の [run 41264546887](https://github.com/nagayasuu/org-mobile-android-sample/actions/runs/41264546887) は SDK セットアップで失敗した。セットアップ用 Action の既定値が、配布されなくなった旧 `tools` パッケージを要求したためであり、ビルド・Lint・テストは開始されていなかった。
 
 セットアップ用 Action の導入対象を `platform-tools` に明示し、後続の SDK 導入ステップで Platform 36 と Build Tools 35.0.0 を入れる構成に修正した。検証タスクは維持する。再実行の結果と CI 生成 APK の実機確認結果は、確認後に記録する。
+
+続く [run 41264662818](https://github.com/nagayasuu/org-mobile-android-sample/actions/runs/41264662818) は SDK 準備と全テストを完了したが、CI に導入済みの新しい SDK を基準とした Lint の `OldTargetApi` が `targetSdk 36` を指摘した。検査を緩めず、AGP 9.2.1 と Gradle 9.4.1 に更新し、compileSdk / targetSdk 37 と Build Tools 37.0.0 を指定する。Platform の実際の導入名は公式 SDK 一覧で確認した `platforms;android-37.0` を使う。
+
+更新後、ローカルで `./gradlew --console=plain clean check assembleDebug` と、Release テストの明示的な有効化後の `./gradlew --console=plain check assembleDebug` が成功した。Debug / Release 各 19 件のテストが成功し、Lint のエラー・警告は 0 件。Gradle 9.4.1 の Wrapper JAR と配布 ZIP の SHA-256 も公式配布値と照合した。

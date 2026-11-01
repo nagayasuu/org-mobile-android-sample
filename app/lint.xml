@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <lint>
-    <!-- Keep the tested API 36 / AGP 8 toolchain reproducible. Version-update
+    <!-- Keep the tested API 37 / AGP 9 toolchain reproducible. Version-update
          suggestions remain in reports as information, while correctness,
          compatibility, accessibility and other warnings still fail the build.
          Review toolchain and library updates together as a separate change. -->

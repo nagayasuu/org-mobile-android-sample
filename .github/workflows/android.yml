@@ -24,7 +24,7 @@ jobs:
           packages: platform-tools
           log-accepted-android-sdk-licenses: false
       - name: Install Android SDK packages
-        run: sdkmanager 'platforms;android-36' 'build-tools;35.0.0'
+        run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0'
       - name: Build, lint and test
         run: ./gradlew --no-daemon --console=plain check assembleDebug
       - name: Upload debug APK

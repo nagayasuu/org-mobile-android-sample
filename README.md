@@ -14,7 +14,7 @@ Dropbox から端末へ保存した UTF-8 の `.org` ファイルを「ファイ
 
 ## ビルドと検証
 
-JDK 17、Android SDK Platform 36、Build Tools 35.0.0 を準備し、SDK の場所を `ANDROID_HOME` またはローカル専用の `local.properties` に設定します。
+JDK 17、Android SDK Platform 37.0、Build Tools 37.0.0 を準備し、SDK の場所を `ANDROID_HOME` またはローカル専用の `local.properties` に設定します。
 
 ```sh
 ./gradlew check assembleDebug
