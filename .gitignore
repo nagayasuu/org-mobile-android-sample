@@ -19,3 +19,6 @@
 /local.properties
 *.jks
 *.keystore
+
+# Python helper script caches
+__pycache__/

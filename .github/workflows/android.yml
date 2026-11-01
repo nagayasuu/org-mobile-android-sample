@@ -2,6 +2,7 @@ name: Android checks
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, edited]
   push:
     branches: [main]
 
@@ -13,6 +14,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Test Git tooling
+        run: python3 -m unittest discover -s scripts/tests -v
+      - name: Check commit messages and PR title
+        run: python3 scripts/check_commit_message.py --github-event "$GITHUB_EVENT_PATH"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
