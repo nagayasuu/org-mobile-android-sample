@@ -26,7 +26,9 @@ class OrgAdapter : RecyclerView.Adapter<OrgAdapter.BlockHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BlockHolder {
         val text = TextView(parent.context).apply {
-            layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+            layoutParams = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT,
+            )
             setTextColor(0xFF202820.toInt())
             setTextIsSelectable(true)
             setLineSpacing(0f, 1.2f)
@@ -37,28 +39,39 @@ class OrgAdapter : RecyclerView.Adapter<OrgAdapter.BlockHolder>() {
     override fun onBindViewHolder(holder: BlockHolder, position: Int) {
         val block = blocks[position]
         val text = holder.text
-        fun dp(value: Int) = (value * text.resources.displayMetrics.density).roundToInt()
         text.setTypeface(null, Typeface.NORMAL)
         text.textSize = 17f
         ViewCompat.setAccessibilityHeading(text, block is OrgBlock.Heading)
         when (block) {
-            is OrgBlock.Heading -> {
-                text.text = block.text
-                text.textSize = when (block.level) { 1 -> 25f; 2 -> 22f; else -> 19f }
-                text.setTypeface(null, Typeface.BOLD)
-                text.setPaddingRelative(0, dp(18), 0, dp(8))
-            }
+            is OrgBlock.Heading -> bindHeading(text, block)
             is OrgBlock.Paragraph -> {
                 text.text = block.text
-                text.setPaddingRelative(0, dp(4), 0, dp(10))
+                text.setPaddingRelative(0, text.dp(4), 0, text.dp(10))
             }
-            is OrgBlock.ListItem -> {
-                val marker = if (block.marker in listOf("-", "+", "*")) "•" else block.marker
-                text.text = text.context.getString(R.string.list_item, marker, block.text)
-                text.setPaddingRelative(dp(12 + block.indent.coerceAtMost(16) * 8), dp(4), 0, dp(4))
-            }
+            is OrgBlock.ListItem -> bindListItem(text, block)
         }
     }
+
+    private fun bindHeading(text: TextView, heading: OrgBlock.Heading) {
+        text.text = heading.text
+        text.textSize = when (heading.level) {
+            1 -> 25f
+            2 -> 22f
+            else -> 19f
+        }
+        text.setTypeface(null, Typeface.BOLD)
+        text.setPaddingRelative(0, text.dp(18), 0, text.dp(8))
+    }
+
+    private fun bindListItem(text: TextView, item: OrgBlock.ListItem) {
+        val marker = if (item.marker in listOf("-", "+", "*")) "•" else item.marker
+        text.text = text.context.getString(R.string.list_item, marker, item.text)
+        val indent = text.dp(12 + item.indent.coerceAtMost(16) * 8)
+        text.setPaddingRelative(indent, text.dp(4), 0, text.dp(4))
+    }
+
+    private fun TextView.dp(value: Int): Int =
+        (value * resources.displayMetrics.density).roundToInt()
 
     class BlockHolder(val text: TextView) : RecyclerView.ViewHolder(text)
 }

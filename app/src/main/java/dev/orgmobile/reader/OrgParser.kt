@@ -11,51 +11,70 @@ object OrgParser {
     private val listItem = Regex("^([ \\t]*)([-+]|\\d+[.)]|\\*)(?:[ \\t]+)(.*)$")
     private val beginBlock = Regex("^\\s*#\\+begin_(\\S+).*$", RegexOption.IGNORE_CASE)
 
-    fun parse(text: String): List<OrgBlock> {
-        val blocks = mutableListOf<OrgBlock>()
-        val paragraph = mutableListOf<String>()
-        var literalBlock: String? = null
+    fun parse(text: String): List<OrgBlock> = Parser().parse(text)
 
-        fun flushParagraph() {
-            if (paragraph.isNotEmpty()) {
-                blocks += OrgBlock.Paragraph(paragraph.joinToString("\n"))
-                paragraph.clear()
-            }
+    private fun parseBlock(line: String): OrgBlock? {
+        heading.matchEntire(line)?.let { title ->
+            return OrgBlock.Heading(title.groupValues[1].length, title.groupValues[2])
+        }
+        val item = listItem.matchEntire(line) ?: return null
+        val (whitespace, marker, text) = item.destructured
+        if (marker == "*" && whitespace.isEmpty()) return null
+        val indent = whitespace.sumOf { if (it == '\t') 4 else 1 }
+        return OrgBlock.ListItem(indent, marker, text)
+    }
+
+    private class Parser {
+        private val blocks = mutableListOf<OrgBlock>()
+        private val paragraph = mutableListOf<String>()
+        private var literalBlock: String? = null
+
+        fun parse(text: String): List<OrgBlock> {
+            text.removePrefix("\uFEFF").lineSequence().forEach(::appendLine)
+            flushParagraph()
+            return blocks
         }
 
-        for (line in text.removePrefix("\uFEFF").lineSequence()) {
+        private fun appendLine(line: String) {
             if (literalBlock != null) {
-                paragraph += line
-                if (line.trim().equals("#+end_$literalBlock", ignoreCase = true)) {
-                    literalBlock = null
-                    flushParagraph()
-                }
-                continue
+                appendLiteralLine(line)
+                return
             }
             val begin = beginBlock.matchEntire(line)
             if (begin != null) {
                 flushParagraph()
                 literalBlock = begin.groupValues[1]
                 paragraph += line
-                continue
+                return
             }
-            val title = heading.matchEntire(line)
-            val item = listItem.matchEntire(line)
+            appendContentLine(line)
+        }
+
+        private fun appendContentLine(line: String) {
+            val block = parseBlock(line)
             when {
                 line.isBlank() -> flushParagraph()
-                title != null -> {
+                block != null -> {
                     flushParagraph()
-                    blocks += OrgBlock.Heading(title.groupValues[1].length, title.groupValues[2])
-                }
-                item != null && (item.groupValues[2] != "*" || item.groupValues[1].isNotEmpty()) -> {
-                    flushParagraph()
-                    val indent = item.groupValues[1].sumOf { if (it == '\t') 4 else 1 }
-                    blocks += OrgBlock.ListItem(indent, item.groupValues[2], item.groupValues[3])
+                    blocks += block
                 }
                 else -> paragraph += line
             }
         }
-        flushParagraph()
-        return blocks
+
+        private fun appendLiteralLine(line: String) {
+            paragraph += line
+            if (line.trim().equals("#+end_$literalBlock", ignoreCase = true)) {
+                literalBlock = null
+                flushParagraph()
+            }
+        }
+
+        private fun flushParagraph() {
+            if (paragraph.isNotEmpty()) {
+                blocks += OrgBlock.Paragraph(paragraph.joinToString("\n"))
+                paragraph.clear()
+            }
+        }
     }
 }
