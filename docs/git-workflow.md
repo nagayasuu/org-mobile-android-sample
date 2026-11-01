@@ -115,7 +115,7 @@ AGENTS.md から参照させ、今後の作業にも適用する。
 
 ### 必須 CI と main の保護
 
-個人開発での統合条件として、次の方針を採用する。[GitHub のブランチ保護](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)を設定して維持する。2026-11-01 に GitHub 側へ設定を適用し、API で保存内容と `main` への適用を確認した。PR での拒否・統合の動作確認は未実施である。設定内容と確認範囲は[検証記録](verification/2026-11-01-branch-protection.md)を参照する。
+個人開発での統合条件として、次の方針を採用する。[GitHub のブランチ保護](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)を設定して維持する。2026-11-01 に GitHub 側へ設定を適用し、API で保存内容と `main` への適用を確認した。同じ保護設定の一時ブランチで、管理者による条件未達の更新・マージの拒否と、条件を満たす PR の Squash merge を確認済みである。設定内容と確認範囲は[検証記録](verification/2026-11-01-branch-protection.md)を参照する。
 
 | 項目 | 採用する方針 |
 | --- | --- |
@@ -142,6 +142,8 @@ GitHub のリポジトリの **Settings → Branches → Branch protection rules
 4. 保存後に設定を再取得し、対象が `main`、管理者への適用が有効、必須チェックが `verify` / App ID `15368`、最新状態の要求が有効であることを確認する。REST API を使う場合は `GET /repos/{owner}/{repo}/branches/main/protection` で確認できる。
 5. PR の Checks とマージ欄で、CI が実行待ち・失敗のときに統合できず、最新の `main` 未反映や未解決のレビュー指摘がある場合も統合できないことを確認する。管理者のアカウントでも確認し、検証のために保護を解除しない。
 6. 条件を満たした PR で `verify` の成功と統合可能な状態を確認し、統合を行う際は Squash merge を選ぶ。統合後の `main` の CI も確認する。設定確認と実際の拒否・統合は別の結果として、対象 PR・コミット・run の URL と未確認事項を記録する。
+
+CI 待ちによる拒否と PR 要件による拒否を区別するため、PR を持たないコミットの直接更新は CI 成功後にも確認する。保護条件を満たした既存 PR の先端への参照更新が許可され、その PR が統合済みになる場合がある。これは PR 要件の無効化とは区別し、通常の統合操作には Squash merge を使う。
 
 ## 5. 履歴の整理・取り消し・調査
 
@@ -184,6 +186,6 @@ Git の運用ルールはこの文書へ集約し、`AGENTS.md` には参照先�
 
 以下は現時点で未実施・未決定の事項であり、適用・導入時に具体化する。
 
-- ビルド・テストの実行手順は[開発手順](development-workflow.md)とその参照先に従う。第4節の必須 CI とブランチ保護は GitHub 側へ設定済みであり、PR での拒否・統合の動作確認を残している。設定を変更する場合も、実際のチェック名と設定状況を確認して記録する。
+- ビルド・テストの実行手順は[開発手順](development-workflow.md)とその参照先に従う。第4節の必須 CI とブランチ保護は GitHub 側へ設定し、同じ保護設定で拒否条件と正常統合を検証済みである。設定を変更する場合も、実際のチェック名と設定状況を確認して記録する。
 - リリースタグの命名、バージョン付与、並行保守が必要になった場合の分岐方法。
 - コミットメッセージ検証やフックの導入。ローカルフックは通常の clone だけでは配布されないため、導入する場合は配布・更新手順も定める。

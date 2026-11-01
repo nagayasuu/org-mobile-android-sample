@@ -66,9 +66,9 @@ UI Automator と Espresso を使い、標準ファイル選択から表示まで
 
 詳細：[開発手順の性能計測](docs/development-workflow.md#性能計測の対象と方法)。
 
-### 7. 必須 CI とブランチ保護（設定済み・PR での動作確認は未実施）
+### 7. 必須 CI とブランチ保護（設定・保護条件の動作確認済み）
 
-2026-11-01 に GitHub 側へ設定を適用しました。`main` への統合は PR 経由とし、GitHub Actions の `verify` の成功と最新の `main` の反映を必須にしています。管理者にも適用し、直接 push・強制 push・削除を禁止し、レビュー指摘の解決を求めます。API で設定の保存と適用対象を確認済みです。条件未達の PR の拒否と条件を満たす PR の統合は未確認です。
+2026-11-01 に GitHub 側へ設定を適用しました。`main` への統合は PR 経由とし、GitHub Actions の `verify` の成功と最新の `main` の反映を必須にしています。管理者にも適用し、直接 push・強制 push・削除を禁止し、レビュー指摘の解決を求めます。API で設定の保存と適用対象を確認し、同じ保護設定の一時ブランチで、管理者による条件未達の更新・マージの拒否と、条件を満たす PR の Squash merge を検証済みです。
 
 詳細：[Git 運用規約の必須 CI と main の保護](docs/git-workflow.md#必須-ci-と-main-の保護)、[設定・検証記録](docs/verification/2026-11-01-branch-protection.md)。
 
