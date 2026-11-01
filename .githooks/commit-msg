@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eu
+
+# Merge commits are permitted when incorporating updates into a shared branch.
+if git rev-parse -q --verify MERGE_HEAD >/dev/null; then
+    exit 0
+fi
+exec python3 scripts/check_commit_message.py --hook --message-file "$1"
