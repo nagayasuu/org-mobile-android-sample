@@ -1,0 +1,13 @@
+# Local-only materials and settings
+/.local/
+/docs/private/
+/docs/references/
+/.agents/
+/.codex/
+/.aws/
+
+# Editor and operating system files
+/.idea/
+/.vscode/
+.DS_Store
+*~
