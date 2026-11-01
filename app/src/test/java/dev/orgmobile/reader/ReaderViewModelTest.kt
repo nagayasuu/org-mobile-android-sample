@@ -4,9 +4,11 @@ import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runCurrent
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
@@ -19,6 +21,9 @@ import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import java.io.IOException
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
@@ -91,5 +96,53 @@ class ReaderViewModelTest {
 
         assertTrue(model.state.value.failed)
         assertFalse(model.state.value.loading)
+    }
+
+    @Test fun `late failures from cancelled reads cannot overwrite the latest document`() = runTest(dispatcher) {
+        for (failure in listOf(IOException(), SecurityException(), IllegalArgumentException())) {
+            val executor = Executors.newFixedThreadPool(2)
+            val io = executor.asCoroutineDispatcher()
+            val oldStarted = CountDownLatch(1)
+            val releaseOld = CountDownLatch(1)
+            val latestRead = CountDownLatch(1)
+            val handle = SavedStateHandle()
+            val document = OrgDocument("latest.org", listOf(OrgBlock.Paragraph("新しい本文")))
+            val latestUri = Uri.parse("content://test/latest")
+            val model = ReaderViewModel(handle, DocumentSource { uri ->
+                if (uri != latestUri) {
+                    oldStarted.countDown()
+                    check(releaseOld.await(5, TimeUnit.SECONDS)) { "Old read was not released" }
+                    throw failure
+                }
+                latestRead.countDown()
+                document
+            }, io)
+
+            try {
+                model.open(Uri.parse("content://test/old"))
+                runCurrent()
+                assertTrue("Old read did not start", oldStarted.await(5, TimeUnit.SECONDS))
+                model.open(latestUri)
+                runCurrent()
+                assertTrue("Latest read did not start", latestRead.await(5, TimeUnit.SECONDS))
+                executor.submit {}.get(5, TimeUnit.SECONDS)
+                runCurrent()
+                assertEquals(document, model.state.value.document)
+                releaseOld.countDown()
+                executor.shutdown()
+                assertTrue("Reads did not finish", executor.awaitTermination(5, TimeUnit.SECONDS))
+                advanceUntilIdle()
+
+                assertEquals(document, model.state.value.document)
+                assertFalse("Obsolete $failure must not report an error", model.state.value.failed)
+                assertFalse(model.state.value.loading)
+                assertEquals(latestUri.toString(), handle.get<String>(ReaderViewModel.DOCUMENT_URI))
+            } finally {
+                releaseOld.countDown()
+                io.close()
+                executor.shutdownNow()
+                executor.awaitTermination(5, TimeUnit.SECONDS)
+            }
+        }
     }
 }
