@@ -11,3 +11,11 @@
 /.vscode/
 .DS_Store
 *~
+
+# Android / Gradle (local settings, caches and generated artifacts)
+/.gradle/
+/.kotlin/
+**/build/
+/local.properties
+*.jks
+*.keystore

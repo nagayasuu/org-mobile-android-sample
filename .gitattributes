@@ -1,0 +1,3 @@
+# Keep the Unix launcher executable on Unix and the Windows launcher in CRLF.
+gradlew text eol=lf
+gradlew.bat text eol=crlf
