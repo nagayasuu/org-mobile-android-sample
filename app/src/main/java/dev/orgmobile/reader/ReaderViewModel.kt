@@ -9,6 +9,8 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.currentCoroutineContext
+import kotlinx.coroutines.ensureActive
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -54,7 +56,9 @@ class ReaderViewModel(
         }
     }
 
-    private fun showFailure() {
+    private suspend fun showFailure() {
+        // A blocking provider can throw after this read was cancelled by a newer one.
+        currentCoroutineContext().ensureActive()
         mutableState.value = mutableState.value.copy(loading = false, failed = true)
     }
 

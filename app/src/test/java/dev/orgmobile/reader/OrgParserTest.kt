@@ -66,4 +66,21 @@ class OrgParserTest {
         assertEquals(10_000, blocks.size)
         assertEquals(OrgBlock.ListItem(0, "-", "項目 10000"), blocks.last())
     }
+
+    @Test fun `literal blocks preserve blank lines and resume parsing after mixed case end`() {
+        val literal = "#+begin_src text\n* literal\n\n\t- literal\n#+EnD_sRc"
+
+        assertEquals(listOf(
+            OrgBlock.Paragraph("前の本文"),
+            OrgBlock.Paragraph(literal),
+            OrgBlock.ListItem(4, "*", "タブ付きの項目"),
+            OrgBlock.Heading(3, "続き"),
+        ), OrgParser.parse("前の本文\n$literal\n\t* タブ付きの項目\n*** 続き"))
+    }
+
+    @Test fun `unterminated literal blocks preserve all remaining lines`() {
+        val literal = "#+BEGIN_EXAMPLE\n* literal\n\n- literal\n"
+
+        assertEquals(listOf(OrgBlock.Paragraph(literal)), OrgParser.parse(literal))
+    }
 }
