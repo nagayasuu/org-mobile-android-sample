@@ -224,3 +224,9 @@ GitHub 上での CI 実行と、CI 生成 APK での実機確認は未実行。
 - 今回変更したのはテストと文書であり、アプリ本体と APK は上記の実機確認時と同一。実機確認結果はそのまま適用し、端末での再操作は行っていない。
 - コミット・push・PR 作成は未実行。GitHub 上の CI と CI 生成 APK の実機確認は、引き続き後続の作業とする。
 - 最終ステージ確認で Windows 用 Wrapper の CRLF 改行が空白エラーとして検出されたため、`.gitattributes` で Unix 用は LF、Windows 用は CRLF と明示した。Git 内では正規化した内容を保存し、最終のコミット対象はこの設定を含む 31 ファイルとした。
+
+#### GitHub 上での CI 確認
+
+[PR #1](https://github.com/nagayasuu/org-mobile-android-sample/pull/1) を作成し、GitHub Actions の実行を開始した。初回の [run 41264546887](https://github.com/nagayasuu/org-mobile-android-sample/actions/runs/41264546887) は SDK セットアップで失敗した。セットアップ用 Action の既定値が、配布されなくなった旧 `tools` パッケージを要求したためであり、ビルド・Lint・テストは開始されていなかった。
+
+セットアップ用 Action の導入対象を `platform-tools` に明示し、後続の SDK 導入ステップで Platform 36 と Build Tools 35.0.0 を入れる構成に修正した。検証タスクは維持する。再実行の結果と CI 生成 APK の実機確認結果は、確認後に記録する。
