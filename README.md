@@ -24,7 +24,7 @@ JDK 17、Android SDK Platform 37.0、Build Tools 37.0.0 を準備し、SDK の�
 
 APK は `app/build/outputs/apk/debug/app-debug.apk` に出力します。詳しくは [環境の準備と検証コマンド](docs/android-build.md)、[USB 接続した端末での確認](docs/device-testing.md) を参照してください。初回の検証結果は [検証記録](docs/verification/2026-11-01-initial-implementation.md) に残しています。
 
-## 未導入の仕組みと今後の決定事項
+## 開発の仕組みと今後の決定事項
 
 以下は導入・検討の方針と残る課題です。方針の決定と実装・検証の完了を区別し、具体的な手順は各項目の参照先へ集約します。番号は項目を識別するためのもので、実装順序を定めるものではありません。
 
@@ -66,11 +66,11 @@ UI Automator と Espresso を使い、標準ファイル選択から表示まで
 
 詳細：[開発手順の性能計測](docs/development-workflow.md#性能計測の対象と方法)。
 
-### 7. 必須 CI とブランチ保護（方針決定済み・GitHub 側の設定状況未確認）
+### 7. 必須 CI とブランチ保護（設定済み・PR での動作確認は未実施）
 
-`main` への統合は PR 経由とし、必須 CI の成功と最新の `main` を反映した検証を求めます。管理者にも保護を適用し、直接 push・強制 push・削除を禁止します。実際のチェック名と設定状況を確認し、条件を満たさない PR を統合できないことまで検証します。
+2026-11-01 に GitHub 側へ設定を適用しました。`main` への統合は PR 経由とし、GitHub Actions の `verify` の成功と最新の `main` の反映を必須にしています。管理者にも適用し、直接 push・強制 push・削除を禁止し、レビュー指摘の解決を求めます。API で設定の保存と適用対象を確認済みです。条件未達の PR の拒否と条件を満たす PR の統合は未確認です。
 
-詳細：[Git 運用規約の必須 CI と main の保護](docs/git-workflow.md#必須-ci-と-main-の保護)。
+詳細：[Git 運用規約の必須 CI と main の保護](docs/git-workflow.md#必須-ci-と-main-の保護)、[設定・検証記録](docs/verification/2026-11-01-branch-protection.md)。
 
 ### 8. 設計判断の記録（運用方針決定済み・個別記録未作成）
 

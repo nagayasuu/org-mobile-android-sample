@@ -115,13 +115,13 @@ AGENTS.md から参照させ、今後の作業にも適用する。
 
 ### 必須 CI と main の保護
 
-個人開発での統合条件として、次の方針を採用する。[GitHub のブランチ保護](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)を設定して維持する。GitHub 側の現設定は未確認であり、設定の適用・動作確認は未実施である。方針の確定と保護の有効化を区別する。
+個人開発での統合条件として、次の方針を採用する。[GitHub のブランチ保護](https://docs.github.com/en/repositories/configuring-branches-and-merges-in-your-repository/managing-protected-branches/about-protected-branches)を設定して維持する。2026-11-01 に GitHub 側へ設定を適用し、API で保存内容と `main` への適用を確認した。PR での拒否・統合の動作確認は未実施である。設定内容と確認範囲は[検証記録](verification/2026-11-01-branch-protection.md)を参照する。
 
 | 項目 | 採用する方針 |
 | --- | --- |
 | 保護対象 | `main`。管理者にも保護条件を適用する |
 | 統合経路 | PR を必須にし、`main` への直接 push を禁止する |
-| 必須 CI | `Android checks` の `verify` ジョブを必須化する。GitHub 上の実際のチェック名と実行元を確認して設定する |
+| 必須 CI | `Android checks` の `verify` ジョブ。チェック名 `verify`、実行元 GitHub Actions（App ID `15368`）を指定済み |
 | 最新状態の検証 | マージ前に最新の `main` を取り込み、CI を成功させる。ブランチ保護でも最新状態を要求する |
 | レビュー | 人による必須承認は当面0人とし、セルフレビューを実施する。レビュー指摘は解決してから統合する |
 | 履歴保護 | `main` の強制 push・削除を禁止する |
@@ -131,6 +131,17 @@ AGENTS.md から参照させ、今後の作業にも適用する。
 CI の実行範囲と拡張時の扱いは[開発手順](development-workflow.md)に従う。必須ジョブを分割・改名する場合は、ワークフローと GitHub 側の必須チェックを合わせて更新し、ジョブ名の重複による曖昧な判定を避ける。
 
 設定時には、実際のチェック名、設定内容、適用日と確認結果を記録する。管理者にも保護が適用されること、CI 失敗・実行待ち、最新の `main` 未反映、未解決のレビュー指摘など、条件を満たさない PR がマージできないことと、条件を満たした PR を統合できることを確認する。本書やワークフローの更新だけで、ホスティングサービス側に制約が設定されたとはみなさない。
+
+#### 設定の維持と動作確認
+
+GitHub のリポジトリの **Settings → Branches → Branch protection rules** で `main` のルールを確認・更新する。GitHub の画面または API を利用でき、`gh` は必須にしない。
+
+1. **Require a pull request before merging** を有効にする。**Require approvals**、Code Owner の承認、最後の push に対する承認は要求せず、必須承認は0人とする。
+2. **Require status checks to pass before merging** と **Require branches to be up to date before merging** を有効にする。チェック名 `verify` を選び、期待する実行元を GitHub Actions にする。他の実行元による同名チェックを許可しない。
+3. **Require conversation resolution before merging** と **Do not allow bypassing the above settings** を有効にする。PR 要件を回避できるユーザー・チーム・アプリは追加しない。**Allow force pushes** と **Allow deletions** は無効のまま維持する。
+4. 保存後に設定を再取得し、対象が `main`、管理者への適用が有効、必須チェックが `verify` / App ID `15368`、最新状態の要求が有効であることを確認する。REST API を使う場合は `GET /repos/{owner}/{repo}/branches/main/protection` で確認できる。
+5. PR の Checks とマージ欄で、CI が実行待ち・失敗のときに統合できず、最新の `main` 未反映や未解決のレビュー指摘がある場合も統合できないことを確認する。管理者のアカウントでも確認し、検証のために保護を解除しない。
+6. 条件を満たした PR で `verify` の成功と統合可能な状態を確認し、統合を行う際は Squash merge を選ぶ。統合後の `main` の CI も確認する。設定確認と実際の拒否・統合は別の結果として、対象 PR・コミット・run の URL と未確認事項を記録する。
 
 ## 5. 履歴の整理・取り消し・調査
 
@@ -173,6 +184,6 @@ Git の運用ルールはこの文書へ集約し、`AGENTS.md` には参照先�
 
 以下は現時点で未実施・未決定の事項であり、適用・導入時に具体化する。
 
-- ビルド・テストの実行手順は[開発手順](development-workflow.md)とその参照先に従う。第4節で定めた必須 CI とブランチ保護の GitHub 側への適用・動作確認は未実施であり、実際のチェック名と設定状況を確認して記録する。
+- ビルド・テストの実行手順は[開発手順](development-workflow.md)とその参照先に従う。第4節の必須 CI とブランチ保護は GitHub 側へ設定済みであり、PR での拒否・統合の動作確認を残している。設定を変更する場合も、実際のチェック名と設定状況を確認して記録する。
 - リリースタグの命名、バージョン付与、並行保守が必要になった場合の分岐方法。
 - コミットメッセージ検証やフックの導入。ローカルフックは通常の clone だけでは配布されないため、導入する場合は配布・更新手順も定める。
