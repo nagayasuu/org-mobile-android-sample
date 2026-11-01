@@ -178,6 +178,47 @@ class MainActivityTest {
         }
     }
 
+    @Test fun `invalid UTF-8 preserves displayed content and a new selection recovers`() {
+        val app = RuntimeEnvironment.getApplication()
+        val file = File(app.cacheDir, "selected.org")
+        file.writeText("* 保持する見出し\n元の本文", Charsets.UTF_8)
+        val provider = SampleProvider()
+        provider.attachInfo(app, ProviderInfo().apply { authority = "sample" })
+        ShadowContentResolver.registerProviderInternal("sample", provider)
+
+        Robolectric.buildActivity(MainActivity::class.java).setup().use { controller ->
+            val activity = controller.get()
+            openSelectedSample(activity, expectedRows = 2)
+            file.writeBytes(byteArrayOf(0xC3.toByte(), 0x28))
+            activity.findViewById<Button>(R.id.open_file).performClick()
+            val request = shadowOf(activity).nextStartedActivityForResult
+            activity.activityResultRegistry.dispatchResult(request.requestCode, Activity.RESULT_OK,
+                Intent().setData(Uri.parse("content://sample/selected.org")))
+            val status = activity.findViewById<TextView>(R.id.status)
+            val timeout = System.nanoTime() + 5_000_000_000L
+            while (status.text.toString() != activity.getString(R.string.error_message) &&
+                System.nanoTime() < timeout) {
+                shadowOf(Looper.getMainLooper()).idle()
+                Thread.sleep(10)
+            }
+
+            assertEquals(activity.getString(R.string.error_message), status.text.toString())
+            assertTrue(activity.findViewById<Button>(R.id.open_file).isEnabled)
+            val view = activity.findViewById<RecyclerView>(R.id.document)
+            layoutDocument(view)
+            assertEquals(2, view.adapter!!.itemCount)
+            assertEquals("保持する見出し",
+                (view.findViewHolderForAdapterPosition(0) as OrgAdapter.BlockHolder).text.text.toString())
+
+            file.writeText("* 再選択\n新しい本文\n- 項目", Charsets.UTF_8)
+            openSelectedSample(activity, expectedRows = 3)
+            layoutDocument(view)
+            assertEquals(android.view.View.GONE, status.visibility)
+            assertEquals("再選択",
+                (view.findViewHolderForAdapterPosition(0) as OrgAdapter.BlockHolder).text.text.toString())
+        }
+    }
+
     private fun openSelectedSample(activity: MainActivity, expectedRows: Int = 1_000) {
         shadowOf(Looper.getMainLooper()).idle()
         activity.findViewById<Button>(R.id.open_file).performClick()
