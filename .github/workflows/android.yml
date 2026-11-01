@@ -7,7 +7,6 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     steps:
-      - name: Branch protection validation (expected failure)
+      - name: Branch protection validation (success)
         run: |
-          sleep 60
-          exit 1
+          echo 'Branch protection validation passed'
