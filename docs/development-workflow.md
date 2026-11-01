@@ -153,6 +153,8 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 adb shell am start -n dev.orgmobile.reader/.MainActivity
 ```
 
+ローカル版と CI 版の Debug APK は署名が異なる場合がある。`INSTALL_FAILED_UPDATE_INCOMPATIBLE` になった場合、この閲覧アプリを `adb uninstall dev.orgmobile.reader` で削除してから、確認対象の APK をインストールする。閲覧状態とファイルへのアクセス権はリセットされるため、ファイルを選び直す。端末のダウンロードフォルダにある org ファイルは残る。
+
 4. Dropbox に公開可能なサンプル [`examples/smoke.org`](../examples/smoke.org) を置き、Dropbox アプリから端末のダウンロードフォルダに保存する。
 5. 本アプリで「ファイルを開く」を押し、標準の選択画面で保存したファイルを選ぶ。日本語、見出し、本文、箇条書き、番号付きリスト、末尾の本文を確認する。
 6. もう一度選択画面を開いて取り消し、現在の文書が残ることを確認する。画面を回転して表示が維持されることも確認する。
@@ -231,8 +233,23 @@ GitHub 上での CI 実行と、CI 生成 APK での実機確認は未実行。
 
 [PR #1](https://github.com/nagayasuu/org-mobile-android-sample/pull/1) を作成し、GitHub Actions の実行を開始した。初回の [run 41264546887](https://github.com/nagayasuu/org-mobile-android-sample/actions/runs/41264546887) は SDK セットアップで失敗した。セットアップ用 Action の既定値が、配布されなくなった旧 `tools` パッケージを要求したためであり、ビルド・Lint・テストは開始されていなかった。
 
-セットアップ用 Action の導入対象を `platform-tools` に明示し、後続の SDK 導入ステップで Platform 36 と Build Tools 35.0.0 を入れる構成に修正した。検証タスクは維持する。再実行の結果と CI 生成 APK の実機確認結果は、確認後に記録する。
+セットアップ用 Action の導入対象を `platform-tools` に明示し、後続の SDK 導入ステップで Platform 36 と Build Tools 35.0.0 を入れる構成に修正した。検証タスクは維持した。
 
-続く [run 41264662818](https://github.com/nagayasuu/org-mobile-android-sample/actions/runs/41264662818) は SDK 準備と全テストを完了したが、CI に導入済みの新しい SDK を基準とした Lint の `OldTargetApi` が `targetSdk 36` を指摘した。検査を緩めず、AGP 9.2.1 と Gradle 9.4.1 に更新し、compileSdk / targetSdk 37 と Build Tools 37.0.0 を指定する。Platform の実際の導入名は公式 SDK 一覧で確認した `platforms;android-37.0` を使う。
+続く [run 41264662818](https://github.com/nagayasuu/org-mobile-android-sample/actions/runs/41264662818) は SDK 準備と全テストを完了したが、CI に導入済みの新しい SDK を基準とした Lint の `OldTargetApi` が `targetSdk 36` を指摘した。検査を緩めず、AGP 9.2.1 と Gradle 9.4.1 に更新し、compileSdk / targetSdk 37 と Build Tools 37.0.0 を指定した。Platform の実際の導入名は公式 SDK 一覧で確認した `platforms;android-37.0` を使う。
 
 更新後、ローカルで `./gradlew --console=plain clean check assembleDebug` と、Release テストの明示的な有効化後の `./gradlew --console=plain check assembleDebug` が成功した。Debug / Release 各 19 件のテストが成功し、Lint のエラー・警告は 0 件。Gradle 9.4.1 の Wrapper JAR と配布 ZIP の SHA-256 も公式配布値と照合した。
+
+#### CI 生成 APK の実機確認
+
+[run 41265398210](https://github.com/nagayasuu/org-mobile-android-sample/actions/runs/41265398210) が成功した。対象コミットは `585f72341877f568b1fda4abd120c29b6801ddaf`。取得した `android-reports` で Debug / Release 各 19 件のテスト成功、失敗・スキップ 0 件、Lint のエラー・警告 0 件を確認した。
+
+- 使用した成果物：同じ run の `org-reader-debug`（artifact ID `13067210748`）に含まれる `app-debug.apk`。
+- APK の SHA-256：`e1074e67d5dbbaf1e09e1520342cce5bbd703d8f23e66a184a815a0c1a27e9b5`。
+- APK の署名と minSdk 26 / targetSdk 37 を確認したうえで、Pixel 10a／Android 17 にインストールした。ローカル版と署名が異なったため、今回の閲覧アプリを入れ替えた。
+- 公開サンプルを Android 標準の選択画面から開き、日本語の見出し・本文・箇条書き・番号付きリストと末尾の本文を確認した。
+- 1 万項目の合成文書で、通常の縦スワイプによる移動と、検証用の大きなスワイプによる `項目 10000` の表示を確認した。
+- ファイル選択の取り消しで文書と閲覧位置が保持されること、空ファイルの案内、不正 UTF-8 のエラー後に正常な文書を選び直せることを確認した。
+- 画面を横向きにしても文書名と内容が保持され、元の回転設定へ戻した後も読めることを確認した。
+- 検証中の画面点灯設定と回転設定は元へ戻した。確認には公開サンプルと合成文書だけを使い、個人のメモの内容は取得・記録していない。
+
+この CI 版 APK の確認では Dropbox アプリの保存操作は繰り返していない。Dropbox 経由の利用経路については、上記のユーザーによる手動確認と区別して記録する。
