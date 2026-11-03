@@ -42,6 +42,14 @@ androidComponents {
     }
 }
 
+tasks.withType<Test>().configureEach {
+    // Pass the replay seed to the forked JVM and invalidate cached test results.
+    providers.gradleProperty("propertyTestSeed").orNull?.let {
+        systemProperty("orgmobile.property.seed", it.toLong().toString())
+    }
+    systemProperty("kotest.proptest.seed.write-failed", "false")
+}
+
 dependencies {
     implementation("androidx.activity:activity-ktx:1.11.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.4")
@@ -50,6 +58,7 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:1.4.0")
 
     testImplementation("junit:junit:4.13.2")
+    testImplementation("io.kotest:kotest-property:6.2.6")
     testImplementation("com.tngtech.archunit:archunit:1.5.1")
     testImplementation("org.robolectric:robolectric:4.16")
     testImplementation("androidx.test:core:1.7.0")
