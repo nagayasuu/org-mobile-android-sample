@@ -15,6 +15,30 @@
 
 本書を開発手順の入口とし、具体的なコマンドは分割先に集約する。設定や操作を変更したら、対応する文書も同じ変更で更新する。公開されたファイルだけで理解・実行できる状態を保ち、ローカル専用の資料や設定への参照を実行の前提にしない。
 
+### Codex skills
+
+このリポジトリの skill は、正本の手順へ案内して検証・レビュー・端末確認を進める入口とする。手順本文や判定基準は本書と各手引きに集約する。
+
+| skill | 使用する場面 |
+| --- | --- |
+| [verify-changes](../.agents/skills/verify-changes/SKILL.md) | 差分に応じた検証を実行し、結果と未確認事項を整理する |
+| [review-changes](../.agents/skills/review-changes/SKILL.md) | R01〜R30によるレビューと根拠を記録する |
+| [android-device-check](../.agents/skills/android-device-check/SKILL.md) | 対象 APK を識別して、端末操作と結果を記録する |
+
+Codex はリポジトリの `.agents/skills/` から skill を検出する。明示的に使う場合は、例えば `$verify-changes 今回の変更を検証して` と依頼する。検出・読み込みの仕様は[公式資料](https://learn.chatgpt.com/docs/build-skills)を参照する。Git の共有対象は上表の3つの `SKILL.md` のみとし、`.agents/` 内のその他の資料・設定は引き続き除外する。
+
+補助として次の公開 skill をユーザー領域に導入できる。共有の開発手順をこれらのインストールや `gh` の利用に依存させない。取得元を固定し、更新時は内容と互換性を確認する。
+
+| skill | 提供元・取得対象 | 用途 |
+| --- | --- | --- |
+| android-profiler | [android/skills の固定版](https://github.com/android/skills/tree/6daa53ef27fa2aa87827d183a85c06cedceca833/profilers/android-profiler) | トレース・メモリなどの記録と解析 |
+| android-cli | [android/skills の固定版](https://github.com/android/skills/tree/6daa53ef27fa2aa87827d183a85c06cedceca833/devtools/android-cli) | Android CLI による環境・端末の操作 |
+| gh-fix-ci | [openai/skills の固定版](https://github.com/openai/skills/tree/49f948faa9258a0c61caceaf225e179651397431/skills/.curated/gh-fix-ci) | `gh` による失敗した PR チェックの調査 |
+
+再導入は Codex の `$skill-installer` に上表の固定版 URL を渡して依頼する。独自 skill から公開 skill の内容を複製せず、公開 skill は取得元のライセンスを保ってユーザー領域へ導入する。skill の導入と必要な実行ツール・接続の準備は区別する。Android CLI、SDK・`adb`、計測ツール、GitHub CLI の認証などは作業に応じて別途確認する。
+
+`gh-fix-ci` は `gh` と認証を前提とし、標準の手順では修正計画への承認後に実装する。利用者が許可した範囲と既存の許可を確認して使う。利用できない場合も GitHub の画面・API・連携ツールで調査を進められる。各 skill を導入したことだけで CI・端末・性能の検証を完了扱いにしない。
+
 ## 1. 現在の動作と変更する範囲を確かめる
 
 最小の閲覧機能、コマンドによるビルド・Lint・自動テスト、GitHub Actions、CI 生成 APK の実機確認は整備済みである。初回の結果は上記の検証記録に残し、以降の変更の成功を保証するものとは扱わない。
