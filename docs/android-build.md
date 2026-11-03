@@ -64,6 +64,44 @@ Kotlin の警告と Lint の警告はビルドを失敗させる。例外とし�
 
 自動テストでは、日本語の解析・UTF-8 読み込み、不正な文字コード、空ファイル、対応外構文の保持、長い文書、読み込み失敗と再試行、URI からの読み込み、ファイル選択の取り消し、画面再作成後の文書と閲覧位置の保持、更新したファイルの再読み込み、一覧の末尾へのスクロールを確認する。Android の画面・ファイルアクセスのテストには Robolectric の API 35 環境とテスト専用の文書プロバイダーを使う。これは実機のファイル選択画面や Dropbox の接続確認を代替しない。
 
+## 依存構造の検査
+
+[`ArchitectureTest`](../app/src/test/java/dev/orgmobile/reader/ArchitectureTest.kt) は
+[ArchUnit 1.5.1](https://github.com/TNG/ArchUnit/releases/tag/v1.5.1) の
+コアライブラリを通常の JUnit 4 `@Test` から呼び出す。専用 runner や Gradle
+プラグインは追加せず、テスト用の依存だけを追加するため APK には含まれない。
+JDK 17、Gradle 9.4.1、AGP 9.2.1 での確認結果は
+[検証記録](verification/2026-11-03-architecture-checks.md)を参照する。
+
+検査は `ClassFileImporter.importPackages("dev.orgmobile.reader")` で本番の
+コンパイル済みクラスを読み込む。AGP が渡すアプリの JAR も含め、テストクラスの
+実際の出力場所だけを除外する。ソースの import 一覧は検査しない。
+クラス名の完全一致と `$` で始まる内部・匿名・Kotlin 生成クラスを同じ責務として
+扱い、広い内部クラス除外は設けない。各規則は対象が空なら失敗し、別のテストでも
+全ルートと既知の内部クラスの存在、テストクラスの除外を確認する。
+
+| 対象 | 禁止する依存 |
+| --- | --- |
+| `OrgParser` / `OrgBlock` のクラス群 | `android` / `androidx` / `com.android` 配下、両クラス群以外のアプリクラス、`java.io` / `java.nio.file` / `java.net` 配下 |
+| `DocumentDecoder` のクラス群 | Android 関連の上記3パッケージ、`DocumentDecoder` / `OrgParser` / `OrgBlock` 以外のアプリクラス。JDK のストリーム・文字コード処理は許可 |
+| `ReaderViewModel` のクラス群 | `MainActivity` / `OrgAdapter` / `ContentDocumentSource` のクラス群と、`android.app` / `android.view` / `android.widget` / `android.webkit` / `androidx.activity` / `androidx.fragment` / `androidx.recyclerview` 配下。`DocumentSource`、URI、ViewModel・状態保存は許可 |
+
+違反はクラス間の型参照・メソッド呼び出しなどの直接依存で判定する。リフレクションで
+文字列から読み込むクラスや、実行時の遅延・資源解放は保証しない。新しい画面や
+ファイルアクセス実装、パッケージの追加時は、責務に合わせて規則も見直す。
+
+```sh
+./gradlew :app:testDebugUnitTest --tests 'dev.orgmobile.reader.ArchitectureTest'
+./gradlew :app:testReleaseUnitTest --tests 'dev.orgmobile.reader.ArchitectureTest'
+```
+
+通常の `check assembleDebug` と既存 CI の `verify` にも含まれる。レポートは
+上記 Debug / Release の JVM テスト HTML と
+`app/build/test-results/testDebugUnitTest/` / `testReleaseUnitTest/` の XML に出力する。
+CI では HTML を `android-reports` に保存する。
+導入時の意図的な違反・対象欠落の検出結果、一時変更の撤去と正常復帰は
+[検証記録](verification/2026-11-03-architecture-checks.md)へ残す。
+
 ## CI
 
 [`.github/workflows/android.yml`](../.github/workflows/android.yml) は PR と `main` への push で、同じ `check assembleDebug` を実行する。PR は作成・コミット更新・再オープンに加え、タイトルや説明の編集でも実行する。必須ジョブ `verify` は先に Python 3 で Git フック・メッセージ検証のテストと、コミットメッセージ・PR タイトルの検証を行う。対象範囲・ローカル実行・フックの導入は[Git 運用規約](git-workflow.md#自動検証と-git-フック)に従う。2026-11-02 に正常系、不正コミット・タイトルの拒否、タイトル修正後の再実行と正常復帰を確認した。対象コミットと run は[検証記録](verification/2026-11-02-git-hooks.md)を参照する。
