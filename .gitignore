@@ -2,7 +2,18 @@
 /.local/
 /docs/private/
 /docs/references/
-/.agents/
+/.agents/*
+!/.agents/skills/
+/.agents/skills/*
+!/.agents/skills/verify-changes/
+/.agents/skills/verify-changes/*
+!/.agents/skills/verify-changes/SKILL.md
+!/.agents/skills/review-changes/
+/.agents/skills/review-changes/*
+!/.agents/skills/review-changes/SKILL.md
+!/.agents/skills/android-device-check/
+/.agents/skills/android-device-check/*
+!/.agents/skills/android-device-check/SKILL.md
 /.codex/
 /.aws/
 
