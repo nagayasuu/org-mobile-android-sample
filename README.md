@@ -50,9 +50,9 @@ Kotest Property を既存の JUnit 4 と併用し、`OrgParser`・`DocumentDecod
 
 詳細：[開発手順のミューテーションテスト](docs/development-workflow.md#ミューテーションテストの構成と評価)。
 
-### 4. 依存構造の自動検査（方針決定済み・未導入）
+### 4. 依存構造の自動検査（実装済み・CI 実行は未確認）
 
-ArchUnit を既存の JUnit 4 の JVM テストへ追加し、クラス間の参照・呼び出し関係を検査します。解析・デコードの Android 非依存と、ViewModel が画面や具体的な読み込み実装へ依存しないことを確認します。通常のローカル検証と CI に含め、規則違反があれば失敗させます。採用バージョン・互換性と、実際に違反を検出できることは導入時に確認します。
+ArchUnit 1.5.1 を既存の JUnit 4 の JVM テストへ追加し、クラス間の参照・呼び出し関係を検査します。解析・デコードの Android 非依存と、ViewModel が画面や具体的な読み込み実装へ依存しないことを確認します。内部クラスも対象とし、対象クラスの欠落や規則違反があれば失敗させます。通常の `check assembleDebug` と既存 CI の JVM テストに含まれます。検証結果と未確認事項は[検証記録](docs/verification/2026-11-03-architecture-checks.md)を参照してください。
 
 詳細：[開発手順の依存構造検査](docs/development-workflow.md#依存構造を自動検査する)。
 
