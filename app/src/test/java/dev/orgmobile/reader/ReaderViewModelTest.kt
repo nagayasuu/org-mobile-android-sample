@@ -98,6 +98,59 @@ class ReaderViewModelTest {
         assertFalse(model.state.value.loading)
     }
 
+    @Test fun `late successful cancelled reads cannot overwrite the latest document`() = runTest(dispatcher) {
+        val executor = Executors.newFixedThreadPool(2)
+        val io = executor.asCoroutineDispatcher()
+        val oldStarted = CountDownLatch(1)
+        val releaseOld = CountDownLatch(1)
+        val oldReadCompleted = CountDownLatch(1)
+        val latestRead = CountDownLatch(1)
+        val handle = SavedStateHandle()
+        val oldDocument = OrgDocument("old.org", listOf(OrgBlock.Paragraph("古い本文")))
+        val latestDocument = OrgDocument("latest.org", listOf(OrgBlock.Paragraph("新しい本文")))
+        val oldUri = Uri.parse("content://test/old")
+        val latestUri = Uri.parse("content://test/latest")
+        val model = ReaderViewModel(handle, DocumentSource { uri ->
+            if (uri == oldUri) {
+                oldStarted.countDown()
+                check(releaseOld.await(5, TimeUnit.SECONDS)) { "Old read was not released" }
+                oldReadCompleted.countDown()
+                oldDocument
+            } else {
+                latestRead.countDown()
+                latestDocument
+            }
+        }, io)
+
+        try {
+            model.open(oldUri)
+            runCurrent()
+            assertTrue("Old read did not start", oldStarted.await(5, TimeUnit.SECONDS))
+            model.open(latestUri)
+            runCurrent()
+            assertTrue("Latest read did not start", latestRead.await(5, TimeUnit.SECONDS))
+            executor.submit {}.get(5, TimeUnit.SECONDS)
+            runCurrent()
+
+            assertEquals(ReaderState(document = latestDocument), model.state.value)
+            assertEquals(latestUri.toString(), handle.get<String>(ReaderViewModel.DOCUMENT_URI))
+
+            releaseOld.countDown()
+            executor.shutdown()
+            assertTrue("Reads did not finish", executor.awaitTermination(5, TimeUnit.SECONDS))
+            advanceUntilIdle()
+
+            assertEquals("Old read must complete successfully", 0L, oldReadCompleted.count)
+            assertEquals(ReaderState(document = latestDocument), model.state.value)
+            assertEquals(latestUri.toString(), handle.get<String>(ReaderViewModel.DOCUMENT_URI))
+        } finally {
+            releaseOld.countDown()
+            io.close()
+            executor.shutdownNow()
+            executor.awaitTermination(5, TimeUnit.SECONDS)
+        }
+    }
+
     @Test fun `late failures from cancelled reads cannot overwrite the latest document`() = runTest(dispatcher) {
         for (failure in listOf(IOException(), SecurityException(), IllegalArgumentException())) {
             val executor = Executors.newFixedThreadPool(2)
