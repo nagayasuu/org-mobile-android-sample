@@ -102,9 +102,70 @@ CI では HTML を `android-reports` に保存する。
 導入時の意図的な違反・対象欠落の検出結果、一時変更の撤去と正常復帰は
 [検証記録](verification/2026-11-03-architecture-checks.md)へ残す。
 
+## カバレッジ計測
+
+[AGP 標準の JaCoCo 連携](https://developer.android.com/studio/test/coverage-report)を使い、
+Debug の JVM テスト全体を計測する。計測条件は
+[`gradle/coverage.gradle`](../gradle/coverage.gradle)へ集約している。
+[JaCoCo 0.8.14](https://www.jacoco.org/jacoco/trunk/doc/changes.html)を固定し、
+AGP 9.2.1・Gradle 9.4.1・内蔵 Kotlin・Robolectric 4.16・JDK 17 で検証した。
+Kotlin の生成処理は JaCoCo の標準フィルターを使い、アプリの内部クラスは除外しない。
+Robolectric 用に `includeNoLocationClasses` を有効にし、エージェントの対象を
+`dev.orgmobile.reader.*` に限定する。名前空間やソース配置を変える際は設定と検査を見直す。
+
+```sh
+# clean → check assembleDebug → Debug 全テストのレポート → 80%・低下判定
+python3 scripts/run_coverage.py --base-ref main
+
+# 比較元がない初回の実行（80%判定は有効、低下判定は未実施と表示）
+python3 scripts/run_coverage.py
+
+# レポートだけを調べる場合。部分実行後の結果は受け入れ判定に使わない
+./gradlew :app:createDebugUnitTestCoverageReport
+python3 scripts/check_coverage.py
+```
+
+`run_coverage.py` は毎回 clean で古い実行データ・レポートを消し、共通検証と
+レポート生成を同じ Gradle 呼び出しで行う。Debug テストを二重には実行しない。
+Release テスト・Lint・APK 生成も維持する。計測はテスト JVM のみに作用し、
+APK に計測エージェントを追加しない。
+
+| 出力 | 場所 |
+| --- | --- |
+| HTML | `app/build/reports/coverage/test/debug/index.html` |
+| XML | `app/build/reports/coverage/test/debug/report.xml` |
+| 実行データ | `app/build/outputs/unit_test_code_coverage/debugUnitTest/testDebugUnitTest.exec` |
+| 比較元の HTML／XML（比較対象がある場合） | `app/build/reports/coverage/baseline/` |
+| 比較元・対象 SHA、対象ファイル、判定 | `app/build/reports/coverage/comparison.json` |
+
+AGP のレポートはアプリのコンパイル済みクラスを対象とし、テスト、依存 JAR、
+Android の生成 `R`／`BuildConfig` を集計しない。アプリ実装を率のために除外する設定は
+追加していない。インライン由来の依存ソース名が XML に出る場合があるが、カウンターの
+ないものに限って許容する。検査は `app/src/main/java` の `.kt`／`.java` がすべて XML に
+存在し、全体とソース群のカウンターが一致することも確認する。XML・実行セッション・
+ソース・行の実行データの欠落や不整合は失敗させる。
+
+全体の行・分岐をそれぞれ丸め前の値で80%以上と判定する。低下判定は変更した既存
+ソースファイル群の合計について行・分岐を比較する。新規ファイルは全体の判定に含む。
+削除・改名は比較可能な既存ファイル群から外し、変更対象がなければその旨を表示する。
+分岐の分母が0ならその指標は対象外と明示する。比較元が指定されているのに取得・計測・
+解析に失敗した場合は、未実施として合格させず失敗する。
+
+CI の PR ではマージ先ブランチを fetch した最新 SHA、`main` push ではイベントの
+`before` SHA を使う。比較対象があれば `git archive` で公開ファイルだけを一時ディレクトリへ
+展開し、変更側と同じ `coverage.gradle` を適用して基準側の全 Debug テストを実行する。
+AGP・Gradle・依存・テスト設定などのビルド入力が異なる場合は比較を止め、同じ条件に
+そろえた検証を求める。テストケース自体は各版のものを使う。
+基準側の APK やローカル設定はコピーしない。比較で SDK を利用するため
+`ANDROID_HOME` を指定する（`local.properties` だけの設定では不足する）。
+
+判定スクリプトの回帰テストは `python3 -m unittest discover -s scripts/tests -v` で実行する。
+80%境界、行・分岐の低下、0分母、欠落・破損 XML の拒否を確認する。
+実測・未確認事項は[検証記録](verification/2026-11-03-coverage.md)を参照する。
+
 ## CI
 
-[`.github/workflows/android.yml`](../.github/workflows/android.yml) は PR と `main` への push で、同じ `check assembleDebug` を実行する。PR は作成・コミット更新・再オープンに加え、タイトルや説明の編集でも実行する。必須ジョブ `verify` は先に Python 3 で Git フック・メッセージ検証のテストと、コミットメッセージ・PR タイトルの検証を行う。対象範囲・ローカル実行・フックの導入は[Git 運用規約](git-workflow.md#自動検証と-git-フック)に従う。2026-11-02 に正常系、不正コミット・タイトルの拒否、タイトル修正後の再実行と正常復帰を確認した。対象コミットと run は[検証記録](verification/2026-11-02-git-hooks.md)を参照する。
+[`.github/workflows/android.yml`](../.github/workflows/android.yml) は PR と `main` への push で、`scripts/run_coverage.py --github-event` で共通検証とカバレッジの80%・低下判定を実行する。PR は作成・コミット更新・再オープンに加え、タイトルや説明の編集でも実行する。必須ジョブ `verify` は先に Python 3 で Git フック・メッセージ検証のテストと、コミットメッセージ・PR タイトルの検証を行う。対象範囲・ローカル実行・フックの導入は[Git 運用規約](git-workflow.md#自動検証と-git-フック)に従う。2026-11-02 に正常系、不正コミット・タイトルの拒否、タイトル修正後の再実行と正常復帰を確認した。対象コミットと run は[検証記録](verification/2026-11-02-git-hooks.md)を参照する。
 
 APK は `org-reader-debug`、検証レポートは `android-reports` という名前の成果物として取得する。アップロード対象は明示した APK と `app/build/reports/` のみとする。
 

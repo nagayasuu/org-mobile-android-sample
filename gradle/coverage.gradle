@@ -1,0 +1,15 @@
+// Kept separate so CI can apply identical measurement settings to the base revision.
+android {
+    buildTypes.debug.enableUnitTestCoverage = true
+    testCoverage.jacocoVersion = '0.8.14'
+}
+
+afterEvaluate {
+    tasks.named('testDebugUnitTest', Test) {
+        // Robolectric loads app classes without a code-source location.
+        def agent = extensions.getByType(org.gradle.testing.jacoco.plugins.JacocoTaskExtension)
+        agent.includeNoLocationClasses = true
+        agent.includes = ['dev.orgmobile.reader.*']
+        agent.sessionId = 'org-reader-debug-tests'
+    }
+}

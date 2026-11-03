@@ -423,11 +423,11 @@ Dropbox アプリからの保存と実際のクラウド接続は、引き続き
 
 ### カバレッジ計測を導入する
 
-カバレッジ計測を導入し、検証が薄い箇所を探すために使う。以下の計測方法・対象・合否条件を採用する。現時点で計測設定・レポート生成・CI 連携は未導入であり、方針の確定と実装の完了を区別する。プロパティベーステストやミューテーションテストの導入を待たず、既存の具体例テストで基準値を計測できるようにする。
+カバレッジ計測は、検証が薄い箇所を探すために使う。以下の計測方法・対象・合否条件を採用する。JaCoCo の計測設定・HTML／XML 生成・CI 判定を実装し、既存の具体例テストによるローカル検証を行った。GitHub 上の実行結果とは区別する。コマンドは[ビルド・検証の手引き](android-build.md#カバレッジ計測)、結果は[検証記録](verification/2026-11-03-coverage.md)を参照する。
 
 #### 計測方法と対象範囲
 
-[AGP 標準の JaCoCo 連携](https://developer.android.com/studio/test/coverage-report)を採用し、Debug ビルドの JVM テストから始める。`enableUnitTestCoverage` で計測を有効にし、対象 variant のレポート生成タスクを使う構成を導入時に検証する。現在の AGP・Gradle・内蔵 Kotlin・Robolectric と組み合わせて、既存テストの成功と、実際に対象コードの実行がレポートへ反映されることを確認する。Kotlin の表示・フィルターや設定の保守負担に問題がある場合は、[Kover](https://kotlin.github.io/kotlinx-kover/gradle-plugin/) を代替候補として比較し、採用方針を変更する理由と互換性を記録する。
+[AGP 標準の JaCoCo 連携](https://developer.android.com/studio/test/coverage-report)を採用し、Debug ビルドの JVM テストから始める。`enableUnitTestCoverage` と `createDebugUnitTestCoverageReport` を使用する。Robolectric の動的クラスも計測するため、アプリの名前空間に限定して `includeNoLocationClasses` を有効にしている。AGP・Gradle・内蔵 Kotlin・Robolectric の更新時にも、既存テストの成功と、実際に対象コードの実行がレポートへ反映されることを確認する。Kotlin の表示・フィルターや設定の保守負担に問題がある場合は、[Kover](https://kotlin.github.io/kotlinx-kover/gradle-plugin/) を代替候補として比較し、採用方針を変更する理由と互換性を記録する。
 
 | 項目 | 初期導入の範囲 |
 | --- | --- |
