@@ -1,6 +1,6 @@
 # Codex 向けの作業指示
 
-このリポジトリで作業する際は、最初に次の文書を読むこと。
+このリポジトリで作業する際は、最初に[作業に応じた読み方](docs/development-workflow.md#workflow-reading)に従い、次の文書の共通事項と今回の作業に該当する節を読むこと。
 
 - [開発手順](docs/development-workflow.md)：小さな機能の実装、ビルド、テスト、CI、端末での動作確認。
 - [Git 運用規約](docs/git-workflow.md)：ブランチ運用、コミット、レビュー、履歴の取り扱い。
