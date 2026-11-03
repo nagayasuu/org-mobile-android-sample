@@ -27,6 +27,8 @@ android {
     }
 }
 
+apply(from = rootProject.file("gradle/coverage.gradle"))
+
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
