@@ -1,7 +1,8 @@
 # 依存構造検査の導入・検証記録
 
 実施日：2026-11-03（日本時間）。作成・検証：主担当 Codex agent。
-対象：`a3b0576` を基点とする `test/architecture-rules` の未コミット差分。
+初回対象：`a3b0576` を基点とする `test/architecture-rules` の未コミット差分。
+実装コミット：`d7787dde5e5a2f0f784b2d5b452db852fd503c9d`。
 対象ファイルは `app/build.gradle.kts`、`ArchitectureTest.kt`、README、
 `docs/android-build.md`、`docs/development-workflow.md`、本記録。
 
@@ -157,4 +158,22 @@ f8d76dde0bd2bef5b0e77b77bdfc622f3a890485e17cde89dd0d35c5cf696edc  app/src/test/j
 - 残るリスク：静的な直接依存以外は保証しない。新しい責務・画面・具体的な読み込み実装を
   追加する際に、保守担当者が規則と機能テストの分担を見直す。
 
-現時点の判定：ローカル実装・独立レビュー完了。CI 確認後に統合する。
+### GitHub CI の確認と判定更新
+
+[PR #17](https://github.com/nagayasuu/org-mobile-android-sample/pull/17) を作成し、
+実装コミット `d7787dd` の [Android checks / verify](https://github.com/nagayasuu/org-mobile-android-sample/actions/runs/41596962291) が成功した。
+主担当が run の対象 SHA・全ステップの成功・両成果物の保存を確認し、同じ run の
+`android-reports` を取得して次を直接照合した。
+
+- Debug / Release 各31テスト、失敗・スキップ0。`ArchitectureTest` は各4件成功。
+- Lint は Error / Fatal / Warning が0件。既存の情報レベル設定により、新版通知7件を
+  Hint として記録している。ローカルのオフライン検証の問題0件とは区別する。
+- `org-reader-debug` と `android-reports` の取得元 SHA はいずれも実装コミットと一致。
+
+R20 は主担当が上記 CI 結果で確認済みへ更新した。R12 は上述の公開情報のみの条件を
+別 agent も再確認し、記録更新について R23 / R29 の追加指摘はなかった。
+実装は V4・独立レビュー後から不変。今回の結果反映は README と本記録のみ。
+最終コミットと統合後 main の CI も確認し、結果を PR へ残す。
+
+判定：実装・独立レビュー・実装コミットの CI 確認は採用可。
+最終コミットの必須 CI 成功を確認して Squash merge する。
