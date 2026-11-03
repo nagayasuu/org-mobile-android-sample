@@ -7,9 +7,6 @@ sealed interface OrgBlock {
 }
 
 object OrgParser {
-    // Temporary CI regression verification; never merge this helper.
-    fun coverageGateProbe(value: Int): Int = if (value > 0) 1 else 0
-
     private val heading = Regex("^(\\*+) +(.+)$")
     private val listItem = Regex("^([ \\t]*)([-+]|\\d+[.)]|\\*)(?:[ \\t]+)(.*)$")
     private val beginBlock = Regex("^\\s*#\\+begin_(\\S+).*$", RegexOption.IGNORE_CASE)
