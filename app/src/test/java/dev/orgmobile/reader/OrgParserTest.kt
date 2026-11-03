@@ -4,6 +4,25 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class OrgParserTest {
+    @Test fun `flushes prose before a heading or list without a blank line`() {
+        assertEquals(listOf(
+            OrgBlock.Paragraph("前の本文"),
+            OrgBlock.Heading(2, "見出し"),
+            OrgBlock.Paragraph("次の本文"),
+            OrgBlock.ListItem(0, "-", "項目"),
+        ), OrgParser.parse("前の本文\n** 見出し\n次の本文\n- 項目"))
+    }
+
+    @Test fun `ends a literal paragraph before following prose without a blank line`() {
+        val literal = "#+BEGIN_EXAMPLE\n* リテラル\n#+END_EXAMPLE"
+        assertEquals(listOf(OrgBlock.Paragraph(literal), OrgBlock.Paragraph("後の本文")),
+            OrgParser.parse("$literal\n後の本文"))
+    }
+
+    @Test fun `preserves an unindented star with no heading text as prose`() {
+        assertEquals(listOf(OrgBlock.Paragraph("* \n*\t")), OrgParser.parse("* \n*\t"))
+    }
+
     @Test fun `renders Japanese headings paragraphs and lists in order`() {
         val source = """
             * 買い物
