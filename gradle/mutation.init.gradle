@@ -1,0 +1,8 @@
+// Opt in explicitly so normal builds and coverage baseline settings stay unchanged.
+gradle.beforeProject { project ->
+    if (project.path == ':app') {
+        project.pluginManager.withPlugin('com.android.application') {
+            project.apply from: new File(project.rootDir, 'gradle/mutation.gradle')
+        }
+    }
+}

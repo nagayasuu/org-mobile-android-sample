@@ -118,6 +118,65 @@ HTML レポートは共通のテスト出力先にあり、性質ごとの実行
 導入時の実測と意図的な反例による失敗・再現確認は[検証記録](verification/2026-11-04-property-tests.md)を参照する。
 1,000例や入力上限は十分性の保証ではなく、不具合や実行負荷に応じて見直す。
 
+## ミューテーションテスト
+
+[PIT 1.30.1](https://github.com/hcoles/pitest/releases/tag/1.30.1)（Apache-2.0）の
+CLI を専用の `JavaExec` タスクで起動する。Android 用プラグイン
+`pl.droidsonroids.pitest` 0.2.27 は AGP 9 の `applicationVariants` 削除により
+構成に失敗するため採用しない。JDK 17、Gradle 9.4.1、AGP 9.2.1、
+内蔵 Kotlin 2.2.10、JUnit 4.13.2、Kotest 6.2.6 で試験した。
+
+```sh
+# 具体例とプロパティテストを使う通常の手動実行
+./gradlew --console=plain -I gradle/mutation.init.gradle :app:pitestDebug
+
+# 比較用：現在の具体例テストだけを使う
+./gradlew --console=plain -I gradle/mutation.init.gradle :app:pitestDebugExamples
+```
+
+設定は [`mutation.gradle`](../gradle/mutation.gradle)、明示的に読み込む入口は
+[`mutation.init.gradle`](../gradle/mutation.init.gradle) に集約する。
+初回は Maven Central への接続が必要。通常の `check assembleDebug`・カバレッジ・
+既存 CI には追加しない。初期化スクリプトを指定しない限り PIT の構成も取得も行わない。
+タスクは毎回実行し、各モードの古いレポートを消してから生成する。
+
+| 条件 | 固定値・範囲 |
+| --- | --- |
+| 変更対象 | `OrgParser` と `$` で始まる内部クラス、`DocumentDecoder` |
+| テスト | `OrgParserTest`・`DocumentDecoderTest`、通常は対応する2つの `PropertyTest` も含む |
+| 変更演算子 | PIT 1.30.1 の `DEFAULTS`。追加の除外なし |
+| プロパティ入力 | 上節と同じ6性質・各1,000例・サイズ上限。seed は各性質42に固定 |
+| プロセス | 1 thread、timeout は通常実行時間の4倍 + 10,000ms |
+| 合否 | mutation score 100%以上、XML の全件が `KILLED`、両クラスの mutation が存在すること |
+
+`propertyTestSeed` は通常のテスト用の指定であり、PIT 内の seed は常に42である。
+履歴による間引きは使わず、失敗 seed の自動保存も無効にする。
+`OrgBlock` などのデータ保持、Android の生成クラス、テスト、依存ライブラリ、
+Robolectric を使う UI・ファイルアクセスのテストは変更対象へ広げない。
+通常の Debug テストタスクが公開するクラスパスとテスト出力を再利用し、AGP が
+本番クラスを JAR にまとめるため `mutableCodePaths` を明示する。
+対象クラスは上記の名前で限定する。AGP の出力パスはハードコードしない。
+
+| 出力 | 場所 |
+| --- | --- |
+| 通常の HTML / XML | `app/build/reports/pitest/combined/index.html` / `mutations.xml` |
+| 具体例のみの HTML / XML | `app/build/reports/pitest/examples/index.html` / `mutations.xml` |
+
+PIT は変更前のテストが成功することも確認する。生き残り・未実行・実行エラー・
+タイムアウトはレポートで区別する。PIT の score は検出扱いの一部エラーも含み得るため、
+XML の `KILLED` 以外を追加検査で拒否する。両クラスの計測欠落・空レポートも失敗とする。
+試験後の31件全検出を維持するため最低スコアは100%とした。新しい生き残りは仕様と
+照合し、意味のあるテスト不足を直す。条件変更時の閾値の再判断は
+[開発手順](development-workflow.md#mutation-score-の閾値を決める手順)に従う。
+
+JaCoCo の引数を引き継がず別 JVM で実行し、通常のテスト結果・カバレッジへ混ぜない。
+PIT もその依存も APK へ含めない。Kotlin 用 Arcmutate プラグイン未導入の案内が出るが、
+今回の試験には導入せず、生成コードのノイズはソースと照合した。
+既定演算子は正規表現の書き換えや fluent API の引数変更を網羅しないため、
+見出しレベル固定・末尾欠落・不正 UTF-8 受け入れの一時的な誤実装でも検出を確認した。
+比較結果・検出した不足・CI を追加しない理由は
+[検証記録](verification/2026-11-04-mutation-tests.md)を参照する。
+
 ## 依存構造の検査
 
 [`ArchitectureTest`](../app/src/test/java/dev/orgmobile/reader/ArchitectureTest.kt) は

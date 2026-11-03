@@ -1,0 +1,60 @@
+// The Android PIT plugin uses the removed applicationVariants API in AGP 9.
+// Reuse the host test task's classpath without executing it or its JaCoCo agent.
+def pitestTool = configurations.create('pitestTool') {
+    canBeConsumed = false
+    canBeResolved = true
+}
+dependencies.add(pitestTool.name, 'org.pitest:pitest-command-line:1.30.1')
+
+afterEvaluate {
+    def hostTest = tasks.named('testDebugUnitTest', Test).get()
+    ['pitestDebug': true, 'pitestDebugExamples': false].each { taskName, withProperties ->
+        tasks.register(taskName, JavaExec) {
+            group = 'verification'
+            description = withProperties ? 'Mutation trial with example and property tests' :
+                'Mutation trial with example tests only (comparison baseline)'
+            dependsOn(hostTest.classpath, hostTest.testClassesDirs)
+            classpath = pitestTool + hostTest.classpath + hostTest.testClassesDirs
+            mainClass = 'org.pitest.mutationtest.commandline.MutationCoverageReport'
+            def report = layout.buildDirectory.dir("reports/pitest/${withProperties ? 'combined' : 'examples'}")
+            doFirst {
+                delete(report)
+                def testNames = ['OrgParserTest', 'DocumentDecoderTest']
+                if (withProperties) testNames += ['OrgParserPropertyTest', 'DocumentDecoderPropertyTest']
+                setArgs([
+                    '--reportDir', report.get().asFile.absolutePath,
+                    '--sourceDirs', file('src/main/java').absolutePath,
+                    // AGP supplies production classes in a JAR; PIT skips JARs by default.
+                    '--mutableCodePaths', hostTest.classpath.files.collect { it.absolutePath }.join(','),
+                    '--targetClasses', 'dev.orgmobile.reader.OrgParser,dev.orgmobile.reader.OrgParser$*,dev.orgmobile.reader.DocumentDecoder',
+                    '--targetTests', testNames.collect { "dev.orgmobile.reader.$it" }.join(','),
+                    '--mutators', 'DEFAULTS', '--threads', '1',
+                    '--timeoutConst', '10000', '--timeoutFactor', '4',
+                    '--outputFormats', 'HTML,XML', '--timestampedReports', 'false',
+                    '--failWhenNoMutations', 'true',
+                    '--mutationThreshold', '100',
+                    '--jvmArgs', '-Dorgmobile.property.seed=42,-Dkotest.proptest.seed.write-failed=false',
+                ])
+            }
+            doLast {
+                // PIT counts some error statuses as detected; require assertion kills as well.
+                def factory = javax.xml.parsers.DocumentBuilderFactory.newInstance()
+                factory.setFeature('http://apache.org/xml/features/disallow-doctype-decl', true)
+                def mutations = factory.newDocumentBuilder().parse(
+                    report.get().file('mutations.xml').asFile).getElementsByTagName('mutation')
+                def classes = [] as Set
+                if (mutations.length == 0) throw new GradleException('PIT report has no mutations')
+                for (int i = 0; i < mutations.length; i++) {
+                    def mutation = mutations.item(i)
+                    classes.add(mutation.getElementsByTagName('mutatedClass').item(0).textContent.split('\\$')[0])
+                    if (mutation.getAttribute('status') != 'KILLED') {
+                        throw new GradleException("PIT requires assertion kills; found ${mutation.getAttribute('status')}. See ${report.get()}")
+                    }
+                }
+                if (classes != ['dev.orgmobile.reader.OrgParser', 'dev.orgmobile.reader.DocumentDecoder'] as Set) {
+                    throw new GradleException("PIT target classes are missing or unexpected: $classes")
+                }
+            }
+        }
+    }
+}
