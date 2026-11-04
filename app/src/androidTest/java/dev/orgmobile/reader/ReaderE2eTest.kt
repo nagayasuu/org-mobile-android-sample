@@ -34,7 +34,6 @@ import org.junit.Test
 import org.junit.rules.TestName
 import org.junit.runner.RunWith
 import java.io.File
-import java.util.regex.Pattern
 
 /** Run only on a disposable API 37 emulator, without accounts or personal files. */
 @RunWith(AndroidJUnit4::class)
@@ -184,11 +183,13 @@ class ReaderE2eTest {
     private fun openPicker() {
         Log.i("ReaderE2E", "${testName.methodName}: open system picker")
         onView(withId(R.id.open_file)).perform(click())
-        val picker = device.wait(Until.findObject(
-            By.pkg(Pattern.compile("com\\.(android|google\\.android)\\.documentsui")),
-        ), TIMEOUT)
-        assertNotNull("System DocumentsUI did not open", picker)
-        pickerPackage = picker.applicationPackage
+        // DocumentsUI replaces its window nodes while opening. Keep the package
+        // string, rather than querying a UiObject2 captured during that transition.
+        await("system DocumentsUI package") {
+            pickerPackage = listOf("com.google.android.documentsui", "com.android.documentsui")
+                .firstOrNull { device.hasObject(By.pkg(it)) }.orEmpty()
+            pickerPackage.isNotEmpty()
+        }
     }
 
     private fun select(name: String) {
