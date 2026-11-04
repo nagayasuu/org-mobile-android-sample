@@ -8,11 +8,10 @@ Dropbox から端末へ保存した UTF-8 の `.org` ファイルを「ファイ
 
 ## 開発ドキュメント
 
-- [開発手順](docs/development-workflow.md)：既存の動作を保ちながら、小さな実装、テスト、CI、端末確認を繰り返す手順と完了条件。
+- [開発手順](docs/development-workflow.md)：既存の動作を保ちながら、小さな実装、テスト、CI、E2E を繰り返す手順と完了条件。
 - [レビューチェックリスト](docs/development-workflow.md#review-checklist)：セルフレビューと PR レビューで使う30項目。結果と根拠は [PR テンプレート](.github/pull_request_template.md)へ記録する。
 - [agent によるレビュー](docs/development-workflow.md#agent-review)：対象差分を指定して30項目を確認する手順と依頼文。別 agent による確認とセルフレビュー、実行結果と未確認を区別する。
 - [Android の開発環境とビルド・検証](docs/android-build.md)：環境の準備、実行コマンド、レポートと CI 成果物。
-- [端末確認手順](docs/device-testing.md)：APK の導入と実際の利用経路のスモークテスト。
 - [Git 運用規約](docs/git-workflow.md)：ブランチ、コミットメッセージ、PR、レビュー、統合のルール。
 - [AGENTS.md](AGENTS.md)：agent が作業開始時に読む指示。
 
@@ -24,7 +23,7 @@ JDK 17、Android SDK Platform 37.0、Build Tools 37.0.0 を準備し、SDK の�
 ./gradlew check assembleDebug
 ```
 
-APK は `app/build/outputs/apk/debug/app-debug.apk` に出力します。詳しくは [環境の準備と検証コマンド](docs/android-build.md)、[USB 接続した端末での確認](docs/device-testing.md) を参照してください。初回の検証結果は [検証記録](docs/verification/2026-11-01-initial-implementation.md) に残しています。
+APK は `app/build/outputs/apk/debug/app-debug.apk` に出力します。詳しくは [環境の準備と検証コマンド](docs/android-build.md)、[自動 E2E の手順](docs/android-build.md#自動-e2e-テスト) を参照してください。初回の検証結果は [検証記録](docs/verification/2026-11-01-initial-implementation.md) に残しています。
 
 カバレッジ計測と CI と同じ判定には `python3 scripts/run_coverage.py --base-ref main` を使います。対象・出力先・比較条件は[カバレッジ計測の手引き](docs/android-build.md#カバレッジ計測)を参照してください。
 
@@ -32,21 +31,17 @@ APK は `app/build/outputs/apk/debug/app-debug.apk` に出力します。詳し�
 
 同じ2クラスへの PIT ミューテーションテストを手動で実行できます。試験で見つかった検証不足を具体例テストで補い、31件すべての検出を確認しました。最低スコアは100%とし、CI への追加は継続運用後に再判断します。コマンドと制約は[ミューテーションテストの手引き](docs/android-build.md#ミューテーションテスト)、比較結果と判断理由は[導入記録](docs/verification/2026-11-04-mutation-tests.md)を参照してください。
 
+標準ファイル選択を通す自動 E2E は `./gradlew :app:pixel2Api37DebugAndroidTest` で手動実行します。API 37 の専用エミュレーターで、表示・長文末尾、取り消し・回転後の保持、不正 UTF-8 からの復帰を確認します。CI の `Android E2E` も手動実行です。環境・結果の見方は[自動 E2E の手引き](docs/android-build.md#自動-e2e-テスト)を参照してください。
+
 ## 今後の決定事項
 
 以下は導入・検討の方針と残る課題です。方針の決定と実装・検証の完了を区別し、具体的な手順は各項目の参照先へ集約します。対応済みの項目は一覧から削除し、運用手順と検証記録は開発ドキュメントへ残します。番号は項目を識別するためのもので、欠番を詰めたり実装順序を定めたりするものではありません。
 
 マージキューと複数バージョンの並行保守用ブランチは引き続き導入を保留します。詳細は[Git 運用規約](docs/git-workflow.md#7-今後の更新)を参照してください。
 
-### 5. 自動 E2E テスト（方針決定済み・未導入）
-
-UI Automator と Espresso を使い、標準ファイル選択から表示まで、取り消し・画面回転後の保持、読み込みエラーからの復帰を自動検証します。API 37 のエミュレーターを Gradle Managed Devices で管理し、採用バージョンと実行環境の互換性を導入時に確認します。PR の必須検証にするかは、実行時間と安定性を確認して判断します。
-
-詳細：[開発手順の自動 E2E テスト](docs/development-workflow.md#自動-e2e-テストを導入する)。
-
 ### 6. 性能計測（計測環境未整備・基準値未確定）
 
-対象端末と合成文書、計測条件をそろえ、読み込み開始から最初の内容表示までの時間、解析時間、メモリ使用量を測定します。実測結果と利用目的から基準値・許容値を決め、性能に影響する変更で再計測します。自動計測は、手順と基準を整えてから必要性を判断します。
+専用エミュレーターと合成文書、計測条件をそろえ、読み込み開始から最初の内容表示までの時間、解析時間、メモリ使用量を測定します。実測結果と利用目的から基準値・許容値を決め、性能に影響する変更で再計測します。自動計測は今後導入し、手順と基準を整えます。
 
 詳細：[開発手順の性能計測](docs/development-workflow.md#性能計測の対象と方法)。
 
@@ -70,7 +65,7 @@ UI Automator と Espresso を使い、標準ファイル選択から表示まで
 
 ### 11. 監視と不具合対応（運用詳細未決定・自動収集／通知は未導入）
 
-当面は利用者の報告と端末での再現確認を使います。一般配布の開始前に、不具合の受付先・担当、監視する指標、異常の判断基準、通知先、記録の保持・削除方法を決定します。文書内容・個人のファイル名・URI・認証情報は収集対象に含めません。
+当面は利用者の報告を基に E2E で再現条件を整えます。一般配布の開始前に、不具合の受付先・担当、監視する指標、異常の判断基準、通知先、記録の保持・削除方法を決定します。文書内容・個人のファイル名・URI・認証情報は収集対象に含めません。
 
 詳細：[開発手順の監視と不具合対応](docs/development-workflow.md#監視と不具合対応)。
 
@@ -88,8 +83,8 @@ UI Automator と Espresso を使い、標準ファイル選択から表示まで
 
 詳細：[検証記録のリスクと保証の限界](docs/verification/2026-11-01-code-review.md#リスクと保証の限界)。
 
-### 15. 未確認の検証範囲（2026-11-01のコード見直し時点）
+### 15. E2E の未対応範囲
 
-今回の変更に対する Dropbox 保存操作の再確認、最大表示サイズ、TalkBack の読み込み中・空文書・エラー時の音声と見出し移動の詳細、支援技術に慣れた利用者による評価は未確認です。確認済みの範囲と区別し、結果を検証記録へ残します。
+利用経路の検証は E2E に集約します。Dropbox 保存・クラウド接続、空ファイル、同じファイルの更新後の再読み込み、1万行文書・性能、TalkBack・文字と表示サイズ・明暗、実機固有の挙動は現在の E2E では未対応です。追加方針は[開発手順](docs/development-workflow.md#e2e-gaps)にまとめています。
 
-詳細：[コード見直しと実機検証の記録](docs/verification/2026-11-01-code-review.md)。
+過去の確認結果は[コード見直しと実機検証の記録](docs/verification/2026-11-01-code-review.md)に残しています。

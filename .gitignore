@@ -11,9 +11,6 @@
 !/.agents/skills/review-changes/
 /.agents/skills/review-changes/*
 !/.agents/skills/review-changes/SKILL.md
-!/.agents/skills/android-device-check/
-/.agents/skills/android-device-check/*
-!/.agents/skills/android-device-check/SKILL.md
 /.codex/
 /.aws/
 
