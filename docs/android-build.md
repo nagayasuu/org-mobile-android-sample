@@ -1,6 +1,6 @@
 # Android の開発環境とビルド・検証
 
-[開発手順](development-workflow.md)から参照する、環境構築と実行コマンドの手引き。バージョンはリポジトリのビルド設定と CI 定義に合わせて更新する。端末での操作は[端末確認手順](device-testing.md)を参照する。
+[開発手順](development-workflow.md)から参照する、環境構築と実行コマンドの手引き。バージョンはリポジトリのビルド設定と CI 定義に合わせて更新する。利用経路の検証は[自動 E2E テスト](#自動-e2e-テスト)に集約する。
 
 ## 開発環境
 
@@ -62,7 +62,93 @@ AGP 9 の既定で Release テストが省略されないよう、`app/build.gra
 
 Kotlin の警告と Lint の警告はビルドを失敗させる。例外として、`app/lint.xml` では依存関係・Gradle の新版通知（`GradleDependency`、`NewerVersionAvailable`、`AndroidGradlePluginVersion`）を情報レベルにする。検証済みの組み合わせを固定し、更新を一つの変更として再検証するためであり、通知自体はレポートに残す。互換性やコードの問題の検出は有効なままとする。
 
-自動テストでは、日本語の解析・UTF-8 読み込み、不正な文字コード、空ファイル、対応外構文の保持、長い文書、読み込み失敗と再試行、URI からの読み込み、ファイル選択の取り消し、画面再作成後の文書と閲覧位置の保持、更新したファイルの再読み込み、一覧の末尾へのスクロールを確認する。Android の画面・ファイルアクセスのテストには Robolectric の API 35 環境とテスト専用の文書プロバイダーを使う。これは実機のファイル選択画面や Dropbox の接続確認を代替しない。
+自動テストでは、日本語の解析・UTF-8 読み込み、不正な文字コード、空ファイル、対応外構文の保持、長い文書、読み込み失敗と再試行、URI からの読み込み、ファイル選択の取り消し、画面再作成後の文書と閲覧位置の保持、更新したファイルの再読み込み、一覧の末尾へのスクロールを確認する。Android の画面・ファイルアクセスのテストには Robolectric の API 35 環境とテスト専用の文書プロバイダーを使う。標準ファイル選択を通す検証は下記の E2E で行い、Dropbox 接続は自動化の未対応範囲として記録する。
+
+## 自動 E2E テスト
+
+[`ReaderE2eTest`](../app/src/androidTest/java/dev/orgmobile/reader/ReaderE2eTest.kt) は、
+実際の標準 DocumentsUI で Downloads の文書を選び、アプリの表示を検証する。
+選択結果のスタブやテスト専用プロバイダーは使わない。
+[UI Automator 2.4.0](https://developer.android.com/jetpack/androidx/releases/test-uiautomator)、
+[Espresso 3.7.0 / AndroidX Test 1.7.0 / ext.junit 1.3.0](https://developer.android.com/jetpack/androidx/releases/test)
+をテスト APK のみに追加した。新しい製品依存はない。
+
+### 環境と実行
+
+[Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices) を
+AGP 9.2.1 の `managedDevices.localDevices` で構成する。
+`pixel2Api37` は Pixel 2、API 37、`systemImageSource = "google"`、4 KB ページの通常イメージを使う。
+ABI は x86_64 に固定し、`system-images;android-37.0;google_apis;x86_64` を使う。
+ATD は標準選択画面を省く可能性があるため採用しない。
+初回はネットワーク接続とイメージ用のディスク空き容量が必要。
+Linux では `/dev/kvm` の読み書き権限を確認する。
+SDK と AVD の両方に十分な空き容量を用意する（今回の AVD の userdata は約7.4 GBの空きを要求した）。
+起動失敗時は SDK だけでなく AVD の保存先も確認する。
+`ANDROID_HOME` は SDK の実体パスを指定する。導入時の AGP 9.2.1 では、
+シンボリックリンク経由のパスで Managed Device のイメージ検索に失敗した。
+
+```sh
+sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64'
+./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle
+```
+
+JDK 17 と通常のビルド環境を使う。エミュレーターの既定言語は en-US とし、
+Downloads のルート名だけ英語に依存する。本文は日本語で検証する。
+描画は `swangle`（ANGLE + SwiftShader）を使う。導入環境の Emulator 37.2.13 では
+`swiftshader_indirect` が描画スレッドでクラッシュしたため、上の指定をローカルと CI でそろえる。
+通常 AOSP revision 6 はシステムサービスの起動に失敗したため、Google APIs 版を選んだ。
+個人のファイル・アカウントを含まない専用環境で実行する。
+接続済みの実機を対象にする `connectedAndroidTest` はこの手順には使わない。
+
+CI は [Android E2E](../.github/workflows/e2e.yml) の `workflow_dispatch` のみ。
+GitHub の Actions から実行対象のブランチを選ぶ。新規ワークフローは既定ブランチに
+入った後に手動実行できる。PR の必須 `verify` と通常の `check assembleDebug` は維持する。
+週次実行・PR 必須化は、実行時間と安定性を継続確認してから判断する。
+
+### 入力・初期化・合否
+
+各テスト前に、新しい Activity を開き、アプリの永続 URI 読み取り権限を解除する。
+アプリ自身が所有する、固定名 `org-reader-e2e-{smoke,long,invalid}.org` の前回分だけを削除し、
+MediaStore Downloads に作り直す。広いストレージ権限やシェルでのファイル書き込みは不要。
+公開 [`examples/smoke.org`](../examples/smoke.org) はテスト assets からそのままコピーする。
+長文は160行のリストと末尾の見出し・本文、不正 UTF-8 は `C3 28` の2バイトを生成する。
+正常文書にも不正文書にも `application/octet-stream` を付け、配置後の文書名を検査する。
+`text/plain` は MediaStore が `.txt` を追加するため使わない。
+アプリは `*/*` で選択し、実際の内容に応じた文字コードの成否を確認する。
+
+| シナリオ | 期待結果 |
+| --- | --- |
+| 公開サンプルと長文 | 日本語見出し・本文・箇条書き・番号付きリストを表示し、別文書の末尾までスクロールできる |
+| 取り消しと回転 | 途中の行番号と先頭行の上端位置を選択取り消し後・横向き回転後に保持し、文書名と末尾を確認できる |
+| 不正 UTF-8 からの復帰 | エラー案内が出て、正常文書を再選択すると本文を表示し、エラー案内が消える |
+
+読み込み完了は文書名、エラーは案内文、回転は横向きの構成と閲覧位置を条件で待つ。
+Downloads のナビゲーションが閉じてからファイルを押し、選択による画面遷移も待つ。
+各条件の上限は15秒。回転の条件は50ms間隔で再確認する。
+Espresso でアプリ内の操作・表示を同期し、Managed Devices でアニメーションを無効化する。
+タイムアウト・アサーション不一致は失敗とし、失敗を隠す自動リトライは追加しない。
+テスト終了時は画面・UI 階層を保存してから Activity を閉じ、権限・作成文書を片付け、回転固定を解除する。
+中断時の残存文書も次の開始時にアプリ所有分のみ片付ける。
+
+### 結果と成果物
+
+| 出力 | 場所 |
+| --- | --- |
+| HTML | `app/build/reports/androidTests/managedDevice/` 以下 |
+| XML・実行ログ | `app/build/outputs/androidTest-results/managedDevice/` 以下 |
+| 各テスト終了時の PNG・UI 階層 XML | `app/build/outputs/managed_device_android_test_additional_output/` 以下 |
+| テスト APK | `app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk` |
+
+runner の `additionalTestOutputDir` に診断を保存し、未指定の場合のみ端末上の
+アプリ専用 external files の `e2e/` を使う。診断の保存失敗は warning を出し、
+シナリオの成否と区別する。失敗段階はアサーションの文言と `ReaderE2E` のログで追う。
+CI は `android-e2e-reports` に上記結果・コミット SHA・APK SHA-256、
+`org-reader-e2e-apks` に本体とテスト APK を保存する。環境作成の失敗も Gradle ログで確認する。
+収集先は明示したビルド出力だけであり、端末全体のデータを収集しない。
+
+導入時のコマンド・結果・未確認は[検証記録](verification/2026-11-05-e2e-tests.md)を参照する。
+E2E の成功は Dropbox の保存・クラウド接続、Pixel 10a の実機、TalkBack、大容量の性能を保証しない。
+利用経路の検証は E2E で行う。未対応の条件と追加方針は[開発手順](development-workflow.md#e2e-gaps)に集約する。既存の JVM・Robolectric・Lint は共通検証として維持する。
 
 ## プロパティベーステスト
 

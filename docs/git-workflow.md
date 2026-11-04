@@ -161,7 +161,7 @@ python3 -m unittest discover -s scripts/tests -v
 
 ## 4. PR・レビュー・統合
 
-ビルド、テスト、CI、端末での動作確認の具体的な手順は [開発手順](development-workflow.md) に従う。
+ビルド、テスト、CI、E2E による利用経路の検証の具体的な手順は [開発手順](development-workflow.md) に従う。
 
 PR 作成前のセルフレビューと統合前のレビューでは、[開発手順のレビューチェックリスト](development-workflow.md#review-checklist)を使い、[PR テンプレート](../.github/pull_request_template.md)へ結果と根拠を記録する。修正や対象コミットの更新後は、影響する項目を再確認する。確認内容と判定基準は開発手順に集約し、人による必須承認数と必須 CI は本節の保護条件に従う。
 

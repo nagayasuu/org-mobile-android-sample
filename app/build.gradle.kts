@@ -14,13 +14,30 @@ android {
         versionCode = 1
         versionName = "0.1.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunnerArguments["disableAnalytics"] = "true"
     }
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    testOptions.unitTests.isIncludeAndroidResources = true
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+        animationsDisabled = true
+        managedDevices {
+            localDevices {
+                create("pixel2Api37") {
+                    device = "Pixel 2"
+                    apiLevel = 37
+                    systemImageSource = "google"
+                    testedAbi = "x86_64"
+                    pageAlignment = com.android.build.api.dsl.ManagedVirtualDevice.PageAlignment.FORCE_4KB_PAGES
+                }
+            }
+        }
+    }
+    // Package the public fixture only in the instrumentation APK.
+    sourceSets.getByName("androidTest").assets.directories.add(rootProject.file("examples").path)
     lint {
         warningsAsErrors = true
         abortOnError = true
@@ -63,4 +80,11 @@ dependencies {
     testImplementation("org.robolectric:robolectric:4.16")
     testImplementation("androidx.test:core:1.7.0")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2")
+
+    androidTestImplementation("androidx.test:core:1.7.0")
+    androidTestImplementation("androidx.test:runner:1.7.0")
+    androidTestImplementation("androidx.test.ext:junit:1.3.0")
+    androidTestImplementation("androidx.test.espresso:espresso-core:3.7.0")
+    androidTestImplementation("androidx.test.espresso:espresso-contrib:3.7.0")
+    androidTestImplementation("androidx.test.uiautomator:uiautomator:2.4.0")
 }
