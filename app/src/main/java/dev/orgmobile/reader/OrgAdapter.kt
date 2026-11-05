@@ -31,6 +31,7 @@ class OrgAdapter : RecyclerView.Adapter<OrgAdapter.BlockHolder>() {
             )
             setTextColor(0xFF202820.toInt())
             setTextIsSelectable(true)
+            minHeight = dp(48)
             setLineSpacing(0f, 1.2f)
         }
         return BlockHolder(text)
