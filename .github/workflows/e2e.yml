@@ -29,7 +29,7 @@ jobs:
           test -r /dev/kvm && test -w /dev/kvm
       - name: Install SDK and full Google APIs image
         run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64'
-      - name: Run three system-picker scenarios
+      - name: Run system-picker E2E scenarios
         run: ./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle
       - name: Record revision and APK identity
         if: always()

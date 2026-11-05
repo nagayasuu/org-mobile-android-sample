@@ -31,7 +31,7 @@ APK は `app/build/outputs/apk/debug/app-debug.apk` に出力します。詳し�
 
 同じ2クラスへの PIT ミューテーションテストを手動で実行できます。試験で見つかった検証不足を具体例テストで補い、31件すべての検出を確認しました。最低スコアは100%とし、CI への追加は継続運用後に再判断します。コマンドと制約は[ミューテーションテストの手引き](docs/android-build.md#ミューテーションテスト)、比較結果と判断理由は[導入記録](docs/verification/2026-11-04-mutation-tests.md)を参照してください。
 
-標準ファイル選択を通す自動 E2E は `./gradlew :app:pixel2Api37DebugAndroidTest` で手動実行します。API 37 の専用エミュレーターで、表示・長文末尾、取り消し・回転後の保持、不正 UTF-8 からの復帰を確認します。CI の `Android E2E` も手動実行です。環境・結果の見方は[自動 E2E の手引き](docs/android-build.md#自動-e2e-テスト)を参照してください。
+標準ファイル選択を通す自動 E2E は `./gradlew :app:pixel2Api37DebugAndroidTest` で手動実行します。API 37 の専用エミュレーターで、表示・長文末尾、取り消し・回転後の保持、不正 UTF-8・空文書からの復帰、更新後の再読み込み、1万項目、表示設定・アクセシビリティの計8シナリオを確認します。CI の `Android E2E` も手動実行です。環境・結果の見方は[自動 E2E の手引き](docs/android-build.md#自動-e2e-テスト)を参照してください。
 
 ## 今後の決定事項
 
@@ -85,6 +85,6 @@ APK は `app/build/outputs/apk/debug/app-debug.apk` に出力します。詳し�
 
 ### 15. E2E の未対応範囲
 
-利用経路の検証は E2E に集約します。Dropbox 保存・クラウド接続、空ファイル、同じファイルの更新後の再読み込み、1万行文書・性能、TalkBack・文字と表示サイズ・明暗、実機固有の挙動は現在の E2E では未対応です。追加方針は[開発手順](docs/development-workflow.md#e2e-gaps)にまとめています。
+利用経路の検証は E2E に集約します。Dropbox 保存・クラウド接続、大容量の性能基準、TalkBack の音声・読み順・主観的な使いやすさ、実機固有の挙動は未対応です。空文書、更新後の再読み込み、1万項目の末尾、表示設定とノード属性の自動検査は対応しています。追加方針は[開発手順](docs/development-workflow.md#e2e-gaps)にまとめています。
 
 過去の確認結果は[コード見直しと実機検証の記録](docs/verification/2026-11-01-code-review.md)に残しています。
