@@ -199,13 +199,13 @@ CI の実行範囲と拡張時の扱いは[開発手順](development-workflow.md
 
 #### 設定の維持と動作確認
 
-GitHub のリポジトリの **Settings → Branches → Branch protection rules** で `main` のルールを確認・更新する。GitHub の画面または API を利用でき、`gh` は必須にしない。
+`main` の保護ルールの確認・更新には `gh api` を使う。認証と読み取りの実行例は[GitHub CLI の手順](#github-cli)に従う。設定変更は依頼された範囲で行い、以下の保護条件を維持する。
 
 1. **Require a pull request before merging** を有効にする。**Require approvals**、Code Owner の承認、最後の push に対する承認は要求せず、必須承認は0人とする。
 2. **Require status checks to pass before merging** と **Require branches to be up to date before merging** を有効にする。チェック名 `verify` を選び、期待する実行元を GitHub Actions にする。他の実行元による同名チェックを許可しない。
 3. **Require conversation resolution before merging** と **Do not allow bypassing the above settings** を有効にする。PR 要件を回避できるユーザー・チーム・アプリは追加しない。**Allow force pushes** と **Allow deletions** は無効のまま維持する。
 4. 保存後に設定を再取得し、対象が `main`、管理者への適用が有効、必須チェックが `verify` / App ID `15368`、最新状態の要求が有効であることを確認する。REST API を使う場合は `GET /repos/{owner}/{repo}/branches/main/protection` で確認できる。
-5. PR の Checks とマージ欄で、CI が実行待ち・失敗のときに統合できず、最新の `main` 未反映や未解決のレビュー指摘がある場合も統合できないことを確認する。管理者のアカウントでも確認し、検証のために保護を解除しない。
+5. `gh pr checks` と `gh pr view`、必要な場合は `gh api` で、CI が実行待ち・失敗のときに統合できず、最新の `main` 未反映や未解決のレビュー指摘がある場合も統合できないことを確認する。管理者のアカウントでも確認し、検証のために保護を解除しない。
 6. 条件を満たした PR で `verify` の成功と統合可能な状態を確認し、統合を行う際は Squash merge を選ぶ。統合後の `main` の CI も確認する。設定確認と実際の拒否・統合は別の結果として、対象 PR・コミット・run の URL と未確認事項を記録する。
 
 CI 待ちによる拒否と PR 要件による拒否を区別するため、PR を持たないコミットの直接更新は CI 成功後にも確認する。保護条件を満たした既存 PR の先端への参照更新が許可され、その PR が統合済みになる場合がある。これは PR 要件の無効化とは区別し、通常の統合操作には Squash merge を使う。
@@ -256,3 +256,104 @@ Git の運用ルールはこの文書へ集約し、`AGENTS.md` には参照先�
 - マージキューの導入は保留する。再検討時は並行する PR の量、リポジトリ所有者・プランの利用条件、CI の `merge_group` 対応を確認する。
 
 コミットメッセージ検証と Git フックは第3節の実装・手順を使う。ローカルの導入と、GitHub 上での CI 実行結果は区別して確認する。
+
+<a id="github-cli"></a>
+
+## 8. GitHub CLI による操作
+
+GitHub 上の PR・Issue 操作、CI の確認・起動、成果物の取得、リポジトリ設定の確認・更新には `gh` を使う。REST / GraphQL API が必要な場合も `gh api` を使う。ローカルの編集・ビルド・テストに `gh` の準備は要求せず、コミットや push には引き続き `git` を使う。
+
+投稿・CI の起動・設定変更・承認・マージは、第6節で定める依頼の範囲に従う。読み取りの動作確認には、既存の PR・CI と成果物を使う。
+
+### 準備と接続の確認
+
+GitHub 上の操作が必要になった時点で `gh` の導入、認証、対象リポジトリへのアクセスを確認する。CLI の入手先とオプションは[公式マニュアル](https://cli.github.com/manual/)を参照する。
+
+```sh
+gh --version
+gh auth status --active --hostname github.com
+gh repo view --json nameWithOwner,url,viewerPermission
+```
+
+認証が必要な場合は、利用者が `gh auth login --hostname github.com --web` でログインする。トークンの実体を表示・記録しない。認証の手順は[公式の認証ガイド](https://docs.github.com/en/github-cli/github-cli/authenticating-with-github-cli)に従う。
+
+接続に失敗した場合は、ネットワーク制限、認証、操作権限を切り分ける。通信が制限された環境での失敗だけを認証切れと判断せず、環境のポリシーに従って通信の許可を得たうえで再確認する。解決できない GitHub 上の操作は未確認として理由と次の確認方法を記録し、進められるローカル作業を続ける。
+
+### 対象と出力を絞る
+
+以下はリポジトリのルートで実行する。`gh_repo` は取得・操作先を固定するための値であり、各コマンドにも明示する。
+
+```sh
+gh_repo='nagayasuu/org-mobile-android-sample'
+```
+
+各例の `gh_pr`、`gh_run`、`gh_sha` は確認する PR 番号、run ID、コミット SHA を設定する。取得前に対象を確かめ、最新の別 run で代用しない。情報の取得には `--json` と必要なフィールドを指定し、必要なら `--jq` でさらに絞る。生ログは必要な箇所だけを読み、成否・対象・詳細の保存先を記録する。
+
+### PR の確認・作成
+
+```sh
+gh pr list --repo "$gh_repo" --state all --limit 5 \
+  --json number,headRefName,headRefOid,state,url
+gh pr view "$gh_pr" --repo "$gh_repo" \
+  --json number,headRefOid,baseRefName,state,mergeable,mergeStateStatus,reviewDecision,url
+```
+
+PR 作成を依頼された場合は、先に `git` で対象ブランチを push する。公開可能な本文を [PR テンプレート](../.github/pull_request_template.md)に沿って一時ファイルへ記入し、そのパスを `gh_body_file`、タイトルを `gh_title`、作業ブランチ名を `gh_branch` に設定する。複数行の本文は `--body-file` で渡す。
+
+```sh
+gh pr create --repo "$gh_repo" --base main --head "$gh_branch" \
+  --title "$gh_title" --body-file "$gh_body_file"
+```
+
+コメントや PR 本文の更新にも本文ファイルを使い、投稿前に内容と対象を確認する。その他の PR 操作は `gh pr <操作> --help` で必要なオプションを確認する。
+
+### CI の状態・失敗箇所の確認
+
+```sh
+gh pr checks "$gh_pr" --repo "$gh_repo" --required --json name,bucket,link
+gh run list --repo "$gh_repo" --workflow android.yml --commit "$gh_sha" --limit 5 \
+  --json databaseId,headSha,event,status,conclusion,url
+gh run view "$gh_run" --repo "$gh_repo" \
+  --json databaseId,attempt,headSha,event,status,conclusion,url
+```
+
+PR の `headRefOid`、チェックのリンク、run の情報から対象の対応を確認する。PR 用のマージコミットで検証される場合は、その関係も記録する。対象の run が見つからなければ未確認とし、別コミットの成功で置き換えない。
+
+CI は `status` が `completed` で `conclusion` が `success`、かつ必須チェック `verify` が成功していることを確認する。実行待ち、キャンセル、スキップ、チェックの欠落を成功とみなさない。`gh pr checks` の終了コード8は実行待ちを表す。
+
+完了を待つ場合は次のコマンドを使う。繰り返し出る状態一覧はそのまま報告へ転記せず、最終結果と参照先を残す。
+
+```sh
+gh pr checks "$gh_pr" --repo "$gh_repo" --required --watch --interval 30
+```
+
+失敗時は、対象 run またはジョブの失敗したステップに絞ってログを取得する。
+
+```sh
+gh run view "$gh_run" --repo "$gh_repo" --log-failed
+```
+
+手動 E2E の起動を依頼された場合は、`gh_branch` に実行するブランチ名を設定して起動する。その後の run は `e2e.yml` と対象コミットで絞って確認する。起動の成功とテストの成功を区別する。
+
+```sh
+gh workflow run e2e.yml --repo "$gh_repo" --ref "$gh_branch"
+```
+
+### 成果物と保護設定の取得
+
+成果物名は[ビルド・検証の手引き](android-build.md#ci)と[E2E の結果](android-build.md#結果と成果物)で確認し、`gh_artifact` に設定する。run ごとに新しい保存先を用意し、異なる run の APK とレポートを混ぜない。APK を使う場合は取得したファイルの SHA-256 も記録する。
+
+```sh
+gh_download_dir=$(mktemp -d)
+gh run download "$gh_run" --repo "$gh_repo" \
+  --name "$gh_artifact" --dir "$gh_download_dir"
+```
+
+保護設定は `gh api` で読み取り、必要な項目に絞る。取得した値は第4節の保護条件と照合する。設定の変更は、変更内容と影響を確認してから、依頼の範囲内で `gh api` の更新操作を行う。
+
+```sh
+gh api --method GET "repos/$gh_repo/branches/main/protection" \
+  --jq '{enforce_admins: .enforce_admins.enabled, strict: .required_status_checks.strict, checks: .required_status_checks.checks, approvals: .required_pull_request_reviews.required_approving_review_count, resolve_conversations: .required_conversation_resolution.enabled, allow_force_pushes: .allow_force_pushes.enabled, allow_deletions: .allow_deletions.enabled}'
+```
+
+コマンドの仕様は [PR チェック](https://cli.github.com/manual/gh_pr_checks)、[run の取得](https://cli.github.com/manual/gh_run_view)、[成果物の取得](https://cli.github.com/manual/gh_run_download)を参照する。
