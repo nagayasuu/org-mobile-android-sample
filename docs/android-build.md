@@ -102,7 +102,7 @@ Downloads のルート名だけ英語に依存する。本文は日本語で検�
 接続済みの実機を対象にする `connectedAndroidTest` はこの手順には使わない。
 
 CI は [Android E2E](../.github/workflows/e2e.yml) の `workflow_dispatch` のみ。
-GitHub の Actions から実行対象のブランチを選ぶ。新規ワークフローは既定ブランチに
+[GitHub CLI の手順](git-workflow.md#github-cli)に従い、`gh workflow run` で実行対象のブランチを指定する。新規ワークフローは既定ブランチに
 入った後に手動実行できる。PR の必須 `verify` と通常の `check assembleDebug` は維持する。
 週次実行・PR 必須化は、実行時間と安定性を継続確認してから判断する。
 
@@ -404,6 +404,6 @@ APK は `org-reader-debug`、検証レポートは `android-reports` という�
 
 GitHub 上での実行結果は、push または PR 作成後に別途確認する。ワークフローの追加やローカル検証の成功だけで CI が成功したとはみなさない。
 
-確認時は対象コミット、run の URL と結果を記録し、同じ run の `android-reports` と `org-reader-debug` を使う。文書だけの変更でも、実行された CI の結果は実際に確認するまで未確認とする。PR 作成や結果・成果物の取得には GitHub の画面、API、利用可能な連携ツールを使え、`gh` は前提にしない。
+確認時は対象コミット、run の URL と結果を記録し、同じ run の `android-reports` と `org-reader-debug` を使う。文書だけの変更でも、実行された CI の結果は実際に確認するまで未確認とする。PR 作成や結果・成果物の取得には `gh` を使い、コマンドと出力の絞り方は[GitHub CLI の手順](git-workflow.md#github-cli)に従う。
 
 CI 定義を変更した場合は、利用できれば actionlint で静的確認し、GitHub 上の実行結果も確認する。actionlint の成功は、SDK の導入や Gradle タスクの成功を代替しない。
