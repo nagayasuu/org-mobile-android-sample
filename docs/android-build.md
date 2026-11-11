@@ -64,6 +64,32 @@ Kotlin の警告と Lint の警告はビルドを失敗させる。例外とし�
 
 自動テストでは、日本語の解析・UTF-8 読み込み、不正な文字コード、空ファイル、対応外構文の保持、長い文書、読み込み失敗と再試行、URI からの読み込み、ファイル選択の取り消し、画面再作成後の文書と閲覧位置の保持、更新したファイルの再読み込み、一覧の末尾へのスクロールを確認する。Android の画面・ファイルアクセスのテストには Robolectric の API 35 環境とテスト専用の文書プロバイダーを使う。標準ファイル選択を通す検証は下記の E2E で行い、Dropbox 接続は自動化の未対応範囲として記録する。
 
+<a id="check-output"></a>
+
+### 検証コマンドのログ保存と結果集約
+
+Python 3.10 以上と Git が必要である。`scripts/run_check.py` を使うと、コマンドの標準出力・標準エラーを全文保存し、モデルへ返す通常出力を成否・終了コード・保存先に絞れる。リポジトリのルートで実行し、実行ごとに未使用の出力先を指定する。
+
+```sh
+python3 scripts/run_check.py --output-dir .local/checks/python-001 -- \
+  python3 -m unittest discover -s scripts/tests -q
+
+# XML レポートも集約する場合は、この実行で再生成する
+python3 scripts/run_check.py --output-dir .local/checks/android-001 \
+  --junit 'app/build/test-results/testDebugUnitTest/TEST-*.xml' \
+  --junit 'app/build/test-results/testReleaseUnitTest/TEST-*.xml' \
+  --lint app/build/reports/lint-results-debug.xml -- \
+  ./gradlew --console=plain --rerun-tasks check assembleDebug
+```
+
+出力先には `command.log` と `summary.json` を保存する。集約 JSON はコマンド、UTC 開始時刻、所要時間、HEAD、追跡済み未コミット差分のハッシュ、元の終了コード、指定レポートの参照先、テスト数・失敗ケース・スキップ数、Lint 重大度別件数を保持する。未追跡ファイルの内容は差分ハッシュに含まれないので、レビューへ渡す対象一覧・内容ハッシュは別途記録する。
+
+`passed` は実行したコマンドが終了0で、指定した XML の確認にも問題がないことだけを示す。JUnit・Lint の指定がなければ、そのレポートの確認はしていない。指定したレポートの欠落・不正形式・実行開始より古い更新時刻は `unconfirmed` と非ゼロ終了にし、古い結果を成功根拠にしない。通常の Gradle 実行は UP-TO-DATE で XML を再生成しない場合があるため、XML を指定するときは上の例のように再生成する。mtime の確認だけで生成元の真正性まで保証しない。
+
+元コマンドの非ゼロ終了コードを優先して返す。POSIX のシグナル終了は `command_returncode` に負の元値を保存し、ツールの終了コードには128＋シグナル番号を使う。元コマンドが終了0でも、JUnit の failure/error、Lint の Error/Fatal、レポート確認の失敗は終了1にする。Lint の Warning・Information・Hint などとテストのスキップは件数を表示し、既存の Gradle・Lint の合否基準を変更しない。シェルを介さず引数列を実行し、ログ保存先を上書きしない。失敗時は `command.log` の該当箇所と元のレポートを読み、原因を確認する。
+
+ログ・コマンド引数・レポートにはローカル専用情報や秘密情報を含めない。`.local/` は Git の除外対象であり、ログを CI 成果物や PR へ自動登録しない。公開する場合は確認済みの非機密な集約値だけを既存の検証記録へ記載する。機密情報の自動除去機能はない。
+
 ## 自動 E2E テスト
 
 [`ReaderE2eTest`](../app/src/androidTest/java/dev/orgmobile/reader/ReaderE2eTest.kt) は、
