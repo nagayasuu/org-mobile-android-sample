@@ -164,7 +164,7 @@ def check(repository, paths):
     return int(bool(errors))
 
 
-def read(repository, name, identifiers, max_chars):
+def section_result(repository, name, identifiers, max_chars):
     path = repository.path(name)
     text = repository.text(path)
     sections, _ = parse_sections(text)
@@ -180,10 +180,40 @@ def read(repository, name, identifiers, max_chars):
     output = '\n'.join(f'{i + 1}: {lines[i]}' for i in indexes)
     if max_chars < 1 or len(output) > max_chars:
         raise ValueError('section exceeds --max-chars; select a child heading or increase the limit; no text returned')
-    print(json.dumps({'path': path.relative_to(repository.root).as_posix(),
-                      'sha256': hashlib.sha256(text.encode('utf-8')).hexdigest(),
-                      'sections': [{'id': s['id'], 'start_line': s['start'] + 1, 'end_line': s['end']} for s in selected]},
-                     ensure_ascii=False))
+    metadata = {'path': path.relative_to(repository.root).as_posix(),
+                'sha256': hashlib.sha256(text.encode('utf-8')).hexdigest(),
+                'sections': [{'id': s['id'], 'start_line': s['start'] + 1, 'end_line': s['end']} for s in selected]}
+    return metadata, output
+
+
+def read(repository, name, identifiers, max_chars):
+    metadata, output = section_result(repository, name, identifiers, max_chars)
+    print(json.dumps(metadata, ensure_ascii=False))
+    print(output)
+    return 0
+
+
+def context(repository, profile, max_chars):
+    """Return fixed common instructions; task-specific dependencies remain caller-selected."""
+    path = repository.path('AGENTS.md')
+    text = repository.text(path)
+    lines = text.splitlines()
+    documents = [{'path': 'AGENTS.md', 'sha256': hashlib.sha256(text.encode('utf-8')).hexdigest(),
+                  'sections': [{'id': 'whole-file', 'start_line': 1, 'end_line': len(lines)}]}]
+    bodies = ['--- AGENTS.md ---\n' + '\n'.join(f'{i}: {line}' for i, line in enumerate(lines, 1))]
+    development = ['workflow-reading', '共通の検証', 'agent-context', 'agent-review',
+                   'review-checklist', '6. 完了条件と報告']
+    if profile == 'change':
+        development.append('change-steps')
+    selections = [('docs/development-workflow.md', development),
+                  ('docs/git-workflow.md', ['1. 基本方針', '6. Codex が作業するときの手順'])]
+    for name, identifiers in selections:
+        metadata, body = section_result(repository, name, identifiers, max_chars)
+        documents.append(metadata)
+        bodies.append(f'--- {name} ---\n{body}')
+    output = json.dumps({'profile': profile, 'documents': documents}, ensure_ascii=False) + '\n' + '\n'.join(bodies)
+    if max_chars < 1 or len(output) > max_chars:
+        raise ValueError('context exceeds --max-chars; increase the limit or use read; no text returned')
     print(output)
     return 0
 
@@ -198,6 +228,9 @@ def main():
     reader.add_argument('path')
     reader.add_argument('sections', nargs='+')
     reader.add_argument('--max-chars', type=int, default=16000)
+    bundle = commands.add_parser('context', help='Read common instructions atomically; add task-specific sections separately')
+    bundle.add_argument('profile', choices=['change', 'review'])
+    bundle.add_argument('--max-chars', type=int, default=24000)
     args = parser.parse_args()
     repository = Repository(args.root)
     try:
@@ -206,6 +239,8 @@ def main():
             if not paths:
                 raise ValueError('no Markdown documents selected')
             return check(repository, paths)
+        if args.operation == 'context':
+            return context(repository, args.profile, args.max_chars)
         return read(repository, args.path, args.sections, args.max_chars)
     except (OSError, UnicodeError, ValueError, subprocess.CalledProcessError) as error:
         parser.exit(1, f'{type(error).__name__}: {error}\n')
