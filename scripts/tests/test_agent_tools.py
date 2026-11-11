@@ -1,5 +1,6 @@
 """CLI acceptance tests with public synthetic documents and reports."""
 
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -30,6 +31,70 @@ class AgentToolsTest(unittest.TestCase):
             [sys.executable, str(SCRIPTS / "document_tools.py"), "--root", str(self.root), *args],
             capture_output=True, text=True,
         )
+
+    def context_fixture(self):
+        self.write('AGENTS.md', '# Instructions\nAGENT_MARKER\n')
+        sections = [
+            ('workflow-reading', '作業に応じた読み方', 'READING_TABLE'),
+            ('change-steps', '変更の共通手順', 'CHANGE_STEPS'),
+            ('', '共通の検証', 'REQUIRED_CHECKS'),
+            ('agent-context', 'agent の入力と出力を絞る', 'CONTEXT_RULES'),
+            ('agent-review', 'agent によるレビュー手順', 'REVIEW_RULES'),
+            ('review-checklist', 'レビューチェックリスト',
+             '### 記録と判定\nUNCONFIRMED_RULE\n' + '\n'.join(f'R{i:02}: criterion' for i in range(1, 31))),
+            ('', '6. 完了条件と報告', 'COMPLETION_RULES'),
+            ('', '対象固有の節', 'UNRELATED_SECTION'),
+        ]
+        self.write('docs/development-workflow.md', '\n'.join(
+            (f'<a id="{anchor}"></a>\n\n' if anchor else '') + f'## {title}\n{body}\n'
+            for anchor, title, body in sections))
+        self.write('docs/git-workflow.md', '## 1. 基本方針\nGIT_POLICY\n'
+                   '## 6. Codex が作業するときの手順\nGIT_STEPS\n')
+
+    def test_context_change_returns_complete_common_rules_with_original_hashes(self):
+        self.context_fixture()
+        result = self.docs('context', 'change')
+        self.assertEqual(0, result.returncode, result.stderr)
+        metadata = json.loads(result.stdout.splitlines()[0])
+        self.assertEqual('change', metadata['profile'])
+        self.assertEqual(3, len(metadata['documents']))
+        for document in metadata['documents']:
+            self.assertEqual(hashlib.sha256((self.root / document['path']).read_bytes()).hexdigest(), document['sha256'])
+        for marker in ['AGENT_MARKER', 'READING_TABLE', 'CHANGE_STEPS', 'REQUIRED_CHECKS', 'CONTEXT_RULES',
+                       'REVIEW_RULES', 'UNCONFIRMED_RULE', 'COMPLETION_RULES', 'GIT_POLICY', 'GIT_STEPS',
+                       *(f'R{i:02}: criterion' for i in range(1, 31))]:
+            self.assertEqual(1, result.stdout.count(marker), marker)
+        self.assertNotIn('UNRELATED_SECTION', result.stdout)
+
+    def test_context_review_retains_decision_rules_without_change_steps(self):
+        self.context_fixture()
+        result = self.docs('context', 'review')
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn('UNCONFIRMED_RULE', result.stdout)
+        self.assertIn('R30: criterion', result.stdout)
+        self.assertNotIn('CHANGE_STEPS', result.stdout)
+
+    def test_context_rejects_combined_size_even_when_each_document_fits(self):
+        self.context_fixture()
+        # Every individual numbered document is below 2,000 characters;
+        # their combined payload and provenance exceed that shared budget.
+        result = self.docs('context', 'change', '--max-chars', '2000')
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual('', result.stdout)
+        self.assertIn('context exceeds', result.stderr)
+
+    def test_context_failure_is_atomic_for_missing_ambiguous_and_large_inputs(self):
+        for failure in ['missing', 'ambiguous', 'limit']:
+            with self.subTest(failure=failure):
+                self.context_fixture()
+                if failure == 'missing':
+                    (self.root / 'docs/git-workflow.md').unlink()
+                elif failure == 'ambiguous':
+                    self.write('docs/git-workflow.md', '## 1. 基本方針\nA\n## 1. 基本方針\nB\n'
+                               '## 6. Codex が作業するときの手順\nC\n')
+                result = self.docs('context', 'change', *(['--max-chars', '10'] if failure == 'limit' else []))
+                self.assertNotEqual(0, result.returncode)
+                self.assertEqual('', result.stdout)
 
     def run_check(self, body, *args):
         return subprocess.run(
