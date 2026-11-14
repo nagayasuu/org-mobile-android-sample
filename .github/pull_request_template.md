@@ -26,45 +26,10 @@ CI・E2E は、run URL、対象 SHA・APK SHA-256、エミュレーター・OS�
 
 ## レビュー記録
 
-[開発手順のレビューチェックリスト](https://github.com/nagayasuu/org-mobile-android-sample/blob/main/docs/development-workflow.md#review-checklist)を使う。
+[レビューのチェックリスト](https://github.com/nagayasuu/org-mobile-android-sample/blob/main/docs/workflow/review.md#review-checklist)を使う。
 
-agent へ依頼する場合は、[agent によるレビュー手順](https://github.com/nagayasuu/org-mobile-android-sample/blob/main/docs/development-workflow.md#agent-review)に従う。
+agent へ依頼する場合は、[agent によるレビュー手順](https://github.com/nagayasuu/org-mobile-android-sample/blob/main/docs/workflow/review.md#agent-review)に従う。
 
-<!-- 項目の本文・判定基準は開発手順に集約する。
-各 ID の結果を確認済み・対象外・未確認・要修正で記録する。
-同じ結果と根拠の ID はまとめてよい。異なる場合は行を分け、対象外と未確認を混在させない。
-確認者が人か agent か、作成者と同じか別かを明記する。
-作成者自身または同じ作成 agent が確認した場合は「セルフレビュー」と明記する。
-AI の検証報告だけを根拠にせず、差分・参照先・実行結果を照合する。
-agent 自身の実行と、他者の検証結果の参照を区別する。
-実行できない検証や権限外の判断は、理由と次の確認方法を付けて未確認にする。
-コミットや差分の更新後は影響する項目を再確認し、対象の版と結果を更新する。
-私的な文書・ファイル名・URI・認証情報・ローカル専用資料を、本文や根拠へ含めない。 -->
+[レビュー記録の様式](https://github.com/nagayasuu/org-mobile-android-sample/blob/main/docs/templates/review-record.md)に沿って、確認者、対象版、R01〜R30の結果と根拠、指摘と対応、残るリスク、総合判定を記載する。同じ結果・根拠の項目だけをまとめ、未確認・対象外は理由を残す。
 
-対象コミットまたは差分の範囲：
-
-作成者／確認者（人・agent の別、セルフレビュー・別担当者の別）：
-
-参照した検証結果の実行者・対象版／確認者が実行した検証：
-
-| 項目 ID | 結果 | 確認根拠／対象外・未確認の理由と次の確認方法 |
-| --- | --- | --- |
-| R01〜R04：要求と文脈 | 未確認 | |
-| R05〜R07：情報と技術の正確性 | 未確認 | |
-| R08〜R11：理解と設計 | 未確認 | |
-| R12〜R15：情報の保護と安全な実装 | 未確認 | |
-| R16〜R20：検証の十分性 | 未確認 | |
-| R21〜R23：利用者への配慮 | 未確認 | |
-| R24〜R27：変更規模と統合・運用 | 未確認 | |
-| R28〜R30：判断と残る課題 | 未確認 | |
-
-### 指摘と残るリスク
-
-<!-- 指摘がなければ「なし」と記載する。残るリスクには、影響、受け入れる理由と判断者、
-後続対応の担当・期限または再検討条件を記載する。必須の検証や完了条件は省略しない。 -->
-
-修正必須の指摘／対応／再確認結果：
-
-改善提案・残るリスク／判断／後続対応：
-
-判定（採用可・要修正・未確認のため保留）：
+レビュー記録：

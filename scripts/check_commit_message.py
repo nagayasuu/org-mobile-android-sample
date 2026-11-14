@@ -127,7 +127,7 @@ def main():
                 print(f"{label}: {error}", file=sys.stderr)
                 failed = True
         if failed:
-            print("規約: docs/git-workflow.md の『コミット規約』を参照してください。", file=sys.stderr)
+            print("規約: docs/workflow/git.md の『コミット規約』を参照してください。", file=sys.stderr)
             return 1
         print(f"Commit message checks passed ({count}).")
         return 0
