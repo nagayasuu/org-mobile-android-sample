@@ -1,0 +1,1364 @@
+{
+  "representative_tasks": {
+    "attempts": [
+      {
+        "id": "D1-direct-1",
+        "phase": "initial",
+        "task": "D1",
+        "condition": "direct",
+        "rep": 1,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 393723,
+          "cached_input_tokens": 320896,
+          "output_tokens": 4078
+        },
+        "seconds": 117.302,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "D1-bounded-1",
+        "phase": "initial",
+        "task": "D1",
+        "condition": "bounded",
+        "rep": 1,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 449901,
+          "cached_input_tokens": 366848,
+          "output_tokens": 4000
+        },
+        "seconds": 115.179,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "P1-direct-1",
+        "phase": "initial",
+        "task": "P1",
+        "condition": "direct",
+        "rep": 1,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 766635,
+          "cached_input_tokens": 659712,
+          "output_tokens": 6560
+        },
+        "seconds": 217.553,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "P1-bounded-1",
+        "phase": "initial",
+        "task": "P1",
+        "condition": "bounded",
+        "rep": 1,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 873423,
+          "cached_input_tokens": 720768,
+          "output_tokens": 6447
+        },
+        "seconds": 208.503,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "U1-direct-1",
+        "phase": "initial",
+        "task": "U1",
+        "condition": "direct",
+        "rep": 1,
+        "success": false,
+        "usage_complete": false,
+        "observed_tokens": {
+          "input_tokens": 0,
+          "cached_input_tokens": 0,
+          "output_tokens": 0
+        },
+        "seconds": 3.176,
+        "stage": "author_failed",
+        "cost_usd": null
+      },
+      {
+        "id": "U1-direct-1-retry",
+        "phase": "continuation",
+        "task": "U1",
+        "condition": "direct",
+        "rep": 1,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 448103,
+          "cached_input_tokens": 342144,
+          "output_tokens": 4472
+        },
+        "seconds": 128.908,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "U1-bounded-1",
+        "phase": "continuation",
+        "task": "U1",
+        "condition": "bounded",
+        "rep": 1,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 684515,
+          "cached_input_tokens": 587648,
+          "output_tokens": 5099
+        },
+        "seconds": 152.998,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "D1-bounded-2",
+        "phase": "continuation",
+        "task": "D1",
+        "condition": "bounded",
+        "rep": 2,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 483457,
+          "cached_input_tokens": 407936,
+          "output_tokens": 3958
+        },
+        "seconds": 109.044,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "D1-direct-2",
+        "phase": "continuation",
+        "task": "D1",
+        "condition": "direct",
+        "rep": 2,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 416047,
+          "cached_input_tokens": 322048,
+          "output_tokens": 3606
+        },
+        "seconds": 102.915,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "P1-bounded-2",
+        "phase": "continuation",
+        "task": "P1",
+        "condition": "bounded",
+        "rep": 2,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 979267,
+          "cached_input_tokens": 874880,
+          "output_tokens": 8089
+        },
+        "seconds": 225.381,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "P1-direct-2",
+        "phase": "continuation",
+        "task": "P1",
+        "condition": "direct",
+        "rep": 2,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 736371,
+          "cached_input_tokens": 615040,
+          "output_tokens": 5952
+        },
+        "seconds": 175.509,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "U1-bounded-2",
+        "phase": "continuation",
+        "task": "U1",
+        "condition": "bounded",
+        "rep": 2,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 613664,
+          "cached_input_tokens": 513536,
+          "output_tokens": 5985
+        },
+        "seconds": 171.733,
+        "stage": "completed",
+        "cost_usd": null
+      },
+      {
+        "id": "U1-direct-2",
+        "phase": "continuation",
+        "task": "U1",
+        "condition": "direct",
+        "rep": 2,
+        "success": true,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 516860,
+          "cached_input_tokens": 417152,
+          "output_tokens": 4989
+        },
+        "seconds": 146.374,
+        "stage": "completed",
+        "cost_usd": null
+      }
+    ],
+    "groups": [
+      {
+        "task": "D1",
+        "condition": "direct",
+        "attempts": 2,
+        "successes": 2,
+        "usage_complete": true,
+        "observed_input_tokens": 809770,
+        "input_per_success": 404885.0,
+        "completion_median_seconds": 110.1085,
+        "cost_usd": null
+      },
+      {
+        "task": "D1",
+        "condition": "bounded",
+        "attempts": 2,
+        "successes": 2,
+        "usage_complete": true,
+        "observed_input_tokens": 933358,
+        "input_per_success": 466679.0,
+        "completion_median_seconds": 112.1115,
+        "cost_usd": null
+      },
+      {
+        "task": "P1",
+        "condition": "direct",
+        "attempts": 2,
+        "successes": 2,
+        "usage_complete": true,
+        "observed_input_tokens": 1503006,
+        "input_per_success": 751503.0,
+        "completion_median_seconds": 196.531,
+        "cost_usd": null
+      },
+      {
+        "task": "P1",
+        "condition": "bounded",
+        "attempts": 2,
+        "successes": 2,
+        "usage_complete": true,
+        "observed_input_tokens": 1852690,
+        "input_per_success": 926345.0,
+        "completion_median_seconds": 216.942,
+        "cost_usd": null
+      },
+      {
+        "task": "U1",
+        "condition": "direct",
+        "attempts": 3,
+        "successes": 2,
+        "usage_complete": false,
+        "observed_input_tokens": 964963,
+        "input_per_success": null,
+        "completion_median_seconds": 128.908,
+        "cost_usd": null
+      },
+      {
+        "task": "U1",
+        "condition": "bounded",
+        "attempts": 2,
+        "successes": 2,
+        "usage_complete": true,
+        "observed_input_tokens": 1298179,
+        "input_per_success": 649089.5,
+        "completion_median_seconds": 162.3655,
+        "cost_usd": null
+      }
+    ],
+    "all_attempts": 13,
+    "successes": 12,
+    "all_usage_complete": false,
+    "planned_task_condition_slots": 12,
+    "missing_usage_attempts": [
+      "U1-direct-1"
+    ],
+    "all_attempt_input_per_success": null,
+    "p95": null,
+    "notes": [
+      "original usage-limit failure preserved; continuation retry occupies original U1-direct-1 slot but remains a separate attempt",
+      "never infer all-attempt reduction from observed-only sums or per-task pairs",
+      "no integration/physical-device success or actual account costs claimed"
+    ],
+    "mode_audit": [
+      {
+        "id": "D1-direct-1-author",
+        "condition": "direct",
+        "command_count": 5,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "D1-direct-1-reviewer",
+        "condition": "direct",
+        "command_count": 12,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "D1-bounded-1-author",
+        "condition": "bounded",
+        "command_count": 18,
+        "bounded_tool_invocations": [
+          "read_excerpt",
+          "run_check",
+          "document_tools",
+          "read_excerpt",
+          "document_tools",
+          "run_check"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "D1-bounded-1-reviewer",
+        "condition": "bounded",
+        "command_count": 11,
+        "bounded_tool_invocations": [
+          "document_tools",
+          "read_excerpt",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "P1-direct-1-author",
+        "condition": "direct",
+        "command_count": 11,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "P1-direct-1-reviewer",
+        "condition": "direct",
+        "command_count": 43,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "P1-bounded-1-author",
+        "condition": "bounded",
+        "command_count": 27,
+        "bounded_tool_invocations": [
+          "read_excerpt",
+          "run_check",
+          "document_tools",
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "document_tools",
+          "document_tools",
+          "run_check",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "P1-bounded-1-reviewer",
+        "condition": "bounded",
+        "command_count": 36,
+        "bounded_tool_invocations": [
+          "read_excerpt",
+          "run_check",
+          "document_tools",
+          "document_tools",
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-direct-1-author",
+        "condition": "direct",
+        "command_count": 0,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-direct-1-retry-author",
+        "condition": "direct",
+        "command_count": 8,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-direct-1-retry-reviewer",
+        "condition": "direct",
+        "command_count": 22,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-bounded-1-author",
+        "condition": "bounded",
+        "command_count": 11,
+        "bounded_tool_invocations": [
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "run_check",
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "run_check",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-bounded-1-reviewer",
+        "condition": "bounded",
+        "command_count": 19,
+        "bounded_tool_invocations": [
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "D1-bounded-2-author",
+        "condition": "bounded",
+        "command_count": 8,
+        "bounded_tool_invocations": [
+          "document_tools",
+          "document_tools",
+          "run_check",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "D1-bounded-2-reviewer",
+        "condition": "bounded",
+        "command_count": 25,
+        "bounded_tool_invocations": [
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "document_tools"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "D1-direct-2-author",
+        "condition": "direct",
+        "command_count": 5,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "D1-direct-2-reviewer",
+        "condition": "direct",
+        "command_count": 13,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "P1-bounded-2-author",
+        "condition": "bounded",
+        "command_count": 13,
+        "bounded_tool_invocations": [
+          "document_tools",
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "document_tools",
+          "read_excerpt",
+          "run_check",
+          "run_check",
+          "read_excerpt",
+          "run_check",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "P1-bounded-2-reviewer",
+        "condition": "bounded",
+        "command_count": 38,
+        "bounded_tool_invocations": [
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "P1-direct-2-author",
+        "condition": "direct",
+        "command_count": 12,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "P1-direct-2-reviewer",
+        "condition": "direct",
+        "command_count": 23,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-bounded-2-author",
+        "condition": "bounded",
+        "command_count": 10,
+        "bounded_tool_invocations": [
+          "read_excerpt",
+          "run_check",
+          "document_tools",
+          "document_tools",
+          "document_tools",
+          "run_check",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-bounded-2-reviewer",
+        "condition": "bounded",
+        "command_count": 36,
+        "bounded_tool_invocations": [
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "document_tools",
+          "document_tools",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt",
+          "read_excerpt"
+        ],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-direct-2-author",
+        "condition": "direct",
+        "command_count": 8,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      },
+      {
+        "id": "U1-direct-2-reviewer",
+        "condition": "direct",
+        "command_count": 26,
+        "bounded_tool_invocations": [],
+        "mode_violation": false,
+        "additional_model": false
+      }
+    ]
+  },
+  "compaction": [
+    {
+      "id": "control-1",
+      "success": true,
+      "seconds": 5.595,
+      "cost_usd": null,
+      "correct_fields": 8,
+      "tool_items": 0,
+      "usage_complete": true,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "seed_usage": {
+        "input_tokens": 20908,
+        "cached_input_tokens": 12288,
+        "output_tokens": 5
+      },
+      "question_usage": {
+        "input_tokens": 23010,
+        "cached_input_tokens": 0,
+        "output_tokens": 81
+      },
+      "compaction_usage": null,
+      "compaction_seconds": null,
+      "compaction_usage_note": null,
+      "observed_tokens": {
+        "input_tokens": 43918,
+        "cached_input_tokens": 12288,
+        "output_tokens": 86
+      }
+    },
+    {
+      "id": "compact-1",
+      "success": true,
+      "seconds": 14.249,
+      "cost_usd": null,
+      "correct_fields": 8,
+      "tool_items": 0,
+      "usage_complete": false,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "seed_usage": {
+        "input_tokens": 20908,
+        "cached_input_tokens": 12288,
+        "output_tokens": 5
+      },
+      "question_usage": {
+        "input_tokens": 22479,
+        "cached_input_tokens": 0,
+        "output_tokens": 81
+      },
+      "compaction_usage": null,
+      "compaction_seconds": 7.611,
+      "compaction_usage_note": "notification exists but last.totalTokens is positive while input/output breakdown is zero and cumulative usage is unchanged; compaction execution tokens are unmeasured",
+      "observed_tokens": {
+        "input_tokens": 43387,
+        "cached_input_tokens": 12288,
+        "output_tokens": 86
+      }
+    },
+    {
+      "id": "compact-2",
+      "success": true,
+      "seconds": 14.594,
+      "cost_usd": null,
+      "correct_fields": 8,
+      "tool_items": 0,
+      "usage_complete": false,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "seed_usage": {
+        "input_tokens": 20908,
+        "cached_input_tokens": 12288,
+        "output_tokens": 5
+      },
+      "question_usage": {
+        "input_tokens": 22505,
+        "cached_input_tokens": 0,
+        "output_tokens": 81
+      },
+      "compaction_usage": null,
+      "compaction_seconds": 8.388,
+      "compaction_usage_note": "notification exists but last.totalTokens is positive while input/output breakdown is zero and cumulative usage is unchanged; compaction execution tokens are unmeasured",
+      "observed_tokens": {
+        "input_tokens": 43413,
+        "cached_input_tokens": 12288,
+        "output_tokens": 86
+      }
+    },
+    {
+      "id": "control-2",
+      "success": true,
+      "seconds": 6.305,
+      "cost_usd": null,
+      "correct_fields": 8,
+      "tool_items": 0,
+      "usage_complete": true,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "seed_usage": {
+        "input_tokens": 20908,
+        "cached_input_tokens": 12288,
+        "output_tokens": 5
+      },
+      "question_usage": {
+        "input_tokens": 23010,
+        "cached_input_tokens": 0,
+        "output_tokens": 81
+      },
+      "compaction_usage": null,
+      "compaction_seconds": null,
+      "compaction_usage_note": null,
+      "observed_tokens": {
+        "input_tokens": 43918,
+        "cached_input_tokens": 12288,
+        "output_tokens": 86
+      }
+    }
+  ],
+  "model_output_phase1": [
+    {
+      "id": "baseline-1",
+      "condition": "baseline",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "medium",
+      "success": false,
+      "seconds": 12.226,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "mechanical_success": false,
+      "checks": {
+        "doc_after": false,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 1059,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "execution_claims": "no false test execution/pass claims",
+        "scope": "proposals only; test body missing in phase1; R01-R30 still required",
+        "quality": "failed original oracle; do not adopt",
+        "passed": false
+      },
+      "usage": {
+        "input_tokens": 15460,
+        "cached_input_tokens": 0,
+        "output_tokens": 488
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "model-1",
+      "condition": "model",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "verbosity": "medium",
+      "success": false,
+      "seconds": 11.722,
+      "cost_usd": null,
+      "effective_model": "gpt-6-luna",
+      "effective_effort": "high",
+      "mechanical_success": false,
+      "checks": {
+        "doc_after": false,
+        "heading_regex": false,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 949,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "execution_claims": "no false test execution/pass claims",
+        "scope": "proposals only; test body missing in phase1; R01-R30 still required",
+        "quality": "failed original oracle; do not adopt",
+        "passed": false
+      },
+      "usage": {
+        "input_tokens": 14769,
+        "cached_input_tokens": 0,
+        "output_tokens": 553
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "effort-1",
+      "condition": "effort",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "verbosity": "medium",
+      "success": false,
+      "seconds": 10.335,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "medium",
+      "mechanical_success": false,
+      "checks": {
+        "doc_after": false,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 1146,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "execution_claims": "no false test execution/pass claims",
+        "scope": "proposals only; test body missing in phase1; R01-R30 still required",
+        "quality": "failed original oracle; do not adopt",
+        "passed": false
+      },
+      "usage": {
+        "input_tokens": 15460,
+        "cached_input_tokens": 0,
+        "output_tokens": 410
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "verbosity-1",
+      "condition": "verbosity",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "low",
+      "success": false,
+      "seconds": 13.804,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "mechanical_success": false,
+      "checks": {
+        "doc_after": false,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 917,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "execution_claims": "no false test execution/pass claims",
+        "scope": "proposals only; test body missing in phase1; R01-R30 still required",
+        "quality": "failed original oracle; do not adopt",
+        "passed": false
+      },
+      "usage": {
+        "input_tokens": 15460,
+        "cached_input_tokens": 0,
+        "output_tokens": 514
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "verbosity-2",
+      "condition": "verbosity",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "low",
+      "success": false,
+      "seconds": 12.169,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "mechanical_success": false,
+      "checks": {
+        "doc_after": false,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 857,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "execution_claims": "no false test execution/pass claims",
+        "scope": "proposals only; test body missing in phase1; R01-R30 still required",
+        "quality": "failed original oracle; do not adopt",
+        "passed": false
+      },
+      "usage": {
+        "input_tokens": 15460,
+        "cached_input_tokens": 0,
+        "output_tokens": 490
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "effort-2",
+      "condition": "effort",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "verbosity": "medium",
+      "success": false,
+      "seconds": 11.323,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "medium",
+      "mechanical_success": false,
+      "checks": {
+        "doc_after": false,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 1245,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "execution_claims": "no false test execution/pass claims",
+        "scope": "proposals only; test body missing in phase1; R01-R30 still required",
+        "quality": "failed original oracle; do not adopt",
+        "passed": false
+      },
+      "usage": {
+        "input_tokens": 15460,
+        "cached_input_tokens": 0,
+        "output_tokens": 428
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "model-2",
+      "condition": "model",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "verbosity": "medium",
+      "success": false,
+      "seconds": 12.685,
+      "cost_usd": null,
+      "effective_model": "gpt-6-luna",
+      "effective_effort": "high",
+      "mechanical_success": false,
+      "checks": {
+        "doc_after": false,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 909,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "execution_claims": "no false test execution/pass claims",
+        "scope": "proposals only; test body missing in phase1; R01-R30 still required",
+        "quality": "failed original oracle; do not adopt",
+        "passed": false
+      },
+      "usage": {
+        "input_tokens": 14769,
+        "cached_input_tokens": 0,
+        "output_tokens": 608
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "baseline-2",
+      "condition": "baseline",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "medium",
+      "success": false,
+      "seconds": 15.774,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "mechanical_success": false,
+      "checks": {
+        "doc_after": false,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 1307,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "execution_claims": "no false test execution/pass claims",
+        "scope": "proposals only; test body missing in phase1; R01-R30 still required",
+        "quality": "failed original oracle; do not adopt",
+        "passed": false
+      },
+      "usage": {
+        "input_tokens": 16562,
+        "cached_input_tokens": 0,
+        "output_tokens": 583
+      },
+      "warning_count": 0
+    }
+  ],
+  "model_output_phase2": [
+    {
+      "id": "baseline-1",
+      "condition": "baseline",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "medium",
+      "success": true,
+      "seconds": 11.222,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "mechanical_success": true,
+      "checks": {
+        "doc_after": true,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 1186,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "passed": true,
+        "evidence": "read complete explanation and exact fields; no fabricated execution/pass claims; existing behavior/assertions preserved; validation, R01-R30 and external limits remain explicit"
+      },
+      "usage": {
+        "input_tokens": 15943,
+        "cached_input_tokens": 0,
+        "output_tokens": 440
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "model-1",
+      "condition": "model",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "verbosity": "medium",
+      "success": true,
+      "seconds": 12.584,
+      "cost_usd": null,
+      "effective_model": "gpt-6-luna",
+      "effective_effort": "high",
+      "mechanical_success": true,
+      "checks": {
+        "doc_after": true,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 914,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "passed": true,
+        "evidence": "read complete explanation and exact fields; no fabricated execution/pass claims; existing behavior/assertions preserved; validation, R01-R30 and external limits remain explicit"
+      },
+      "usage": {
+        "input_tokens": 15252,
+        "cached_input_tokens": 0,
+        "output_tokens": 572
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "effort-1",
+      "condition": "effort",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "verbosity": "medium",
+      "success": true,
+      "seconds": 9.592,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "medium",
+      "mechanical_success": true,
+      "checks": {
+        "doc_after": true,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 1231,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "passed": true,
+        "evidence": "read complete explanation and exact fields; no fabricated execution/pass claims; existing behavior/assertions preserved; validation, R01-R30 and external limits remain explicit"
+      },
+      "usage": {
+        "input_tokens": 15943,
+        "cached_input_tokens": 0,
+        "output_tokens": 351
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "verbosity-1",
+      "condition": "verbosity",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "low",
+      "success": true,
+      "seconds": 9.482,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "mechanical_success": true,
+      "checks": {
+        "doc_after": true,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 892,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "passed": true,
+        "evidence": "read complete explanation and exact fields; no fabricated execution/pass claims; existing behavior/assertions preserved; validation, R01-R30 and external limits remain explicit"
+      },
+      "usage": {
+        "input_tokens": 15943,
+        "cached_input_tokens": 0,
+        "output_tokens": 334
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "verbosity-2",
+      "condition": "verbosity",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "low",
+      "success": true,
+      "seconds": 10.561,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "mechanical_success": true,
+      "checks": {
+        "doc_after": true,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 980,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "passed": true,
+        "evidence": "read complete explanation and exact fields; no fabricated execution/pass claims; existing behavior/assertions preserved; validation, R01-R30 and external limits remain explicit"
+      },
+      "usage": {
+        "input_tokens": 15943,
+        "cached_input_tokens": 14336,
+        "output_tokens": 397
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "effort-2",
+      "condition": "effort",
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "verbosity": "medium",
+      "success": true,
+      "seconds": 10.825,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "medium",
+      "mechanical_success": true,
+      "checks": {
+        "doc_after": true,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 1082,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "passed": true,
+        "evidence": "read complete explanation and exact fields; no fabricated execution/pass claims; existing behavior/assertions preserved; validation, R01-R30 and external limits remain explicit"
+      },
+      "usage": {
+        "input_tokens": 15943,
+        "cached_input_tokens": 0,
+        "output_tokens": 333
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "model-2",
+      "condition": "model",
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "verbosity": "medium",
+      "success": true,
+      "seconds": 13.669,
+      "cost_usd": null,
+      "effective_model": "gpt-6-luna",
+      "effective_effort": "high",
+      "mechanical_success": true,
+      "checks": {
+        "doc_after": true,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 889,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "passed": true,
+        "evidence": "read complete explanation and exact fields; no fabricated execution/pass claims; existing behavior/assertions preserved; validation, R01-R30 and external limits remain explicit"
+      },
+      "usage": {
+        "input_tokens": 15252,
+        "cached_input_tokens": 0,
+        "output_tokens": 663
+      },
+      "warning_count": 0
+    },
+    {
+      "id": "baseline-2",
+      "condition": "baseline",
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "medium",
+      "success": true,
+      "seconds": 10.251,
+      "cost_usd": null,
+      "effective_model": "gpt-6.1-sol",
+      "effective_effort": "high",
+      "mechanical_success": true,
+      "checks": {
+        "doc_after": true,
+        "heading_regex": true,
+        "u1_assertion": true,
+        "u1_production_change": true,
+        "required_review": true,
+        "unconfirmed": true,
+        "explanation_nonempty": true,
+        "explains_validation": true,
+        "explains_limits": true
+      },
+      "tool_items": 0,
+      "answer_chars": 1187,
+      "manual_explanation_review": {
+        "reviewer": "primary Codex agent",
+        "passed": true,
+        "evidence": "read complete explanation and exact fields; no fabricated execution/pass claims; existing behavior/assertions preserved; validation, R01-R30 and external limits remain explicit"
+      },
+      "usage": {
+        "input_tokens": 15943,
+        "cached_input_tokens": 0,
+        "output_tokens": 402
+      },
+      "warning_count": 0
+    }
+  ],
+  "actual_costs_usd": null,
+  "scope": "sanitized trial aggregates only; root orchestration/preparation/final review not measured as trial usage; raw local events not published"
+}

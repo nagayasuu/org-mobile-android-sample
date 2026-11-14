@@ -1,0 +1,63 @@
+{
+  "purpose": "compare verbosity medium vs low through actual isolated edits, mandatory local checks, and independent R01-R30 review",
+  "source_protocol": "2026-11-13-adoption-comparison-protocol.json",
+  "source_manifest_sha256": "c90b0cc01d58b2a0b41f9ca864b343cb9bb118fbb938a74b79acb221a82b721b",
+  "corpus_archive_sha256": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+  "prompts": {
+    "D1-direct-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit docs/evaluation-fixture.md; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "205bee9a108ba6c75a1d80fc77d7c4142a609075e9c7b96e2166c915faa245ad"
+    },
+    "D1-direct-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "12436f96c0385538284021ba5b04509e7dab57b8758d27affc6db9ac642ec34e"
+    },
+    "P1-direct-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit app/src/main/java/dev/orgmobile/reader/OrgParser.kt; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "4a3c65af10f94ba92836a1c38d185b75414ac90e4f31ff85e395f9387052e5cc"
+    },
+    "P1-direct-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "c192c4c975605d33eefb3d26b4d694a62cfe364ec2bcb2479bfb282beab586d8"
+    },
+    "U1-direct-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "d20b341a0c340e3cee708753b5ecc6daaff76d88d40bc5b556483b6ce22c6ac0"
+    },
+    "U1-direct-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "2dccafdccfbd436cd731ff31b4d970d0179ea84452a40dac582b4b70dff8a175"
+    }
+  },
+  "model": "gpt-6.1-sol",
+  "effort": "high",
+  "conditions": [
+    "medium",
+    "low"
+  ],
+  "configuration_only_difference": "model_verbosity on both author and reviewer; same original direct prompts, fixtures and external checks",
+  "repetitions": 2,
+  "order": [
+    "D1-medium-1",
+    "D1-low-1",
+    "P1-medium-1",
+    "P1-low-1",
+    "U1-medium-1",
+    "U1-low-1",
+    "D1-low-2",
+    "D1-medium-2",
+    "P1-low-2",
+    "P1-medium-2",
+    "U1-low-2",
+    "U1-medium-2"
+  ],
+  "max_model_roles": 24,
+  "role_timeout_seconds": 180,
+  "verification": "D1 document_tools check; P1/U1 check assembleDebug; independent review and fixed scope/oracle required",
+  "success": "same as source protocol, local success only; remote CI/device E2E not claimed",
+  "adoption": "no observed success regression; input OR output per successful local task >=10% lower; median whole task time <=120% of medium; all roles/attempt usage covered; actual costs remain unknown and no automatic global config change",
+  "stop": "first role failure, access/usage error, usage missing or additional model; preserve all attempts; never change auth/payment/model to bypass",
+  "cost_usd": null,
+  "role_accounting": "author and reviewer included; setup/orchestration/final overall review outside trial and unmeasured",
+  "privacy": "public frozen source only; raw logs local; no low-priority methods in scope"
+}

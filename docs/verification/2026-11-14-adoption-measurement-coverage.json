@@ -1,0 +1,67 @@
+{
+  "scope": "audit of saved relevant CLI and app-server usage events only; account configuration and notification payloads are not exported",
+  "missing_records": [
+    {
+      "target": "original usage-limit failure",
+      "trial": "U1-direct-1",
+      "artifact_sha256": "1ccfd987ad5a3e62c79241f3f79474f4acf8036e702a933650f9b9fb8eda87d8",
+      "completed_usage_records": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "recoverable_from_saved_events": false,
+      "reason": "failure event exists but no completed token usage; do not reconstruct from characters, cache size or other trials"
+    },
+    {
+      "target": "standard compaction own consumption",
+      "trial": "compact-1",
+      "artifact_sha256": "8feea7c6dd8c72c449a4c2c1e4d7392ce049da0655f9eb5b63cc1766a080d335",
+      "reported_last_total_tokens": 27044,
+      "reported_breakdown_zero": true,
+      "cumulative_usage_unchanged": true,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "recoverable_from_saved_events": false,
+      "reason": "positive last total with zero breakdown and unchanged cumulative usage is not a measured compaction execution cost"
+    },
+    {
+      "target": "standard compaction own consumption",
+      "trial": "compact-2",
+      "artifact_sha256": "5c7888cb3c470f0f8cdab424d51f6e54abaf73715f33481dce0ec242509d393e",
+      "reported_last_total_tokens": 27067,
+      "reported_breakdown_zero": true,
+      "cumulative_usage_unchanged": true,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "recoverable_from_saved_events": false,
+      "reason": "positive last total with zero breakdown and unchanged cumulative usage is not a measured compaction execution cost"
+    },
+    {
+      "target": "verbosity implementation reviewer timeout",
+      "trial": "U1-medium-2",
+      "role": "reviewer",
+      "artifact_sha256": "9993db3f795d0a840e7351fef77825e5eff496f79b3e64b1168bd9a7b4daaf2a",
+      "exit": 124,
+      "completed_usage_records": 0,
+      "input_tokens": null,
+      "output_tokens": null,
+      "cost_usd": null,
+      "recoverable_from_saved_events": false,
+      "reason": "role hit fixed 180-second timeout after interrupted run; no turn.completed usage; preserve failed trial and do not impute zero"
+    }
+  ],
+  "billing_fields_in_relevant_usage_events": [],
+  "actual_cost_usd": null,
+  "actual_cost_reason": "no actual billed USD field in saved trial usage; do not substitute API token prices or allocate a subscription fee",
+  "unrecoverable_history_preserved": true,
+  "low_priority_methods": "not performed",
+  "documentation": {
+    "account_usage": "https://learn.chatgpt.com/docs/app-server",
+    "pricing": "https://learn.chatgpt.com/docs/pricing",
+    "conclusion": "documented account usage has account/daily summaries, not trial-specific billed USD; aggregate account activity cannot recover these missing role breakdowns; actual cost remains unknown",
+    "account_summary_requested": false,
+    "reason_not_requested": "account/daily aggregate cannot identify missing per-role consumption; avoid unnecessary account metadata collection"
+  }
+}

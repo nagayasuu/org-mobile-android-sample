@@ -1,0 +1,1653 @@
+{
+  "plan": "2026-11-13-verbosity-implementation-protocol.json",
+  "trial_rows": [
+    {
+      "id": "D1-medium-1",
+      "task": "D1",
+      "condition": "medium",
+      "rep": 1,
+      "success": true,
+      "stage": "completed",
+      "seconds": 139.693,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 51.226
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 88.401
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 488889,
+        "cached_input_tokens": 408192,
+        "output_tokens": 4748
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "docs/evaluation-fixture.md",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "python3 scripts/document_tools.py check docs/evaluation-fixture.md",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "not_applicable",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "not_applicable",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "not_applicable",
+          "R10": "not_applicable",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "27db5ab904b659f451b317eb3ca7c2a9f159455766809ac84a467b47aa70d30d",
+        "findings_chars": 4113
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "D1-low-1",
+      "task": "D1",
+      "condition": "low",
+      "rep": 1,
+      "success": true,
+      "stage": "completed",
+      "seconds": 106.86,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 35.26
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 71.535
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 413977,
+        "cached_input_tokens": 333824,
+        "output_tokens": 3620
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "docs/evaluation-fixture.md",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "python3 scripts/document_tools.py check docs/evaluation-fixture.md",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "not_applicable",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "not_applicable",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "not_applicable",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "e8b419b08369658de88249b82d62b332fdd8c29da97014a0c1cfcfd1c1c0150d",
+        "findings_chars": 2605
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-medium-1",
+      "task": "P1",
+      "condition": "medium",
+      "rep": 1,
+      "success": true,
+      "stage": "completed",
+      "seconds": 180.464,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 58.168
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 107.121
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 587020,
+        "cached_input_tokens": 482560,
+        "output_tokens": 5720
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "./gradlew --console=plain check assembleDebug",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "unconfirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "c4dc7e236191aa2d5ff1fb2711c8fe466c37c6d9e7623d79c73f7c4529766764",
+        "findings_chars": 5216
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-low-1",
+      "task": "P1",
+      "condition": "low",
+      "rep": 1,
+      "success": true,
+      "stage": "completed",
+      "seconds": 162.217,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 60.338
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 86.869
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 632374,
+        "cached_input_tokens": 533888,
+        "output_tokens": 5179
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "./gradlew --console=plain check assembleDebug",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "unconfirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "707e920a3a7ebc6d88bd67a8d2fb617e4a991c33fcad9344940f4b8428527749",
+        "findings_chars": 2504
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "U1-medium-1",
+      "task": "U1",
+      "condition": "medium",
+      "rep": 1,
+      "success": true,
+      "stage": "completed",
+      "seconds": 138.272,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 34.764
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 88.611
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 466818,
+        "cached_input_tokens": 340736,
+        "output_tokens": 4522
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "./gradlew --console=plain check assembleDebug",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "not_applicable",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "not_applicable",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "5dcf54a86dd315e5c22d59a72e8eb3ca172895ace4294b457f578d723c5a4251",
+        "findings_chars": 4353
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "U1-low-1",
+      "task": "U1",
+      "condition": "low",
+      "rep": 1,
+      "success": true,
+      "stage": "completed",
+      "seconds": 157.895,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 40.632
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 102.383
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 715963,
+        "cached_input_tokens": 621696,
+        "output_tokens": 5011
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "./gradlew --console=plain check assembleDebug",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "e86742de03e09e941ecff085bd13fed26de6720c9cf486984fabae1cdd5f35b9",
+        "findings_chars": 3197
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "D1-low-2",
+      "task": "D1",
+      "condition": "low",
+      "rep": 2,
+      "success": true,
+      "stage": "completed",
+      "seconds": 123.114,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 40.736
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 82.301
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 420678,
+        "cached_input_tokens": 343808,
+        "output_tokens": 3828
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "docs/evaluation-fixture.md",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "python3 scripts/document_tools.py check docs/evaluation-fixture.md",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "not_applicable",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "not_applicable",
+          "R10": "not_applicable",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "c0fd6d39dc2f2056fbccf0a85111b9aaeed7f3de6285014faa3169dc9feb20ac",
+        "findings_chars": 2768
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "D1-medium-2",
+      "task": "D1",
+      "condition": "medium",
+      "rep": 2,
+      "success": true,
+      "stage": "completed",
+      "seconds": 128.134,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 39.638
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 88.421
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 398029,
+        "cached_input_tokens": 311808,
+        "output_tokens": 4680
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "docs/evaluation-fixture.md",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "python3 scripts/document_tools.py check docs/evaluation-fixture.md",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "not_applicable",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "not_applicable",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "not_applicable",
+          "R10": "not_applicable",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "0bd3f1ef4a7aec25666e8adcca60098c94469d5f3e2f6a95c35f3a8031d9747c",
+        "findings_chars": 2003
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-low-2",
+      "task": "P1",
+      "condition": "low",
+      "rep": 2,
+      "success": true,
+      "stage": "completed",
+      "seconds": 131.854,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 51.18
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 65.624
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 422413,
+        "cached_input_tokens": 329088,
+        "output_tokens": 4024
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "./gradlew --console=plain check assembleDebug",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "unconfirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "21964115f6b53667ce71c92bc8af6a3e8e75d9593b185db1d85861495532ac78",
+        "findings_chars": 2146
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-medium-2",
+      "task": "P1",
+      "condition": "medium",
+      "rep": 2,
+      "success": true,
+      "stage": "completed",
+      "seconds": 187.081,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 62.145
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 109.872
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 654824,
+        "cached_input_tokens": 557056,
+        "output_tokens": 5521
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "./gradlew --console=plain check assembleDebug",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "unconfirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "323b025d69a8e25a4ff6574d410e0c26a8c35a45dc17c8fb111af80e7c216d3e",
+        "findings_chars": 5445
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "U1-low-2",
+      "task": "U1",
+      "condition": "low",
+      "rep": 2,
+      "success": true,
+      "stage": "completed",
+      "seconds": 140.231,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 37.517
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 87.991
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 422937,
+        "cached_input_tokens": 335104,
+        "output_tokens": 4407
+      },
+      "usage_complete": true,
+      "checks": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "./gradlew --console=plain check assembleDebug",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "unconfirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "answer_sha256": "930ee9d5abbd1e83ac895d4f1247665e2c9a28786ba4f56996874d1115c72c82",
+        "findings_chars": 2731
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "U1-medium-2",
+      "task": "U1",
+      "condition": "medium",
+      "rep": 2,
+      "success": false,
+      "stage": "completed",
+      "seconds": 233.565,
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "usage_records": 1,
+          "additional_model": false,
+          "seconds": 38.576
+        },
+        {
+          "role": "reviewer",
+          "exit": 124,
+          "usage_records": 0,
+          "additional_model": false,
+          "seconds": 180.01
+        }
+      ],
+      "observed_tokens": {
+        "input_tokens": 166730,
+        "cached_input_tokens": 118784,
+        "output_tokens": 1241
+      },
+      "usage_complete": false,
+      "checks": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "verification_exit": 0,
+        "command": "./gradlew --console=plain check assembleDebug",
+        "CI": "not applicable to isolated benchmark",
+        "E2E": "not claimed; U1 is regression-test-only"
+      },
+      "review": null,
+      "cost_usd": null
+    }
+  ],
+  "usage_summary": {
+    "groups": [
+      {
+        "condition": "low",
+        "task_kind": "fixed-representative",
+        "revision": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+        "environment": "CLI0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 6,
+        "successes": 6,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 3028342,
+          "cached_input_tokens": 2497408,
+          "output_tokens": 26069
+        },
+        "uncached_input_tokens": 530934,
+        "cache_ratio": 0.8246783223295123,
+        "input_tokens_per_success": 504723.6666666667,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 6,
+            "missing": 0,
+            "total": 822.171,
+            "median": 136.04250000000002,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "D1-low-1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "P1-low-1",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "U1-low-1",
+            "task_id": "U1",
+            "success": true
+          },
+          {
+            "id": "D1-low-2",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "P1-low-2",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "U1-low-2",
+            "task_id": "U1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "medium",
+        "task_kind": "fixed-representative",
+        "revision": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+        "environment": "CLI0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 6,
+        "successes": 5,
+        "success_rate": 0.8333333333333334,
+        "usage_complete": false,
+        "observed_tokens": {
+          "input_tokens": 2762310,
+          "cached_input_tokens": 2219136,
+          "output_tokens": 26432
+        },
+        "uncached_input_tokens": null,
+        "cache_ratio": null,
+        "input_tokens_per_success": null,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 6,
+            "missing": 0,
+            "total": 1007.209,
+            "median": 160.07850000000002,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "D1-medium-1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "P1-medium-1",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "U1-medium-1",
+            "task_id": "U1",
+            "success": true
+          },
+          {
+            "id": "D1-medium-2",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "P1-medium-2",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "U1-medium-2",
+            "task_id": "U1",
+            "success": false
+          }
+        ]
+      }
+    ]
+  },
+  "usage_by_task": {
+    "groups": [
+      {
+        "condition": "low",
+        "task_kind": "D1",
+        "revision": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+        "environment": "CLI0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 834655,
+          "cached_input_tokens": 677632,
+          "output_tokens": 7448
+        },
+        "uncached_input_tokens": 157023,
+        "cache_ratio": 0.8118707729540948,
+        "input_tokens_per_success": 417327.5,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 229.974,
+            "median": 114.987,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "D1-low-1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "D1-low-2",
+            "task_id": "D1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "low",
+        "task_kind": "P1",
+        "revision": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+        "environment": "CLI0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 1054787,
+          "cached_input_tokens": 862976,
+          "output_tokens": 9203
+        },
+        "uncached_input_tokens": 191811,
+        "cache_ratio": 0.8181519112389516,
+        "input_tokens_per_success": 527393.5,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 294.071,
+            "median": 147.0355,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "P1-low-1",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "P1-low-2",
+            "task_id": "P1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "low",
+        "task_kind": "U1",
+        "revision": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+        "environment": "CLI0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 1138900,
+          "cached_input_tokens": 956800,
+          "output_tokens": 9418
+        },
+        "uncached_input_tokens": 182100,
+        "cache_ratio": 0.840108876986566,
+        "input_tokens_per_success": 569450.0,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 298.126,
+            "median": 149.063,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "U1-low-1",
+            "task_id": "U1",
+            "success": true
+          },
+          {
+            "id": "U1-low-2",
+            "task_id": "U1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "medium",
+        "task_kind": "D1",
+        "revision": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+        "environment": "CLI0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 886918,
+          "cached_input_tokens": 720000,
+          "output_tokens": 9428
+        },
+        "uncached_input_tokens": 166918,
+        "cache_ratio": 0.8117999634690016,
+        "input_tokens_per_success": 443459.0,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 267.827,
+            "median": 133.9135,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "D1-medium-1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "D1-medium-2",
+            "task_id": "D1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "medium",
+        "task_kind": "P1",
+        "revision": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+        "environment": "CLI0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 1241844,
+          "cached_input_tokens": 1039616,
+          "output_tokens": 11241
+        },
+        "uncached_input_tokens": 202228,
+        "cache_ratio": 0.8371550693968003,
+        "input_tokens_per_success": 620922.0,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 367.54499999999996,
+            "median": 183.77249999999998,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "P1-medium-1",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "P1-medium-2",
+            "task_id": "P1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "medium",
+        "task_kind": "U1",
+        "revision": "c7f8b9a53a4371e563bb53e81efb3e8930b8d9412e5de6af4606b5c4089652ee",
+        "environment": "CLI0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 1,
+        "success_rate": 0.5,
+        "usage_complete": false,
+        "observed_tokens": {
+          "input_tokens": 633548,
+          "cached_input_tokens": 459520,
+          "output_tokens": 5763
+        },
+        "uncached_input_tokens": null,
+        "cache_ratio": null,
+        "input_tokens_per_success": null,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 371.837,
+            "median": 185.9185,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "U1-medium-1",
+            "task_id": "U1",
+            "success": true
+          },
+          {
+            "id": "U1-medium-2",
+            "task_id": "U1",
+            "success": false
+          }
+        ]
+      }
+    ]
+  },
+  "planned_slots": 12,
+  "attempted_slots": 12,
+  "unstarted_slots": 0,
+  "cost_usd": null,
+  "notes": [
+    "this fresh cohort stays separate from earlier prompts/conditions and failures",
+    "usage covers trial authors/reviewers, not setup/orchestration/final overall review",
+    "requested verbosity is recorded; no wire-level effective verbosity inspection",
+    "no low-priority methods performed"
+  ],
+  "role_audit": {
+    "roles": [
+      {
+        "id": "D1-medium-1-author",
+        "task": "D1",
+        "condition": "medium",
+        "role": "author",
+        "command_count": 7,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "d1f9d424622b1f154bce80678074432f1b3eb92cbe18c078b747e548c827cc8a"
+      },
+      {
+        "id": "D1-medium-1-review",
+        "task": "D1",
+        "condition": "medium",
+        "role": "reviewer",
+        "command_count": 20,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "27db5ab904b659f451b317eb3ca7c2a9f159455766809ac84a467b47aa70d30d"
+      },
+      {
+        "id": "D1-low-1-author",
+        "task": "D1",
+        "condition": "low",
+        "role": "author",
+        "command_count": 8,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "eb468d679aec1c491ab91f28e44c3a887f648b5205ed06f3f78d724f7c579cba"
+      },
+      {
+        "id": "D1-low-1-review",
+        "task": "D1",
+        "condition": "low",
+        "role": "reviewer",
+        "command_count": 6,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "e8b419b08369658de88249b82d62b332fdd8c29da97014a0c1cfcfd1c1c0150d"
+      },
+      {
+        "id": "P1-medium-1-author",
+        "task": "P1",
+        "condition": "medium",
+        "role": "author",
+        "command_count": 10,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "2a42dbfdcd774960370d805ac5acf503e5e01d8d1ebdf01467e8c1f32798f3c3"
+      },
+      {
+        "id": "P1-medium-1-review",
+        "task": "P1",
+        "condition": "medium",
+        "role": "reviewer",
+        "command_count": 18,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "c4dc7e236191aa2d5ff1fb2711c8fe466c37c6d9e7623d79c73f7c4529766764"
+      },
+      {
+        "id": "P1-low-1-author",
+        "task": "P1",
+        "condition": "low",
+        "role": "author",
+        "command_count": 8,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "35541025a6a5405a099f170f994b60916ad089471e717a479b56c2345a0825b0"
+      },
+      {
+        "id": "P1-low-1-review",
+        "task": "P1",
+        "condition": "low",
+        "role": "reviewer",
+        "command_count": 15,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "707e920a3a7ebc6d88bd67a8d2fb617e4a991c33fcad9344940f4b8428527749"
+      },
+      {
+        "id": "U1-medium-1-author",
+        "task": "U1",
+        "condition": "medium",
+        "role": "author",
+        "command_count": 4,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "a5aee82c4abb729f441ed5d80ba60c366696040931cccc05706c7ce1b029d035"
+      },
+      {
+        "id": "U1-medium-1-review",
+        "task": "U1",
+        "condition": "medium",
+        "role": "reviewer",
+        "command_count": 30,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "5dcf54a86dd315e5c22d59a72e8eb3ca172895ace4294b457f578d723c5a4251"
+      },
+      {
+        "id": "U1-low-1-author",
+        "task": "U1",
+        "condition": "low",
+        "role": "author",
+        "command_count": 6,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "ec30dff600a0e649428fd35464834aae586d4d4d765b93368098299b046b27f2"
+      },
+      {
+        "id": "U1-low-1-review",
+        "task": "U1",
+        "condition": "low",
+        "role": "reviewer",
+        "command_count": 10,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "e86742de03e09e941ecff085bd13fed26de6720c9cf486984fabae1cdd5f35b9"
+      },
+      {
+        "id": "D1-low-2-author",
+        "task": "D1",
+        "condition": "low",
+        "role": "author",
+        "command_count": 10,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "16beb8c8ca991da7b0dacecdbfc03c9c19433698b8770ae47da33bc066e023ec"
+      },
+      {
+        "id": "D1-low-2-review",
+        "task": "D1",
+        "condition": "low",
+        "role": "reviewer",
+        "command_count": 12,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "c0fd6d39dc2f2056fbccf0a85111b9aaeed7f3de6285014faa3169dc9feb20ac"
+      },
+      {
+        "id": "D1-medium-2-author",
+        "task": "D1",
+        "condition": "medium",
+        "role": "author",
+        "command_count": 6,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "7a847be0bbb5ceb0165f9129ffcac5aeb922bda2bbb969b62b599f530f5f078f"
+      },
+      {
+        "id": "D1-medium-2-review",
+        "task": "D1",
+        "condition": "medium",
+        "role": "reviewer",
+        "command_count": 10,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "0bd3f1ef4a7aec25666e8adcca60098c94469d5f3e2f6a95c35f3a8031d9747c"
+      },
+      {
+        "id": "P1-low-2-author",
+        "task": "P1",
+        "condition": "low",
+        "role": "author",
+        "command_count": 7,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "97c5dffad844d19a02c41e5f5052a55bab8bf448ecedc852cdfd04b80a3d5569"
+      },
+      {
+        "id": "P1-low-2-review",
+        "task": "P1",
+        "condition": "low",
+        "role": "reviewer",
+        "command_count": 17,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "21964115f6b53667ce71c92bc8af6a3e8e75d9593b185db1d85861495532ac78"
+      },
+      {
+        "id": "P1-medium-2-author",
+        "task": "P1",
+        "condition": "medium",
+        "role": "author",
+        "command_count": 7,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "72a4da15613bf7d54679e8387c2bc6e3c2c3fde8df698593b048dad5fa5d2f20"
+      },
+      {
+        "id": "P1-medium-2-review",
+        "task": "P1",
+        "condition": "medium",
+        "role": "reviewer",
+        "command_count": 14,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "323b025d69a8e25a4ff6574d410e0c26a8c35a45dc17c8fb111af80e7c216d3e"
+      },
+      {
+        "id": "U1-low-2-author",
+        "task": "U1",
+        "condition": "low",
+        "role": "author",
+        "command_count": 6,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "a00b91348ed168ed69f9435f338d1488083b4687672cac9bcf1eebbd9624cb02"
+      },
+      {
+        "id": "U1-low-2-review",
+        "task": "U1",
+        "condition": "low",
+        "role": "reviewer",
+        "command_count": 18,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "930ee9d5abbd1e83ac895d4f1247665e2c9a28786ba4f56996874d1115c72c82"
+      },
+      {
+        "id": "U1-medium-2-author",
+        "task": "U1",
+        "condition": "medium",
+        "role": "author",
+        "command_count": 6,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": "529483f14cac72e888db8da9931c4d60ef6533f6feaba5a13fb3e7e80eccc3ed"
+      },
+      {
+        "id": "U1-medium-2-review",
+        "task": "U1",
+        "condition": "medium",
+        "role": "reviewer",
+        "command_count": 1,
+        "direct_mode_violation": false,
+        "additional_model": false,
+        "verbosity_ignored_warning": false,
+        "answer_sha256": null
+      }
+    ],
+    "independent_threads": [
+      {
+        "trial": "D1-medium-1",
+        "verified": true
+      },
+      {
+        "trial": "D1-low-1",
+        "verified": true
+      },
+      {
+        "trial": "P1-medium-1",
+        "verified": true
+      },
+      {
+        "trial": "P1-low-1",
+        "verified": true
+      },
+      {
+        "trial": "U1-medium-1",
+        "verified": true
+      },
+      {
+        "trial": "U1-low-1",
+        "verified": true
+      },
+      {
+        "trial": "D1-low-2",
+        "verified": true
+      },
+      {
+        "trial": "D1-medium-2",
+        "verified": true
+      },
+      {
+        "trial": "P1-low-2",
+        "verified": true
+      },
+      {
+        "trial": "P1-medium-2",
+        "verified": true
+      },
+      {
+        "trial": "U1-low-2",
+        "verified": true
+      },
+      {
+        "trial": "U1-medium-2",
+        "verified": true
+      }
+    ],
+    "wire_level_effective_verbosity": "not observed; requested invocation setting only",
+    "no_low_priority_methods": true
+  },
+  "review_quality": {
+    "first_repetition": {
+      "reviewer": "separate agent review_adoption",
+      "reviewed_trials": 6,
+      "must_fix_findings": 0,
+      "critical_evidence_preserved": true
+    },
+    "second_repetition": {
+      "reviewer": "separate agent review_adoption",
+      "completed_reviews_checked": 5,
+      "must_fix_findings": 0,
+      "critical_evidence_preserved": true,
+      "timed_out_trial_not_reclassified": true
+    },
+    "timed_out_trial": "U1-medium-2",
+    "timed_out_role": "reviewer",
+    "failure_is_not_a_functional_regression_finding": true
+  }
+}

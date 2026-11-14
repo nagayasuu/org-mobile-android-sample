@@ -1,0 +1,4 @@
+# Optional Kotlin declaration reader; not an Android app dependency.
+# Python binding: MIT, https://github.com/tree-sitter/py-tree-sitter
+tree-sitter==0.26.1
+# Build the MIT Kotlin grammar at the pinned commit documented in the workflow.
