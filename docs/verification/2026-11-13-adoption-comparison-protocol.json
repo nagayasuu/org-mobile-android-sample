@@ -1,0 +1,427 @@
+{
+  "plan": {
+    "repetitions": 2,
+    "tasks": [
+      "D1",
+      "P1",
+      "U1"
+    ],
+    "conditions": [
+      "direct",
+      "bounded"
+    ],
+    "order": "rep1 direct then bounded; rep2 bounded then direct, per task",
+    "model": "gpt-6.1-sol",
+    "effort": "high",
+    "role_timeout_seconds": 180,
+    "success": "fixed external checks plus independent local-scoped review; not integration/E2E success",
+    "adoption": "no observed success regression, input per local success at least 10% lower, completion median no more than 20% higher",
+    "cost_usd": null,
+    "stop": "stop additional model calls on usage/access failure; preserve completed results"
+  },
+  "tasks": {
+    "D1": {
+      "target": "docs/evaluation-fixture.md",
+      "description": "Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link."
+    },
+    "P1": {
+      "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+      "description": "OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt."
+    },
+    "U1": {
+      "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+      "description": "In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI."
+    }
+  },
+  "prompts": {
+    "D1-direct-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit docs/evaluation-fixture.md; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "205bee9a108ba6c75a1d80fc77d7c4142a609075e9c7b96e2166c915faa245ad"
+    },
+    "D1-direct-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "12436f96c0385538284021ba5b04509e7dab57b8758d27affc6db9ac642ec34e"
+    },
+    "D1-bounded-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then document_tools read/context for unread common rules, read_excerpt and run_check for bounded results where useful. Reuse unchanged reads. Do not weaken any criteria.\nTask: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit docs/evaluation-fixture.md; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "32a8f1c6badfba41cd8908e7d45aac8fcc57df9e6f2fa21943fdf8db26663241"
+    },
+    "D1-bounded-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then document_tools read/context for unread common rules, read_excerpt and run_check for bounded results where useful. Reuse unchanged reads. Do not weaken any criteria.\nTask: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "3b3a6cf042778298d0af1a043e7348afd02b1be7efe9094fd28db32e85f1dde6"
+    },
+    "P1-direct-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit app/src/main/java/dev/orgmobile/reader/OrgParser.kt; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "4a3c65af10f94ba92836a1c38d185b75414ac90e4f31ff85e395f9387052e5cc"
+    },
+    "P1-direct-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "c192c4c975605d33eefb3d26b4d694a62cfe364ec2bcb2479bfb282beab586d8"
+    },
+    "P1-bounded-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then document_tools read/context for unread common rules, read_excerpt and run_check for bounded results where useful. Reuse unchanged reads. Do not weaken any criteria.\nTask: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit app/src/main/java/dev/orgmobile/reader/OrgParser.kt; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "ca978a7c9f3e54d1987c43f46f08575f16563fa8cb3c5e22058129f2c6a7f42d"
+    },
+    "P1-bounded-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then document_tools read/context for unread common rules, read_excerpt and run_check for bounded results where useful. Reuse unchanged reads. Do not weaken any criteria.\nTask: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "5837756912baaba9a0eb975f79f28e1e1524f1083dda9d6a3e801c1a051bd976"
+    },
+    "U1-direct-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "d20b341a0c340e3cee708753b5ecc6daaff76d88d40bc5b556483b6ce22c6ac0"
+    },
+    "U1-direct-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then normal selected source reads. Do not use document_tools read/context, read_excerpt, context_memory, or run_check. Save long logs locally and preserve exit codes manually.\nTask: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "2dccafdccfbd436cd731ff31b4d970d0179ea84452a40dac582b4b70dff8a175"
+    },
+    "U1-bounded-author": {
+      "text": "Scoped evaluation author. Follow AGENTS.md and applicable public workflow. Use rg then document_tools read/context for unread common rules, read_excerpt and run_check for bounded results where useful. Reuse unchanged reads. Do not weaken any criteria.\nTask: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nDo not commit, publish, access private data, start other agents or invoke other models. The pipeline performs an independent review after your handoff. Do not claim review complete. An external verifier runs required checks after you, before review, so you may use focused tests while editing; return a short handoff instead of repeating full checks. Only edit app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt; keep optional handoff under .local/. Existing user permission for public sources is recorded in docs/verification/2026-11-07-instruction-reading.md. Do not alter tests to make failures pass. This fixture is isolated; leave the original project untouched.",
+      "sha256": "07441799899e0ae7fcf0f95ffec2e391ab16befe03405b60137b919237c9ec06"
+    },
+    "U1-bounded-review": {
+      "text": "Independent review of this isolated local evaluation. Follow public AGENTS.md and R01-R30. Use rg then document_tools read/context for unread common rules, read_excerpt and run_check for bounded results where useful. Reuse unchanged reads. Do not weaken any criteria.\nTask: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nRead git diff HEAD and .local/evaluation-check.json directly, inspect source and relevant tests. Do not edit, commit, publish, start agents or invoke other models. The external verifier already ran the recorded checks; distinguish their execution from yours. Verify local task success only: remote CI and device E2E are outside this experiment, not passed. Existing public-data permission is in docs/verification/2026-11-07-instruction-reading.md. Return the specified JSON with all R01-R30, approved true only if the scoped change has no must-fix issues and recorded local verification is valid. Do not generalize to integration or physical-device success. Findings must describe any unconfirmed external conditions honestly.",
+      "sha256": "e6fda82ea878be4052a505e6d9c5295892c59e558cf193547fbdc6c248503290"
+    }
+  },
+  "source_manifest_sha256": "c90b0cc01d58b2a0b41f9ca864b343cb9bb118fbb938a74b79acb221a82b721b",
+  "review_schema": {
+    "type": "object",
+    "properties": {
+      "approved": {
+        "type": "boolean"
+      },
+      "checks": {
+        "type": "object",
+        "properties": {
+          "R01": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R02": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R03": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R04": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R05": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R06": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R07": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R08": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R09": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R10": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R11": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R12": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R13": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R14": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R15": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R16": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R17": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R18": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R19": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R20": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R21": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R22": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R23": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R24": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R25": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R26": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R27": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R28": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R29": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          },
+          "R30": {
+            "type": "string",
+            "enum": [
+              "confirmed",
+              "not_applicable",
+              "unconfirmed",
+              "needs_fix"
+            ]
+          }
+        },
+        "required": [
+          "R01",
+          "R02",
+          "R03",
+          "R04",
+          "R05",
+          "R06",
+          "R07",
+          "R08",
+          "R09",
+          "R10",
+          "R11",
+          "R12",
+          "R13",
+          "R14",
+          "R15",
+          "R16",
+          "R17",
+          "R18",
+          "R19",
+          "R20",
+          "R21",
+          "R22",
+          "R23",
+          "R24",
+          "R25",
+          "R26",
+          "R27",
+          "R28",
+          "R29",
+          "R30"
+        ],
+        "additionalProperties": false
+      },
+      "findings": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "approved",
+      "checks",
+      "findings"
+    ],
+    "additionalProperties": false
+  },
+  "fixtures": {
+    "D1": {
+      "initial": "# 検証\n結果を確認しましす。\n[作業指示](../AGENTS.md)\n",
+      "expected": "# 検証\n結果を確認します。\n[作業指示](../AGENTS.md)\n"
+    },
+    "P1": {
+      "original_pattern": "Regex(\"^(\\\\*+) +(.+)$\")",
+      "seeded_pattern": "Regex(\"^(\\\\*) +(.+)$\")",
+      "expected": "restore the original source; existing tests must pass"
+    },
+    "U1": {
+      "expected": "assert selected.org document_title after the final cancellation",
+      "execution": "not reached before CLI usage limit"
+    }
+  }
+}

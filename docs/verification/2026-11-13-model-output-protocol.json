@@ -1,0 +1,113 @@
+{
+  "purpose": "one-factor screening of model, reasoning effort, and output verbosity on fixed document/parser/UI-test proposals; not implemented app task success",
+  "prompt": "Controlled source-based proposal evaluation. Use no tools, files, agents or other models. These are public repository snippets. Return only JSON using doc_after (exact fixed complete fixture text), heading_regex (regex expression, not Kotlin source literal), u1_assertion (one exact Kotlin statement), u1_production_change (boolean), required_review (string ID range), unconfirmed (scope string), explanation (explain all fixes, limits and validation). Preserve all existing behavior and assertions. Do not claim to have edited or executed tests.\nD1: Fix only 確認しましす to 確認します in this fixture:\n# 検証\n結果を確認しましす。\n[作業指示](../AGENTS.md)\nP1: Fix recognition of ** 詳細 without changing other parsing behavior. Return the corrected regex expression.\npackage dev.orgmobile.reader\n\nsealed interface OrgBlock {\n    data class Heading(val level: Int, val text: String) : OrgBlock\n    data class Paragraph(val text: String) : OrgBlock\n    data class ListItem(val indent: Int, val marker: String, val text: String) : OrgBlock\n}\n\nobject OrgParser {\n    private val heading = Regex(\"^(\\\\*) +(.+)$\")\n    private val listItem = Regex(\"^([ \\\\t]*)([-+]|\\\\d+[.)]|\\\\*)(?:[ \\\\t]+)(.*)$\")\n    private val beginBlock = Regex(\"^\\\\s*#\\\\+begin_(\\\\S+).*$\", RegexOption.IGNORE_CASE)\n\n    fun parse(text: String): List<OrgBlock> = Parser().parse(text)\n\n    private fun parseBlock(line: String): OrgBlock? {\n        heading.matchEntire(line)?.let { title ->\n            return OrgBlock.Heading(title.groupValues[1].length, title.groupValues[2])\n        }\n        val item = listItem.matchEntire(line) ?: return null\n        val (whitespace, marker, text) = item.destructured\n        if (marker == \"*\" && whitespace.isEmpty()) return null\n        val indent = whitespace.sumOf { if (it == '\\t') 4 else 1 }\n        return OrgBlock.ListItem(indent, marker, text)\n    }\n\n    private class Parser {\n        private val blocks = mutableListOf<OrgBlock>()\n        private val paragraph = mutableListOf<String>()\n        private var literalBlock: String? = null\n\n        fun parse(text: String): List<OrgBlock> {\n            text.removePrefix(\"\\uFEFF\").lineSequence().forEach(::appendLine)\n            flushParagraph()\n            return blocks\n        }\n\n        private fun appendLine(line: String) {\n            if (literalBlock != null) {\n                appendLiteralLine(line)\n                return\n            }\n            val begin = beginBlock.matchEntire(line)\n            if (begin != null) {\n                flushParagraph()\n                literalBlock = begin.groupValues[1]\n                paragraph += line\n                return\n            }\n            appendContentLine(line)\n        }\n\n        private fun appendContentLine(line: String) {\n            val block = parseBlock(line)\n            when {\n                line.isBlank() -> flushParagraph()\n                block != null -> {\n                    flushParagraph()\n                    blocks += block\n                }\n                else -> paragraph += line\n            }\n        }\n\n        private fun appendLiteralLine(line: String) {\n            paragraph += line\n            if (line.trim().equals(\"#+end_$literalBlock\", ignoreCase = true)) {\n                literalBlock = null\n                flushParagraph()\n            }\n        }\n\n        private fun flushParagraph() {\n            if (paragraph.isNotEmpty()) {\n                blocks += OrgBlock.Paragraph(paragraph.joinToString(\"\\n\"))\n                paragraph.clear()\n            }\n        }\n    }\n}\n\nU1: After the final cancellation in this test, add an explicit assertEquals that document_title remains selected.org. Use activity.findViewById<TextView>(R.id.document_title).text.toString() as the actual expression.\n\nProject rule: mandatory independent review IDs R01-R30; remote CI and device E2E remain unconfirmed. For unconfirmed use the exact scope string \"remote CI and device E2E\".",
+  "prompt_sha256": "35e60ca37d441b422109ef090e5f567980dc66c6b787c643105d5230970ef1ba",
+  "expected": {
+    "doc_after": "# 検証\n結果を確認します。\n[作業指示](../AGENTS.md)\n",
+    "heading_regex": "^(\\*+) +(.+)$",
+    "u1_assertion": "assertEquals(\"selected.org\", activity.findViewById<TextView>(R.id.document_title).text.toString())",
+    "u1_production_change": false,
+    "required_review": "R01-R30",
+    "unconfirmed": "remote CI and device E2E"
+  },
+  "output_schema": {
+    "type": "object",
+    "properties": {
+      "doc_after": {
+        "type": "string"
+      },
+      "heading_regex": {
+        "type": "string"
+      },
+      "u1_assertion": {
+        "type": "string"
+      },
+      "u1_production_change": {
+        "type": "boolean"
+      },
+      "required_review": {
+        "type": "string"
+      },
+      "unconfirmed": {
+        "type": "string"
+      },
+      "explanation": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "doc_after",
+      "heading_regex",
+      "u1_assertion",
+      "u1_production_change",
+      "required_review",
+      "unconfirmed",
+      "explanation"
+    ],
+    "additionalProperties": false
+  },
+  "conditions": {
+    "baseline": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "medium"
+    },
+    "model": {
+      "model": "gpt-6-luna",
+      "effort": "high",
+      "verbosity": "medium"
+    },
+    "effort": {
+      "model": "gpt-6.1-sol",
+      "effort": "medium",
+      "verbosity": "medium"
+    },
+    "verbosity": {
+      "model": "gpt-6.1-sol",
+      "effort": "high",
+      "verbosity": "low"
+    }
+  },
+  "repetitions": 2,
+  "order": [
+    "baseline-1",
+    "model-1",
+    "effort-1",
+    "verbosity-1",
+    "verbosity-2",
+    "effort-2",
+    "model-2",
+    "baseline-2"
+  ],
+  "max_model_operations": 8,
+  "operation_timeout_seconds": 120,
+  "adoption": "all exact fields correct and explanation covers validation limits; observed input or output per success >=10% lower and median time <=120% baseline, then retain as candidate only pending implemented task/full review comparison",
+  "stop": "any usage/access failure; no fallback model/auth/payment; unsupported or ignored verbosity is not a valid verbosity comparison",
+  "cost_usd": null,
+  "sources": [
+    "https://learn.chatgpt.com/docs/config-file/config-advanced",
+    "https://developers.openai.com/api/docs/guides/deployment-checklist",
+    "https://learn.chatgpt.com/docs/app-server"
+  ],
+  "source_snapshot": {
+    "OrgParser.kt": "7cbb61307d150c694b96fbee4a5644d699604d769c4157c44f9a61698d988171",
+    "MainActivityTest.kt": "2ed8f53b3aebfc33f67a0858c3fa7def3653cc89c457efed9aad12592838d240"
+  },
+  "explanation_gate": {
+    "nonempty": true,
+    "validation_regex": "check|test|検証|テスト",
+    "limits_regex": "unconfirm|not (?:run|execut|verif)|未確認|未実行",
+    "regex_ignorecase": true
+  },
+  "manual_explanation_review": {
+    "required": true,
+    "before_adoption": true,
+    "criteria": [
+      "no false execution/pass claims",
+      "fixes preserve existing behavior and assertions",
+      "validation and independent review remain necessary",
+      "remote CI/device E2E not claimed passed"
+    ],
+    "mechanical_gate_is_insufficient": true
+  }
+}

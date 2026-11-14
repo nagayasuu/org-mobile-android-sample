@@ -53,6 +53,8 @@ AGP 9 の既定で Release テストが省略されないよう、`app/build.gra
 
 個別実行は早いフィードバックを得るために使う。アプリ・テスト・ビルド設定の変更では、完了前に共通の `check assembleDebug` も実行する。
 
+タスク出力の再利用は `gradle.properties` の `org.gradle.caching=true` で有効にしている。必要なら実行ごとに `--no-build-cache` で無効化できる。依存関係のキャッシュ、UP-TO-DATE、タスクのFROM-CACHEは分けて確認する。[比較記録](verification/2026-11-13-codex-adoption-followup.md)の速度は同じ入力で準備後の限定した結果であり、変更を含むすべてのビルドの短縮率を保証しない。JUnit・Lint XMLを今回の結果として集約する場合は、[ログ保存と結果集約](#check-output)の再生成条件を維持する。
+
 | 出力 | 場所 |
 | --- | --- |
 | Debug APK | `app/build/outputs/apk/debug/app-debug.apk` |
@@ -89,6 +91,17 @@ python3 scripts/run_check.py --output-dir .local/checks/android-001 \
 元コマンドの非ゼロ終了コードを優先して返す。POSIX のシグナル終了は `command_returncode` に負の元値を保存し、ツールの終了コードには128＋シグナル番号を使う。元コマンドが終了0でも、JUnit の failure/error、Lint の Error/Fatal、レポート確認の失敗は終了1にする。Lint の Warning・Information・Hint などとテストのスキップは件数を表示し、既存の Gradle・Lint の合否基準を変更しない。シェルを介さず引数列を実行し、ログ保存先を上書きしない。失敗時は `command.log` の該当箇所と元のレポートを読み、原因を確認する。
 
 ログ・コマンド引数・レポートにはローカル専用情報や秘密情報を含めない。`.local/` は Git の除外対象であり、ログを CI 成果物や PR へ自動登録しない。公開する場合は確認済みの非機密な集約値だけを既存の検証記録へ記載する。機密情報の自動除去機能はない。
+
+保存したログや検索結果は、次のように必要な範囲を取得する。
+
+```sh
+python3 scripts/read_excerpt.py .local/checks/python-001/command.log --lines 40
+python3 scripts/read_excerpt.py .local/checks/python-001/command.log --tail --lines 40
+python3 scripts/read_excerpt.py .local/checks/python-001/command.log --match FAILED --before 3 --lines 20
+python3 scripts/read_excerpt.py .local/checks/python-001/command.log --start 41 --lines 40
+```
+
+`read_excerpt.py` は UTF-8 の原文を変更せず、行番号、全文の SHA-256、総行数、取得範囲、省略行数を返す。既定は40行、メタデータ・行番号を含め8,000文字までであり、トークン上限ではない。上限超過、不正 UTF-8、検索文字列の不一致では本文を返さず非ゼロ終了する。長い1行の場合は `--max-chars` を明示して増やす。`--match` は正規表現ではなく最初の文字列一致から前後を取得し、前の行は最大 `--lines - 1` 行とする。空ファイルや末尾より先の範囲は本文が空になる。省略箇所に必要な情報があれば `--start` などを変えて原文を追加取得する。このツールも機密情報を自動除去しない。
 
 ## 自動 E2E テスト
 
