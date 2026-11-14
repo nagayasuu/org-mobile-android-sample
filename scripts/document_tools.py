@@ -271,12 +271,14 @@ def context(repository, profile, max_chars, includes=(), state=None, reader=None
     selected = {agent_name: ({'path': agent_name, 'sha256': hashlib.sha256(text.encode('utf-8')).hexdigest(),
                               'sections': [{'id': 'whole-file', 'start_line': 1, 'end_line': len(lines)}]},
                              set(range(1, len(lines) + 1)))}
-    development = ['workflow-reading', '共通の検証', 'agent-context', 'agent-review',
-                   'review-checklist', '6. 完了条件と報告']
+    development = ['workflow-reading', 'completion']
     if profile == 'change':
         development.append('change-steps')
-    selections = [('docs/development-workflow.md', development),
-                  ('docs/git-workflow.md', ['1. 基本方針', '6. Codex が作業するときの手順'])]
+    selections = [('docs/workflow/development.md', development),
+                  ('docs/workflow/verification.md', ['共通の検証']),
+                  ('docs/guides/agent-tools.md', ['agent-context']),
+                  ('docs/workflow/review.md', ['agent-review', 'review-checklist']),
+                  ('docs/workflow/git.md', ['1. 基本方針', '6. Codex が作業するときの手順'])]
     for include in includes:
         if len(include) < 2:
             raise ValueError('--include requires a path and at least one section')

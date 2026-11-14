@@ -45,13 +45,19 @@ class AgentToolsTest(unittest.TestCase):
             ('agent-review', 'agent によるレビュー手順', 'REVIEW_RULES'),
             ('review-checklist', 'レビューチェックリスト',
              '### 記録と判定\nUNCONFIRMED_RULE\n' + '\n'.join(f'R{i:02}: criterion' for i in range(1, 31))),
-            ('', '6. 完了条件と報告', 'COMPLETION_RULES'),
+            ('completion', '完了条件と報告', 'COMPLETION_RULES'),
             ('', '対象固有の節', 'UNRELATED_SECTION'),
         ]
-        self.write('docs/development-workflow.md', '\n'.join(
-            (f'<a id="{anchor}"></a>\n\n' if anchor else '') + f'## {title}\n{body}\n'
-            for anchor, title, body in sections))
-        self.write('docs/git-workflow.md', '## 1. 基本方針\nGIT_POLICY\n'
+        for name, selected in [
+            ('docs/workflow/development.md', [0, 1, 6, 7]),
+            ('docs/workflow/verification.md', [2]),
+            ('docs/guides/agent-tools.md', [3]),
+            ('docs/workflow/review.md', [4, 5]),
+        ]:
+            self.write(name, '\n'.join(
+                (f'<a id="{anchor}"></a>\n\n' if anchor else '') + f'## {title}\n{body}\n'
+                for anchor, title, body in (sections[index] for index in selected)))
+        self.write('docs/workflow/git.md', '## 1. 基本方針\nGIT_POLICY\n'
                    '## 6. Codex が作業するときの手順\nGIT_STEPS\n')
 
     def test_context_change_returns_complete_common_rules_with_original_hashes(self):
@@ -60,7 +66,7 @@ class AgentToolsTest(unittest.TestCase):
         self.assertEqual(0, result.returncode, result.stderr)
         metadata = json.loads(result.stdout.splitlines()[0])
         self.assertEqual('change', metadata['profile'])
-        self.assertEqual(3, len(metadata['documents']))
+        self.assertEqual(6, len(metadata['documents']))
         for document in metadata['documents']:
             self.assertEqual(hashlib.sha256((self.root / document['path']).read_bytes()).hexdigest(), document['sha256'])
         for marker in ['AGENT_MARKER', 'READING_TABLE', 'CHANGE_STEPS', 'REQUIRED_CHECKS', 'CONTEXT_RULES',
@@ -91,9 +97,9 @@ class AgentToolsTest(unittest.TestCase):
             with self.subTest(failure=failure):
                 self.context_fixture()
                 if failure == 'missing':
-                    (self.root / 'docs/git-workflow.md').unlink()
+                    (self.root / 'docs/workflow/git.md').unlink()
                 elif failure == 'ambiguous':
-                    self.write('docs/git-workflow.md', '## 1. 基本方針\nA\n## 1. 基本方針\nB\n'
+                    self.write('docs/workflow/git.md', '## 1. 基本方針\nA\n## 1. 基本方針\nB\n'
                                '## 6. Codex が作業するときの手順\nC\n')
                 result = self.docs('context', 'change', *(['--max-chars', '10'] if failure == 'limit' else []))
                 self.assertNotEqual(0, result.returncode)
@@ -112,13 +118,13 @@ class AgentToolsTest(unittest.TestCase):
         self.context_fixture()
         self.write('extra.md', '# Extra\nPARENT\n## Child\nCHILD\n')
         result = self.docs('context', 'change',
-                           '--include', 'docs/development-workflow.md', '対象固有の節', 'review-checklist',
+                           '--include', 'docs/workflow/development.md', '対象固有の節', 'workflow-reading',
                            '--include', 'extra.md', 'Extra', 'Child',
                            '--include', 'extra.md', 'Child')
         self.assertEqual(0, result.returncode, result.stderr)
         for marker in ['UNRELATED_SECTION', 'PARENT', 'CHILD', 'R01: criterion', 'R30: criterion']:
             self.assertEqual(1, result.stdout.count(marker), marker)
-        self.assertEqual(4, len(json.loads(result.stdout.splitlines()[0])['documents']))
+        self.assertEqual(7, len(json.loads(result.stdout.splitlines()[0])['documents']))
 
     def test_context_receipt_reuses_only_delivered_ranges_and_expands_without_repeating(self):
         self.context_state_fixture()
@@ -197,7 +203,7 @@ class AgentToolsTest(unittest.TestCase):
                 self.assertNotEqual(0, result.returncode)
                 self.assertEqual('', result.stdout)
                 self.assertEqual(before, state.read_bytes())
-        (self.root / 'docs/git-workflow.md').unlink()
+        (self.root / 'docs/workflow/git.md').unlink()
         result = self.cached_context()
         self.assertNotEqual(0, result.returncode)
         self.assertEqual('', result.stdout)
