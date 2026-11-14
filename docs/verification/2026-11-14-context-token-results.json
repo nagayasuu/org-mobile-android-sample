@@ -1,0 +1,2245 @@
+{
+  "source_versions": {
+    "before": "af4002adadf46d3f75f11f8dad5bdd9e1157bd41",
+    "after": "59239be502475d40a42f65db7c2da14624deb98e"
+  },
+  "trials": [
+    {
+      "id": "D1-before-1",
+      "task": "D1",
+      "condition": "before",
+      "rep": 1,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 199.531,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 628011,
+        "cached_input_tokens": 531072,
+        "output_tokens": 6806
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 81.627,
+          "usage_records": 1,
+          "command_count": 7,
+          "returned_chars": 61252,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "8476490f94807a47a90f0bb8c8d1d4f90937c199dd2c8f191fd2fd362c922b0d"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 117.589,
+          "usage_records": 1,
+          "command_count": 7,
+          "returned_chars": 67364,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 5,
+          "contexts": [
+            {
+              "profile": "review",
+              "status": null,
+              "reader": null,
+              "refresh": null,
+              "emitted_lines": null,
+              "reused_lines": null
+            }
+          ],
+          "additional_model_detected": false,
+          "answer_sha256": "77669ab13a45ae9a8668c58897770efaac507213d3af3b6bf6779b9ae3abb705"
+        }
+      ],
+      "checks": {
+        "target": "docs/evaluation-fixture.md",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": null,
+          "failures": null,
+          "errors": null,
+          "skipped": null
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "docs/evaluation-fixture.md",
+        "precheck_exit": 0,
+        "status": "passed",
+        "expected_regression_observed": false,
+        "junit": {
+          "tests": null,
+          "failures": null,
+          "errors": null,
+          "skipped": null,
+          "failed_cases": null
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "not_applicable",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "not_applicable",
+          "R10": "not_applicable",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 2604
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "D1-after-1",
+      "task": "D1",
+      "condition": "after",
+      "rep": 1,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 180.37,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 584255,
+        "cached_input_tokens": 492032,
+        "output_tokens": 5920
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 86.562,
+          "usage_records": 1,
+          "command_count": 8,
+          "returned_chars": 43302,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 3,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "865f74434fd4b8546599b2bf3215b71a065186871207191aa3b6d867cac109c1"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 93.494,
+          "usage_records": 1,
+          "command_count": 8,
+          "returned_chars": 82205,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 3,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "6a6aa554fd92845560ee51c558d52803fcae6d564abcbdfa1769d92d23c55f4d"
+        }
+      ],
+      "checks": {
+        "target": "docs/evaluation-fixture.md",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": null,
+          "failures": null,
+          "errors": null,
+          "skipped": null
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "docs/evaluation-fixture.md",
+        "precheck_exit": 0,
+        "status": "passed",
+        "expected_regression_observed": false,
+        "junit": {
+          "tests": null,
+          "failures": null,
+          "errors": null,
+          "skipped": null,
+          "failed_cases": null
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "not_applicable",
+          "R03": "not_applicable",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "not_applicable",
+          "R10": "not_applicable",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 5287
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-before-1",
+      "task": "P1",
+      "condition": "before",
+      "rep": 1,
+      "stage": "completed",
+      "failure_category": "usage_limit",
+      "success": false,
+      "seconds": 104.907,
+      "reused_author_from": null,
+      "usage_complete": false,
+      "observed_tokens": {
+        "input_tokens": 292642,
+        "cached_input_tokens": 243840,
+        "output_tokens": 3240
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 82.367,
+          "usage_records": 1,
+          "command_count": 7,
+          "returned_chars": 52287,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "9f502d772262e739aebe44e68a6df08cc27142542b81830b4ca10251d48a6823"
+        },
+        {
+          "role": "reviewer",
+          "exit": 1,
+          "terminal_completed": false,
+          "process_exit_unobserved": false,
+          "seconds": 3.778,
+          "usage_records": 0,
+          "command_count": 0,
+          "returned_chars": 0,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 0,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": null
+        }
+      ],
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "precheck_exit": 1,
+        "status": "failed",
+        "expected_regression_observed": true,
+        "junit": {
+          "tests": 12,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 0,
+          "failed_cases": [
+            "dev.orgmobile.reader.OrgParserTest.renders Japanese headings paragraphs and lists in order",
+            "dev.orgmobile.reader.OrgParserTest.flushes prose before a heading or list without a blank line",
+            "dev.orgmobile.reader.OrgParserTest.literal blocks preserve blank lines and resume parsing after mixed case end"
+          ]
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": null,
+        "checks": null,
+        "findings_chars": 0
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-before-1-retry",
+      "task": "P1",
+      "condition": "before",
+      "rep": 1,
+      "stage": "review_retry_completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": null,
+      "reused_author_from": "P1-before-1",
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 315248,
+        "cached_input_tokens": 259712,
+        "output_tokens": 4931
+      },
+      "roles": [
+        {
+          "role": "reviewer",
+          "exit": null,
+          "terminal_completed": true,
+          "process_exit_unobserved": true,
+          "seconds": null,
+          "usage_records": 1,
+          "command_count": 9,
+          "returned_chars": 77837,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 4,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "319b6263aa579fa505091f451934aec28a9025303ec034e6af3cd91629ec6d94"
+        }
+      ],
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": null,
+      "reviewer_immutable": true,
+      "independence_reference": "P1-before-1",
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 7573
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-after-1",
+      "task": "P1",
+      "condition": "after",
+      "rep": 1,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 285.571,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 701825,
+        "cached_input_tokens": 592640,
+        "output_tokens": 8831
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 103.269,
+          "usage_records": 1,
+          "command_count": 8,
+          "returned_chars": 84831,
+          "state_command_count": 3,
+          "refresh_command_count": 1,
+          "help_command_count": 0,
+          "document_tool_mentions": 3,
+          "contexts": [
+            {
+              "profile": "change",
+              "status": "updated",
+              "reader": "orgparser-author",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 243,
+              "reused_lines": 0
+            },
+            {
+              "profile": "change",
+              "status": "updated",
+              "reader": "orgparser-author",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 243,
+              "reused_lines": 0
+            },
+            {
+              "profile": "change",
+              "status": "updated",
+              "reader": "orgparser-author",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 127,
+              "reused_lines": 243
+            }
+          ],
+          "additional_model_detected": false,
+          "answer_sha256": "6a4f517bd44af67db391d9ab36dc47cf554f31157df25e34c36d2e506f51c61d"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 165.488,
+          "usage_records": 1,
+          "command_count": 11,
+          "returned_chars": 85557,
+          "state_command_count": 2,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [
+            {
+              "profile": "review",
+              "status": "updated",
+              "reader": "independent-review-20261114",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 233,
+              "reused_lines": 0
+            },
+            {
+              "profile": "review",
+              "status": "updated",
+              "reader": "independent-review-20261114",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 101,
+              "reused_lines": 233
+            }
+          ],
+          "additional_model_detected": false,
+          "answer_sha256": "c11e6c7295971cc3382da4ac1f4352d4575698964e81a3c5b950b41bfbe92ecc"
+        }
+      ],
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "precheck_exit": 1,
+        "status": "failed",
+        "expected_regression_observed": true,
+        "junit": {
+          "tests": 12,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 0,
+          "failed_cases": [
+            "dev.orgmobile.reader.OrgParserTest.renders Japanese headings paragraphs and lists in order",
+            "dev.orgmobile.reader.OrgParserTest.flushes prose before a heading or list without a blank line",
+            "dev.orgmobile.reader.OrgParserTest.literal blocks preserve blank lines and resume parsing after mixed case end"
+          ]
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [
+        "orgparser-author",
+        "orgparser-author",
+        "orgparser-author"
+      ],
+      "review_receipt_readers": [
+        "independent-review-20261114",
+        "independent-review-20261114"
+      ],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 8437
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "U1-before-1",
+      "task": "U1",
+      "condition": "before",
+      "rep": 1,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 259.662,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 611392,
+        "cached_input_tokens": 514304,
+        "output_tokens": 8471
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 98.862,
+          "usage_records": 1,
+          "command_count": 10,
+          "returned_chars": 93687,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 1,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "ab847abab0a1c03918095f180853855ac643670236ad7ea13233e58f7ff9bda8"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 139.968,
+          "usage_records": 1,
+          "command_count": 12,
+          "returned_chars": 84000,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 5,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "6f5c94ee26ee4cb216a943a3a534d2c6cc822e78061d81adfc5a05d1bccab318"
+        }
+      ],
+      "checks": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "precheck_exit": 0,
+        "status": "passed",
+        "expected_regression_observed": false,
+        "junit": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "failed_cases": []
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "not_applicable",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 5323
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "U1-after-1",
+      "task": "U1",
+      "condition": "after",
+      "rep": 1,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 231.499,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 686141,
+        "cached_input_tokens": 556288,
+        "output_tokens": 6700
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 86.113,
+          "usage_records": 1,
+          "command_count": 8,
+          "returned_chars": 61322,
+          "state_command_count": 3,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [
+            {
+              "profile": "change",
+              "status": "updated",
+              "reader": "cancellation-title-author",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 243,
+              "reused_lines": 0
+            },
+            {
+              "profile": "change",
+              "status": "updated",
+              "reader": "cancellation-title-author",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 145,
+              "reused_lines": 243
+            }
+          ],
+          "additional_model_detected": false,
+          "answer_sha256": "299900a3153c182736939d8cd9e4bb1028d5883dfd48326c242a57ac800ca2a4"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 124.865,
+          "usage_records": 1,
+          "command_count": 18,
+          "returned_chars": 102957,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 3,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "a478f86df86b354ba0018a88e141bea24463a1ad31faf0ed235c7fdf15057fb1"
+        }
+      ],
+      "checks": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "precheck_exit": 0,
+        "status": "passed",
+        "expected_regression_observed": false,
+        "junit": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "failed_cases": []
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [
+        "cancellation-title-author",
+        "cancellation-title-author"
+      ],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 5996
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "D1-after-2",
+      "task": "D1",
+      "condition": "after",
+      "rep": 2,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 177.439,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 644241,
+        "cached_input_tokens": 555648,
+        "output_tokens": 6414
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 72.996,
+          "usage_records": 1,
+          "command_count": 11,
+          "returned_chars": 56547,
+          "state_command_count": 1,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 4,
+          "contexts": [
+            {
+              "profile": "change",
+              "status": "updated",
+              "reader": "typo-author",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 243,
+              "reused_lines": 0
+            }
+          ],
+          "additional_model_detected": false,
+          "answer_sha256": "85a85c77d7e2ce06eda67f38170616133b4cb439012a128ffc8db960bcddfc0f"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 104.115,
+          "usage_records": 1,
+          "command_count": 11,
+          "returned_chars": 60494,
+          "state_command_count": 1,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 3,
+          "contexts": [
+            {
+              "profile": "review",
+              "status": "updated",
+              "reader": "independent-review",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 233,
+              "reused_lines": 0
+            }
+          ],
+          "additional_model_detected": false,
+          "answer_sha256": "d6e9d75fe4c0d7586e43b2f7dbb60cf2c83d83a3f9d3068baf3953c55bb07f3e"
+        }
+      ],
+      "checks": {
+        "target": "docs/evaluation-fixture.md",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": null,
+          "failures": null,
+          "errors": null,
+          "skipped": null
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "docs/evaluation-fixture.md",
+        "precheck_exit": 0,
+        "status": "passed",
+        "expected_regression_observed": false,
+        "junit": {
+          "tests": null,
+          "failures": null,
+          "errors": null,
+          "skipped": null,
+          "failed_cases": null
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [
+        "typo-author"
+      ],
+      "review_receipt_readers": [
+        "independent-review"
+      ],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "not_applicable",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "not_applicable",
+          "R10": "not_applicable",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 2845
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "D1-before-2",
+      "task": "D1",
+      "condition": "before",
+      "rep": 2,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 178.835,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 541715,
+        "cached_input_tokens": 452608,
+        "output_tokens": 6578
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 77.861,
+          "usage_records": 1,
+          "command_count": 6,
+          "returned_chars": 41590,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "d23e96c7d82d63ffd1a7a7645849dd5281f4743e72d96c243afc948f0d44bb14"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 100.65,
+          "usage_records": 1,
+          "command_count": 8,
+          "returned_chars": 62859,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 4,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "045c1cef18d4e91b913832c996d3cfe388fc962dd9450f4927ad79837d2ef23d"
+        }
+      ],
+      "checks": {
+        "target": "docs/evaluation-fixture.md",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": null,
+          "failures": null,
+          "errors": null,
+          "skipped": null
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "docs/evaluation-fixture.md",
+        "precheck_exit": 0,
+        "status": "passed",
+        "expected_regression_observed": false,
+        "junit": {
+          "tests": null,
+          "failures": null,
+          "errors": null,
+          "skipped": null,
+          "failed_cases": null
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "not_applicable",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "not_applicable",
+          "R10": "not_applicable",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 2859
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-after-2",
+      "task": "P1",
+      "condition": "after",
+      "rep": 2,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 231.477,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 658951,
+        "cached_input_tokens": 558848,
+        "output_tokens": 7827
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 103.966,
+          "usage_records": 1,
+          "command_count": 8,
+          "returned_chars": 65701,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "240ee3f0416191b5b0167684a18234271374f84cc4deeed2ddb23877f452529a"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 111.303,
+          "usage_records": 1,
+          "command_count": 8,
+          "returned_chars": 79002,
+          "state_command_count": 1,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [
+            {
+              "profile": "review",
+              "status": "updated",
+              "reader": "independent-heading-review-20261114",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 233,
+              "reused_lines": 0
+            }
+          ],
+          "additional_model_detected": false,
+          "answer_sha256": "d92547386851cf711791e5393489c13a643a25881804c943bc0b017e0605bddf"
+        }
+      ],
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "precheck_exit": 1,
+        "status": "failed",
+        "expected_regression_observed": true,
+        "junit": {
+          "tests": 12,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 0,
+          "failed_cases": [
+            "dev.orgmobile.reader.OrgParserTest.renders Japanese headings paragraphs and lists in order",
+            "dev.orgmobile.reader.OrgParserTest.flushes prose before a heading or list without a blank line",
+            "dev.orgmobile.reader.OrgParserTest.literal blocks preserve blank lines and resume parsing after mixed case end"
+          ]
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [
+        "independent-heading-review-20261114"
+      ],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "not_applicable",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 7237
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "P1-before-2",
+      "task": "P1",
+      "condition": "before",
+      "rep": 2,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 180.434,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 551524,
+        "cached_input_tokens": 444800,
+        "output_tokens": 5284
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 57.329,
+          "usage_records": 1,
+          "command_count": 7,
+          "returned_chars": 55077,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 3,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "0cc1b30f4dc11c5c822c54a599c66ca1647b4ae0f5b7a71bf7aa0d90c4a69ef9"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 106.736,
+          "usage_records": 1,
+          "command_count": 9,
+          "returned_chars": 81178,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 3,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "93cc010d8bd576f11dcf46d28dea8afbd7dc9d89cf2f9cdaeda4e1caca00bc7f"
+        }
+      ],
+      "checks": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+        "precheck_exit": 1,
+        "status": "failed",
+        "expected_regression_observed": true,
+        "junit": {
+          "tests": 12,
+          "failures": 3,
+          "errors": 0,
+          "skipped": 0,
+          "failed_cases": [
+            "dev.orgmobile.reader.OrgParserTest.renders Japanese headings paragraphs and lists in order",
+            "dev.orgmobile.reader.OrgParserTest.flushes prose before a heading or list without a blank line",
+            "dev.orgmobile.reader.OrgParserTest.literal blocks preserve blank lines and resume parsing after mixed case end"
+          ]
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "confirmed",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 5282
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "U1-after-2",
+      "task": "U1",
+      "condition": "after",
+      "rep": 2,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 243.173,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 791226,
+        "cached_input_tokens": 670592,
+        "output_tokens": 8020
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 91.238,
+          "usage_records": 1,
+          "command_count": 8,
+          "returned_chars": 115452,
+          "state_command_count": 2,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [
+            {
+              "profile": "change",
+              "status": "updated",
+              "reader": "cancellation-author",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 243,
+              "reused_lines": 0
+            },
+            {
+              "profile": "change",
+              "status": "updated",
+              "reader": "cancellation-author",
+              "refresh": "use --refresh if output was truncated or context was lost",
+              "emitted_lines": 168,
+              "reused_lines": 243
+            }
+          ],
+          "additional_model_detected": false,
+          "answer_sha256": "0d306ff5fd7c60049261d6680c69b7d73e72f4aeff5472e64fd541d82516deba"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 131.052,
+          "usage_records": 1,
+          "command_count": 23,
+          "returned_chars": 115054,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 4,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "7dfcc51e983523dd6e42f2839f88fb299a10cfc9a8b47650ed694a6de4a96b94"
+        }
+      ],
+      "checks": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "precheck_exit": 0,
+        "status": "passed",
+        "expected_regression_observed": false,
+        "junit": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "failed_cases": []
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [
+        "cancellation-author",
+        "cancellation-author"
+      ],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "not_applicable",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 7465
+      },
+      "cost_usd": null
+    },
+    {
+      "id": "U1-before-2",
+      "task": "U1",
+      "condition": "before",
+      "rep": 2,
+      "stage": "completed",
+      "failure_category": null,
+      "success": true,
+      "seconds": 232.122,
+      "reused_author_from": null,
+      "usage_complete": true,
+      "observed_tokens": {
+        "input_tokens": 648927,
+        "cached_input_tokens": 555648,
+        "output_tokens": 7474
+      },
+      "roles": [
+        {
+          "role": "author",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 92.926,
+          "usage_records": 1,
+          "command_count": 9,
+          "returned_chars": 99136,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 3,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "e00c490ecc9474091f3f7ad8dc5a7717d756a22d4eecfe1e40a4fe7c15b06e84"
+        },
+        {
+          "role": "reviewer",
+          "exit": 0,
+          "terminal_completed": true,
+          "process_exit_unobserved": false,
+          "seconds": 118.511,
+          "usage_records": 1,
+          "command_count": 10,
+          "returned_chars": 84533,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "help_command_count": 0,
+          "document_tool_mentions": 2,
+          "contexts": [],
+          "additional_model_detected": false,
+          "answer_sha256": "c80644468d124ce24fd651cc915f94116fb971b30fb1f0a7815bc378e051336f"
+        }
+      ],
+      "checks": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "scope_ok": true,
+        "expected_change": true,
+        "source_integrity": true,
+        "precheck_integrity": true,
+        "verification_exit": 0,
+        "post_summary": ".local/host-postcheck/summary.json",
+        "post_log": ".local/host-postcheck/command.log",
+        "junit": {
+          "tests": 80,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0
+        },
+        "CI": "not claimed for isolated trial",
+        "E2E": "not claimed; regression test addition only"
+      },
+      "precheck": {
+        "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+        "precheck_exit": 0,
+        "status": "passed",
+        "expected_regression_observed": false,
+        "junit": {
+          "tests": 7,
+          "failures": 0,
+          "errors": 0,
+          "skipped": 0,
+          "failed_cases": []
+        },
+        "summary": ".local/host-precheck/summary.json",
+        "log": ".local/host-precheck/command.log",
+        "retained_junit": ".local/precheck-junit",
+        "oracle_initially_unmet": true
+      },
+      "reviewer_immutable": true,
+      "independence_reference": null,
+      "independent_threads": true,
+      "author_receipt_readers": [],
+      "review_receipt_readers": [],
+      "review": {
+        "approved": true,
+        "checks": {
+          "R01": "confirmed",
+          "R02": "confirmed",
+          "R03": "confirmed",
+          "R04": "confirmed",
+          "R05": "not_applicable",
+          "R06": "confirmed",
+          "R07": "not_applicable",
+          "R08": "confirmed",
+          "R09": "confirmed",
+          "R10": "confirmed",
+          "R11": "confirmed",
+          "R12": "confirmed",
+          "R13": "confirmed",
+          "R14": "confirmed",
+          "R15": "not_applicable",
+          "R16": "confirmed",
+          "R17": "confirmed",
+          "R18": "confirmed",
+          "R19": "confirmed",
+          "R20": "confirmed",
+          "R21": "confirmed",
+          "R22": "not_applicable",
+          "R23": "not_applicable",
+          "R24": "confirmed",
+          "R25": "not_applicable",
+          "R26": "not_applicable",
+          "R27": "not_applicable",
+          "R28": "confirmed",
+          "R29": "confirmed",
+          "R30": "confirmed"
+        },
+        "findings_chars": 6347
+      },
+      "cost_usd": null
+    }
+  ],
+  "preparation_failures": [],
+  "usage_summary": {
+    "groups": [
+      {
+        "condition": "after",
+        "task_kind": "fixed-representative",
+        "revision": "59239be502475d40a42f65db7c2da14624deb98e",
+        "environment": "codex-cli 0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 6,
+        "successes": 6,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 4066639,
+          "cached_input_tokens": 3426048,
+          "output_tokens": 43712
+        },
+        "uncached_input_tokens": 640591,
+        "cache_ratio": 0.8424765512748981,
+        "input_tokens_per_success": 677773.1666666666,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 6,
+            "missing": 0,
+            "total": 1349.529,
+            "median": 231.488,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "D1-after-1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "P1-after-1",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "U1-after-1",
+            "task_id": "U1",
+            "success": true
+          },
+          {
+            "id": "D1-after-2",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "P1-after-2",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "U1-after-2",
+            "task_id": "U1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "before",
+        "task_kind": "fixed-representative",
+        "revision": "af4002adadf46d3f75f11f8dad5bdd9e1157bd41",
+        "environment": "codex-cli 0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 7,
+        "successes": 6,
+        "success_rate": 0.8571428571428571,
+        "usage_complete": false,
+        "observed_tokens": {
+          "input_tokens": 3589459,
+          "cached_input_tokens": 3001984,
+          "output_tokens": 42784
+        },
+        "uncached_input_tokens": null,
+        "cache_ratio": null,
+        "input_tokens_per_success": null,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 6,
+            "missing": 1,
+            "total": null,
+            "median": null,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "D1-before-1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "P1-before-1",
+            "task_id": "P1",
+            "success": false
+          },
+          {
+            "id": "P1-before-1-retry",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "U1-before-1",
+            "task_id": "U1",
+            "success": true
+          },
+          {
+            "id": "D1-before-2",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "P1-before-2",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "U1-before-2",
+            "task_id": "U1",
+            "success": true
+          }
+        ]
+      }
+    ]
+  },
+  "usage_by_task": {
+    "groups": [
+      {
+        "condition": "after",
+        "task_kind": "D1",
+        "revision": "59239be502475d40a42f65db7c2da14624deb98e",
+        "environment": "codex-cli 0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 1228496,
+          "cached_input_tokens": 1047680,
+          "output_tokens": 12334
+        },
+        "uncached_input_tokens": 180816,
+        "cache_ratio": 0.8528151495812766,
+        "input_tokens_per_success": 614248.0,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 357.80899999999997,
+            "median": 178.90449999999998,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "D1-after-1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "D1-after-2",
+            "task_id": "D1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "after",
+        "task_kind": "P1",
+        "revision": "59239be502475d40a42f65db7c2da14624deb98e",
+        "environment": "codex-cli 0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 1360776,
+          "cached_input_tokens": 1151488,
+          "output_tokens": 16658
+        },
+        "uncached_input_tokens": 209288,
+        "cache_ratio": 0.8461995214495258,
+        "input_tokens_per_success": 680388.0,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 517.048,
+            "median": 258.524,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "P1-after-1",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "P1-after-2",
+            "task_id": "P1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "after",
+        "task_kind": "U1",
+        "revision": "59239be502475d40a42f65db7c2da14624deb98e",
+        "environment": "codex-cli 0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 1477367,
+          "cached_input_tokens": 1226880,
+          "output_tokens": 14720
+        },
+        "uncached_input_tokens": 250487,
+        "cache_ratio": 0.8304503891043999,
+        "input_tokens_per_success": 738683.5,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 474.672,
+            "median": 237.336,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "U1-after-1",
+            "task_id": "U1",
+            "success": true
+          },
+          {
+            "id": "U1-after-2",
+            "task_id": "U1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "before",
+        "task_kind": "D1",
+        "revision": "af4002adadf46d3f75f11f8dad5bdd9e1157bd41",
+        "environment": "codex-cli 0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 1169726,
+          "cached_input_tokens": 983680,
+          "output_tokens": 13384
+        },
+        "uncached_input_tokens": 186046,
+        "cache_ratio": 0.840949076963323,
+        "input_tokens_per_success": 584863.0,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 378.366,
+            "median": 189.183,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "D1-before-1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "D1-before-2",
+            "task_id": "D1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "before",
+        "task_kind": "P1",
+        "revision": "af4002adadf46d3f75f11f8dad5bdd9e1157bd41",
+        "environment": "codex-cli 0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 3,
+        "successes": 2,
+        "success_rate": 0.6666666666666666,
+        "usage_complete": false,
+        "observed_tokens": {
+          "input_tokens": 1159414,
+          "cached_input_tokens": 948352,
+          "output_tokens": 13455
+        },
+        "uncached_input_tokens": null,
+        "cache_ratio": null,
+        "input_tokens_per_success": null,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 1,
+            "total": null,
+            "median": null,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "P1-before-1",
+            "task_id": "P1",
+            "success": false
+          },
+          {
+            "id": "P1-before-1-retry",
+            "task_id": "P1",
+            "success": true
+          },
+          {
+            "id": "P1-before-2",
+            "task_id": "P1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "before",
+        "task_kind": "U1",
+        "revision": "af4002adadf46d3f75f11f8dad5bdd9e1157bd41",
+        "environment": "codex-cli 0.166.0 JDK17.0.21 SDK37 Gradle9.4.1",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-agent",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 1260319,
+          "cached_input_tokens": 1069952,
+          "output_tokens": 15945
+        },
+        "uncached_input_tokens": 190367,
+        "cache_ratio": 0.8489533205482104,
+        "input_tokens_per_success": 630159.5,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 491.784,
+            "median": 245.892,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "U1-before-1",
+            "task_id": "U1",
+            "success": true
+          },
+          {
+            "id": "U1-before-2",
+            "task_id": "U1",
+            "success": true
+          }
+        ]
+      }
+    ]
+  },
+  "planned_slots": 12,
+  "attempted_slots": 12,
+  "attempt_records": 13,
+  "unstarted_slots": 0,
+  "model_role_count": 25,
+  "all_task_sources_and_protocols_audited": true,
+  "actual_cost_usd": null,
+  "limits": [
+    "fresh cohort; never pool with previous direct/bounded or verbosity trials",
+    "public git archives; shared app/task source identical; workflow/tool changes are the intervention",
+    "cache state/service latency uncontrolled; alternating order and two repetitions are a limited pilot",
+    "setup, report writing and final overall review usage unmeasured and outside trial",
+    "actual billed costs unavailable; do not substitute API prices"
+  ],
+  "audit": {
+    "source_cases": 12,
+    "method": "archive bytes, recorded host integrity checks, JUnit, all executed command logs and prompt hashes",
+    "retry_record": "reconstructed from completed event, answer and read-only command audit; process exit and duration unobserved",
+    "unmeasured": [
+      "actual cost",
+      "outer preparation, orchestration and final review usage",
+      "complete P1-before input",
+      "complete P1-before completion time",
+      "source_chars across all read mechanisms",
+      "first edit tokens",
+      "p95"
+    ]
+  },
+  "comparisons": {
+    "D1": {
+      "before_input_per_success": 584863.0,
+      "after_input_per_success": 614248.0,
+      "input_change_percent": 5.024253543137447,
+      "completion_median_change_percent": -5.433099168529942
+    },
+    "P1": {
+      "before_input_per_success": null,
+      "after_input_per_success": 680388.0,
+      "input_change_percent": null,
+      "completion_median_change_percent": null
+    },
+    "U1": {
+      "before_input_per_success": 630159.5,
+      "after_input_per_success": 738683.5,
+      "input_change_percent": 17.22167165614419,
+      "completion_median_change_percent": -3.479576399394846
+    }
+  },
+  "decision": {
+    "result": "trial-continuation",
+    "scope": "optional helper retained; no claim of whole-task token reduction or mandatory use",
+    "next_review": "maintainer: next 3 comparable development tasks or 2026-11 month end, whichever first; no automatic run configured"
+  }
+}

@@ -1,0 +1,140 @@
+{
+  "purpose": "token efficiency of actual isolated edit, host verification and independent review before/after the five-file context retrieval improvement",
+  "versions": {
+    "before": "af4002adadf46d3f75f11f8dad5bdd9e1157bd41",
+    "after": "59239be502475d40a42f65db7c2da14624deb98e"
+  },
+  "changed_files": [
+    "docs/development-workflow.md",
+    "docs/notes/codex-adoption-recommendations.md",
+    "docs/verification/2026-11-14-context-read-reuse.md",
+    "scripts/document_tools.py",
+    "scripts/tests/test_agent_tools.py"
+  ],
+  "intervention": "combined document_tools batching/receipt and workflow guidance; not an isolated flag effect",
+  "tasks": {
+    "D1": {
+      "target": "docs/evaluation-fixture.md",
+      "description": "Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link."
+    },
+    "P1": {
+      "target": "app/src/main/java/dev/orgmobile/reader/OrgParser.kt",
+      "description": "OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt."
+    },
+    "U1": {
+      "target": "app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt",
+      "description": "In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI."
+    }
+  },
+  "D1_fixture": "# 検証\n結果を確認しましす。\n[作業指示](../AGENTS.md)\n",
+  "prompts": {
+    "D1-author": {
+      "text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nTask: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nThe host verifier already ran the pre-edit check; inspect .local/precheck.json and relevant source/tests. The host runs the mandatory post-edit checks after your handoff and before independent review. Do not run Gradle or repeat full verification yourself. Change only docs/evaluation-fixture.md. Optional notes and your own supported instruction-delivery receipt must stay under .local/. Return a brief handoff; do not claim independent review complete.",
+      "sha256": "2eac43f46fe8625af529e9d915d988bfda66192ac5fec036e085b3d6c10dab05"
+    },
+    "D1-review": {
+      "text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nIndependent review task: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nRead git diff HEAD, .local/evaluation-check.json, relevant source/tests and recorded results directly. The host ran the checks; distinguish its execution from your own inspection. Do not run Gradle or alter tracked sources, verifier files or generated reports. You may create only your own .local/ instruction-delivery receipt when supported; never reuse the author’s receipt. The host checks source and verifier artifact hashes after review. Apply all R01-R30 and return approved/checks/findings JSON, with reasons, evidence and scope in findings. Approve only if this local task has no must-fix issues and local verification is valid. Remote CI, physical devices and E2E are outside these isolated task trials and are not passed by this review.",
+      "sha256": "ab6bdc2365bfe004d6bf01653bf2d4361dbbcbe8199e506dc2151704b0a3780b"
+    },
+    "P1-author": {
+      "text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nTask: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nThe host verifier already ran the pre-edit check; inspect .local/precheck.json and relevant source/tests. The host runs the mandatory post-edit checks after your handoff and before independent review. Do not run Gradle or repeat full verification yourself. Change only app/src/main/java/dev/orgmobile/reader/OrgParser.kt. Optional notes and your own supported instruction-delivery receipt must stay under .local/. Return a brief handoff; do not claim independent review complete.",
+      "sha256": "e7342c99125e7aafc63ccd843a7cf4da4ec4ceef23417d7fbb8bca94d99862a6"
+    },
+    "P1-review": {
+      "text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nIndependent review task: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nRead git diff HEAD, .local/evaluation-check.json, relevant source/tests and recorded results directly. The host ran the checks; distinguish its execution from your own inspection. Do not run Gradle or alter tracked sources, verifier files or generated reports. You may create only your own .local/ instruction-delivery receipt when supported; never reuse the author’s receipt. The host checks source and verifier artifact hashes after review. Apply all R01-R30 and return approved/checks/findings JSON, with reasons, evidence and scope in findings. Approve only if this local task has no must-fix issues and local verification is valid. Remote CI, physical devices and E2E are outside these isolated task trials and are not passed by this review.",
+      "sha256": "4827aeb46f6e9688de2e154d63e67b49eebbda32f4af2a6ab1d0e5a5ae7a48bd"
+    },
+    "U1-author": {
+      "text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nTask: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nThe host verifier already ran the pre-edit check; inspect .local/precheck.json and relevant source/tests. The host runs the mandatory post-edit checks after your handoff and before independent review. Do not run Gradle or repeat full verification yourself. Change only app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt. Optional notes and your own supported instruction-delivery receipt must stay under .local/. Return a brief handoff; do not claim independent review complete.",
+      "sha256": "2cd857eba6297d3b6a061979ade62650647b1c63e087b3ce82414cc48240544e"
+    },
+    "U1-review": {
+      "text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nIndependent review task: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nRead git diff HEAD, .local/evaluation-check.json, relevant source/tests and recorded results directly. The host ran the checks; distinguish its execution from your own inspection. Do not run Gradle or alter tracked sources, verifier files or generated reports. You may create only your own .local/ instruction-delivery receipt when supported; never reuse the author’s receipt. The host checks source and verifier artifact hashes after review. Apply all R01-R30 and return approved/checks/findings JSON, with reasons, evidence and scope in findings. Approve only if this local task has no must-fix issues and local verification is valid. Remote CI, physical devices and E2E are outside these isolated task trials and are not passed by this review.",
+      "sha256": "13158684c073e3f22a8b840b07d9f00037274dc12a77919ace486da246283be0"
+    }
+  },
+  "order": [
+    "D1-before-1",
+    "D1-after-1",
+    "P1-before-1",
+    "P1-after-1",
+    "U1-before-1",
+    "U1-after-1",
+    "D1-after-2",
+    "D1-before-2",
+    "P1-after-2",
+    "P1-before-2",
+    "U1-after-2",
+    "U1-before-2"
+  ],
+  "repetitions": 2,
+  "max_model_roles": 24,
+  "role_timeout_seconds": 240,
+  "model": "gpt-6.1-sol",
+  "reasoning_effort": "high",
+  "verbosity": "medium",
+  "cli_version": "codex-cli 0.166.0",
+  "role_sandbox": "workspace-write for both roles; review may write its own receipt only; source/artifact immutability checked",
+  "baseline_checks": {
+    "D1": "document_tools check; fixed typo oracle initially unmet",
+    "P1": "focused OrgParserTest must produce JUnit assertion failures from seeded regression",
+    "U1": "focused MainActivityTest must pass before test assertion addition"
+  },
+  "post_checks": {
+    "D1": "document_tools check and exact whole-file oracle",
+    "P1": "run_check: --no-build-cache --rerun-tasks check assembleDebug; fresh JUnit/Lint; original parser source equality",
+    "U1": "run_check: --no-build-cache --rerun-tasks check assembleDebug; fresh JUnit/Lint; assertion insertion and original lines retained"
+  },
+  "success": "fixed target scope, oracle, post checks, complete independent local review, no extra model, reviewer source/artifact immutability; not integration/device E2E success",
+  "adoption": "same success quality; >=10% lower total input per local success; completion median <=120% baseline; all roles and failures observable; do not silently adopt settings",
+  "stop": "first model access/execution/timeout error, missing usage, nested model or protocol violation; keep failures and unstarted slots; no authentication/payment/model workaround",
+  "metrics": [
+    "all-role input/cached input/output",
+    "input per local success only when complete",
+    "completion seconds including precheck, author, postcheck and review",
+    "shell command count and returned output chars; not unique source chars or model request count"
+  ],
+  "scope_limits": [
+    "fresh cohort; never pool with previous direct/bounded or verbosity trials",
+    "public git archives; shared app/task source identical; workflow/tool changes are the intervention",
+    "cache state/service latency uncontrolled; alternating order and two repetitions are a limited pilot",
+    "setup, report writing and final overall review usage unmeasured and outside trial",
+    "actual billed costs unavailable; do not substitute API prices"
+  ],
+  "cost_usd": null,
+  "build_verification_policy": "host uses --no-build-cache --rerun-tasks with fresh JUnit/Lint collection; dependency download caches remain shared",
+  "review_immutability": "author may change only target; precheck evidence sealed before author; tracked source, verifier files and generated reports sealed before reviewer",
+  "timing": "whole trial includes host precheck, author, host postcheck and reviewer; archive/init and final overall review outside trial",
+  "resumption": {
+    "reason": "explicit user request to resume after original P1-before-1 reviewer usage-limit failure",
+    "max_new_roles": 19,
+    "first_role": "same-source reviewer retry, author/checks reused without double-counting",
+    "remaining_slots": [
+      "P1-after-1",
+      "U1-before-1",
+      "U1-after-1",
+      "D1-after-2",
+      "D1-before-2",
+      "P1-after-2",
+      "P1-before-2",
+      "U1-after-2",
+      "U1-before-2"
+    ],
+    "settings": "identical model/effort/verbosity/prompts/versions/role timeout",
+    "stop": "stop after first access/execution/usage failure; preserve original and retry failures; no model/auth/payment workaround",
+    "accounting": "original failed attempt remains separate, with missing usage; no total reduction claimed for incomplete groups",
+    "record_recovery": {
+      "cause": "The orchestrator overwrote the completed retry record while checking completion; restored from saved events, answer and public-source checks.",
+      "retained": [
+        "turn.completed usage",
+        "independent review answer R01-R30",
+        "original usage-limit failure"
+      ],
+      "unobserved": [
+        "retry subprocess exit code",
+        "retry duration"
+      ],
+      "accounting": "Count only additional reviewer usage. Do not replace original missing usage or infer time. Read-only reviewer commands audited separately."
+    }
+  }
+}
