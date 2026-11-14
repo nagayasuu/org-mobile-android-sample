@@ -1,6 +1,8 @@
 """CLI acceptance tests with public synthetic documents and reports."""
 
 import hashlib
+import importlib.util
+import io
 import json
 import os
 from pathlib import Path
@@ -9,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 
 SCRIPTS = Path(__file__).resolve().parents[1]
@@ -95,6 +98,206 @@ class AgentToolsTest(unittest.TestCase):
                 result = self.docs('context', 'change', *(['--max-chars', '10'] if failure == 'limit' else []))
                 self.assertNotEqual(0, result.returncode)
                 self.assertEqual('', result.stdout)
+
+    def context_state_fixture(self):
+        self.context_fixture()
+        subprocess.run(['git', 'init', '-q', str(self.root)], check=True)
+        self.write('.gitignore', '.local/\n')
+
+    def cached_context(self, *args, reader='task-author'):
+        return self.docs('context', 'change', '--state', '.local/context.json',
+                         '--reader', reader, *args)
+
+    def test_context_includes_multiple_documents_and_deduplicates_overlapping_sections(self):
+        self.context_fixture()
+        self.write('extra.md', '# Extra\nPARENT\n## Child\nCHILD\n')
+        result = self.docs('context', 'change',
+                           '--include', 'docs/development-workflow.md', '対象固有の節', 'review-checklist',
+                           '--include', 'extra.md', 'Extra', 'Child',
+                           '--include', 'extra.md', 'Child')
+        self.assertEqual(0, result.returncode, result.stderr)
+        for marker in ['UNRELATED_SECTION', 'PARENT', 'CHILD', 'R01: criterion', 'R30: criterion']:
+            self.assertEqual(1, result.stdout.count(marker), marker)
+        self.assertEqual(4, len(json.loads(result.stdout.splitlines()[0])['documents']))
+
+    def test_context_receipt_reuses_only_delivered_ranges_and_expands_without_repeating(self):
+        self.context_state_fixture()
+        self.write('extra.md', '# Extra\n## First\nFIRST_BODY\n' + 'X' * 6000 + '\n## Second\nSECOND_BODY\n')
+        first = self.cached_context('--include', 'extra.md', 'First')
+        self.assertEqual(0, first.returncode, first.stderr)
+        state = self.root / '.local/context.json'
+        saved = state.read_bytes()
+        self.assertNotIn(b'FIRST_BODY', saved)
+        again = self.cached_context('--include', 'extra.md', 'First', '--max-chars', '4000')
+        self.assertEqual(0, again.returncode, again.stderr)
+        self.assertEqual('unchanged', json.loads(again.stdout)['status'])
+        self.assertNotIn('AGENT_MARKER', again.stdout)
+        self.assertNotIn('FIRST_BODY', again.stdout)
+        self.assertEqual(saved, state.read_bytes())
+        expanded = self.cached_context('--include', 'extra.md', 'Extra')
+        self.assertEqual(0, expanded.returncode, expanded.stderr)
+        self.assertIn('SECOND_BODY', expanded.stdout)
+        self.assertNotIn('FIRST_BODY', expanded.stdout)
+        self.assertNotIn('AGENT_MARKER', expanded.stdout)
+
+    def test_context_changed_file_invalidates_all_its_old_ranges(self):
+        self.context_state_fixture()
+        source = self.write('extra.md', '# Extra\n## First\nFIRST_BODY\n## Second\nOLD_BODY\n')
+        self.assertEqual(0, self.cached_context('--include', 'extra.md', 'Extra').returncode)
+        source.write_text(source.read_text() + 'NEW_BODY\n')
+        result = self.cached_context('--include', 'extra.md', 'First')
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn('FIRST_BODY', result.stdout)
+        self.assertNotIn('AGENT_MARKER', result.stdout)
+        result = self.cached_context('--include', 'extra.md', 'Second')
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertIn('OLD_BODY', result.stdout)
+        self.assertIn('NEW_BODY', result.stdout)
+
+    def test_context_public_symlink_alias_is_deduplicated_and_receipt_remains_reusable(self):
+        self.context_state_fixture()
+        target = self.write('docs/shared.md', '# Instructions\nAGENT_MARKER\n')
+        (self.root / 'AGENTS.md').unlink()
+        (self.root / 'AGENTS.md').symlink_to(target)
+        first = self.cached_context('--include', 'docs/shared.md', 'Instructions')
+        self.assertEqual(0, first.returncode, first.stderr)
+        self.assertEqual(1, first.stdout.count('AGENT_MARKER'))
+        again = self.cached_context('--include', 'AGENTS.md', 'Instructions')
+        self.assertEqual(0, again.returncode, again.stderr)
+        self.assertEqual('unchanged', json.loads(again.stdout)['status'])
+
+    def test_context_refresh_and_independent_reader_do_not_trust_previous_delivery(self):
+        self.context_state_fixture()
+        self.assertEqual(0, self.cached_context().returncode)
+        state = self.root / '.local/context.json'
+        before = state.read_bytes()
+        other = self.cached_context(reader='task-reviewer')
+        self.assertNotEqual(0, other.returncode)
+        self.assertEqual('', other.stdout)
+        self.assertEqual(before, state.read_bytes())
+        refreshed = self.cached_context('--refresh')
+        self.assertEqual(0, refreshed.returncode, refreshed.stderr)
+        self.assertIn('AGENT_MARKER', refreshed.stdout)
+        self.assertIn('R30: criterion', refreshed.stdout)
+
+    def test_context_errors_are_atomic_for_receipt_and_all_includes(self):
+        self.context_state_fixture()
+        self.assertEqual(0, self.cached_context().returncode)
+        state = self.root / '.local/context.json'
+        before = state.read_bytes()
+        self.write('ambiguous.md', '# Same\nONE\n# Same\nTWO\n')
+        self.write('bad.md', '# Bad\n').write_bytes(b'\xff')
+        for options in [('--include', 'missing.md', 'Missing'),
+                        ('--include', 'ambiguous.md', 'Same'),
+                        ('--include', 'bad.md', 'Bad'),
+                        ('--include', '.local/private.md', 'Secret'),
+                        ('--include', 'extra.md'), ('--max-chars', '10')]:
+            with self.subTest(options=options):
+                result = self.cached_context(*options)
+                self.assertNotEqual(0, result.returncode)
+                self.assertEqual('', result.stdout)
+                self.assertEqual(before, state.read_bytes())
+        (self.root / 'docs/git-workflow.md').unlink()
+        result = self.cached_context()
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual('', result.stdout)
+        self.assertEqual(before, state.read_bytes())
+
+    def test_context_rejects_malformed_receipts_and_nonlocal_or_tracked_state(self):
+        self.context_state_fixture()
+        self.assertEqual(0, self.cached_context().returncode)
+        state = self.root / '.local/context.json'
+        original = json.loads(state.read_text())
+        for damaged in ['{', json.dumps({**original, 'version': True}),
+                        json.dumps({**original, 'documents': [{'path': '.local/secret.md'}]})]:
+            with self.subTest(damaged=damaged):
+                state.write_text(damaged)
+                result = self.cached_context()
+                self.assertNotEqual(0, result.returncode)
+                self.assertEqual('', result.stdout)
+                self.assertEqual(damaged, state.read_text())
+        state.write_text(json.dumps(original))
+        for value in ['outside.json', '../outside.json', '.git/context.json']:
+            result = self.docs('context', 'change', '--state', value, '--reader', 'task-author')
+            self.assertNotEqual(0, result.returncode)
+            self.assertEqual('', result.stdout)
+        subprocess.run(['git', '-C', str(self.root), 'add', '-f', '.local/context.json'], check=True)
+        result = self.cached_context()
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual('', result.stdout)
+
+    def test_context_new_required_section_and_invalid_coverage_are_not_silently_skipped(self):
+        self.context_state_fixture()
+        review = self.docs('context', 'review', '--state', '.local/context.json', '--reader', 'task-author')
+        self.assertEqual(0, review.returncode, review.stderr)
+        change = self.cached_context()
+        self.assertEqual(0, change.returncode, change.stderr)
+        self.assertIn('CHANGE_STEPS', change.stdout)
+        self.assertNotIn('R30: criterion', change.stdout)
+        state = self.root / '.local/context.json'
+        record = json.loads(state.read_text())
+        record['documents'][0]['ranges'] = [[1, 999999]]
+        state.write_text(json.dumps(record))
+        before = state.read_bytes()
+        rejected = self.cached_context()
+        self.assertNotEqual(0, rejected.returncode)
+        self.assertEqual('', rejected.stdout)
+        self.assertEqual(before, state.read_bytes())
+
+    def test_context_state_rejects_symlink_escape_and_requires_explicit_scope_and_ignore(self):
+        self.context_state_fixture()
+        self.write('safe.json', 'SENTINEL')
+        (self.root / '.local').mkdir()
+        (self.root / '.local/state.json').symlink_to(self.root / 'safe.json')
+        result = self.docs('context', 'change', '--state', '.local/state.json', '--reader', 'task-author')
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual('', result.stdout)
+        self.assertEqual('SENTINEL', (self.root / 'safe.json').read_text())
+        for options in [('--state', '.local/new.json'), ('--reader', 'task-author'), ('--refresh',)]:
+            result = self.docs('context', 'change', *options)
+            self.assertNotEqual(0, result.returncode)
+            self.assertEqual('', result.stdout)
+        (self.root / '.gitignore').write_text('')
+        result = self.cached_context()
+        self.assertNotEqual(0, result.returncode)
+        self.assertEqual('', result.stdout)
+
+    def test_context_receipt_is_not_advanced_if_stdout_write_or_flush_fails(self):
+        self.context_state_fixture()
+        self.assertEqual(0, self.cached_context().returncode)
+        state = self.root / '.local/context.json'
+        before = state.read_bytes()
+        self.write('extra.md', '# Extra\nNEW_BODY\n')
+        spec = importlib.util.spec_from_file_location('context_delivery_test', SCRIPTS / 'document_tools.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        for stage in ['write', 'flush']:
+            stream = mock.Mock()
+            getattr(stream, stage).side_effect = BrokenPipeError('consumer closed')
+            with self.subTest(stage=stage), mock.patch.object(module.sys, 'stdout', stream):
+                with self.assertRaises(BrokenPipeError):
+                    module.context(module.Repository(self.root), 'change', 24000,
+                                   [('extra.md', 'Extra')], '.local/context.json', 'task-author')
+            self.assertEqual(before, state.read_bytes())
+
+    def test_context_receipt_replace_failure_is_reported_without_advancing_state(self):
+        self.context_state_fixture()
+        self.assertEqual(0, self.cached_context().returncode)
+        state = self.root / '.local/context.json'
+        before = state.read_bytes()
+        self.write('extra.md', '# Extra\nNEW_BODY\n')
+        spec = importlib.util.spec_from_file_location('context_replace_test', SCRIPTS / 'document_tools.py')
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        output = io.StringIO()
+        with mock.patch.object(module.sys, 'stdout', output), \
+                mock.patch.object(module.os, 'replace', side_effect=PermissionError('replace denied')):
+            with self.assertRaises(PermissionError):
+                module.context(module.Repository(self.root), 'change', 24000,
+                               [('extra.md', 'Extra')], '.local/context.json', 'task-author')
+        self.assertIn('NEW_BODY', output.getvalue())
+        self.assertEqual(before, state.read_bytes())
+        self.assertEqual([state], list(state.parent.iterdir()))
 
     def run_check(self, body, *args):
         return subprocess.run(
