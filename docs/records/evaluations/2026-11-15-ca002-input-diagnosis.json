@@ -1,0 +1,510 @@
+{
+  "scope": "offline analysis of public aggregates; no new model trials; cohorts kept separate",
+  "sources": {
+    "2026-11-13-adoption-remaining-results.json": "6d840117723550a220d56d45b9c1c4364085e3b808467eecc507db128e712c2a",
+    "2026-11-14-context-token-results.json": "31a54e498c03902bae0bde4736d27b837be265c0b447c12f654edb75c01cf143",
+    "2026-11-14-context-token-protocol.json": "724d3aca1f62ae41ce1122b903e4fa9347388e266e177f17166eadf0e2ba1f43"
+  },
+  "cohort_2026_11_13": [
+    {
+      "task": "D1",
+      "condition": "direct",
+      "attempts": 2,
+      "successes": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 809770,
+      "input_per_success": 404885.0,
+      "completion_median_seconds": 110.1085,
+      "cost_usd": null,
+      "roles": [
+        {
+          "role": "author",
+          "command_count": 10,
+          "helper_invocations": {},
+          "input_tokens": null,
+          "returned_chars": null
+        },
+        {
+          "role": "reviewer",
+          "command_count": 25,
+          "helper_invocations": {},
+          "input_tokens": null,
+          "returned_chars": null
+        }
+      ]
+    },
+    {
+      "task": "D1",
+      "condition": "bounded",
+      "attempts": 2,
+      "successes": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 933358,
+      "input_per_success": 466679.0,
+      "completion_median_seconds": 112.1115,
+      "cost_usd": null,
+      "roles": [
+        {
+          "role": "author",
+          "command_count": 26,
+          "helper_invocations": {
+            "read_excerpt": 3,
+            "run_check": 3,
+            "document_tools": 4
+          },
+          "input_tokens": null,
+          "returned_chars": null
+        },
+        {
+          "role": "reviewer",
+          "command_count": 36,
+          "helper_invocations": {
+            "document_tools": 5,
+            "read_excerpt": 4
+          },
+          "input_tokens": null,
+          "returned_chars": null
+        }
+      ]
+    },
+    {
+      "task": "P1",
+      "condition": "direct",
+      "attempts": 2,
+      "successes": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 1503006,
+      "input_per_success": 751503.0,
+      "completion_median_seconds": 196.531,
+      "cost_usd": null,
+      "roles": [
+        {
+          "role": "author",
+          "command_count": 23,
+          "helper_invocations": {},
+          "input_tokens": null,
+          "returned_chars": null
+        },
+        {
+          "role": "reviewer",
+          "command_count": 66,
+          "helper_invocations": {},
+          "input_tokens": null,
+          "returned_chars": null
+        }
+      ]
+    },
+    {
+      "task": "P1",
+      "condition": "bounded",
+      "attempts": 2,
+      "successes": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 1852690,
+      "input_per_success": 926345.0,
+      "completion_median_seconds": 216.942,
+      "cost_usd": null,
+      "roles": [
+        {
+          "role": "author",
+          "command_count": 40,
+          "helper_invocations": {
+            "read_excerpt": 11,
+            "run_check": 5,
+            "document_tools": 10
+          },
+          "input_tokens": null,
+          "returned_chars": null
+        },
+        {
+          "role": "reviewer",
+          "command_count": 74,
+          "helper_invocations": {
+            "read_excerpt": 18,
+            "run_check": 1,
+            "document_tools": 8
+          },
+          "input_tokens": null,
+          "returned_chars": null
+        }
+      ]
+    },
+    {
+      "task": "U1",
+      "condition": "direct",
+      "attempts": 3,
+      "successes": 2,
+      "usage_complete": false,
+      "observed_input_tokens": 964963,
+      "input_per_success": null,
+      "completion_median_seconds": 128.908,
+      "cost_usd": null,
+      "roles": [
+        {
+          "role": "author",
+          "command_count": 16,
+          "helper_invocations": {},
+          "input_tokens": null,
+          "returned_chars": null
+        },
+        {
+          "role": "reviewer",
+          "command_count": 48,
+          "helper_invocations": {},
+          "input_tokens": null,
+          "returned_chars": null
+        }
+      ]
+    },
+    {
+      "task": "U1",
+      "condition": "bounded",
+      "attempts": 2,
+      "successes": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 1298179,
+      "input_per_success": 649089.5,
+      "completion_median_seconds": 162.3655,
+      "cost_usd": null,
+      "roles": [
+        {
+          "role": "author",
+          "command_count": 21,
+          "helper_invocations": {
+            "document_tools": 7,
+            "read_excerpt": 5,
+            "run_check": 4
+          },
+          "input_tokens": null,
+          "returned_chars": null
+        },
+        {
+          "role": "reviewer",
+          "command_count": 55,
+          "helper_invocations": {
+            "document_tools": 7,
+            "read_excerpt": 14
+          },
+          "input_tokens": null,
+          "returned_chars": null
+        }
+      ]
+    }
+  ],
+  "cohort_2026_11_14": [
+    {
+      "task": "D1",
+      "condition": "before",
+      "attempt_records": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 1169726,
+      "roles": [
+        {
+          "role": "author",
+          "role_records": 2,
+          "command_count": 13,
+          "returned_chars": 102842,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "context_records": 0,
+          "receipt_context_records": 0,
+          "emitted_lines": 0,
+          "reused_lines": 0,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        },
+        {
+          "role": "reviewer",
+          "role_records": 2,
+          "command_count": 15,
+          "returned_chars": 130223,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "context_records": 1,
+          "receipt_context_records": 0,
+          "emitted_lines": null,
+          "reused_lines": null,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        }
+      ]
+    },
+    {
+      "task": "D1",
+      "condition": "after",
+      "attempt_records": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 1228496,
+      "roles": [
+        {
+          "role": "author",
+          "role_records": 2,
+          "command_count": 19,
+          "returned_chars": 99849,
+          "state_command_count": 1,
+          "refresh_command_count": 0,
+          "context_records": 1,
+          "receipt_context_records": 1,
+          "emitted_lines": 243,
+          "reused_lines": 0,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        },
+        {
+          "role": "reviewer",
+          "role_records": 2,
+          "command_count": 19,
+          "returned_chars": 142699,
+          "state_command_count": 1,
+          "refresh_command_count": 0,
+          "context_records": 1,
+          "receipt_context_records": 1,
+          "emitted_lines": 233,
+          "reused_lines": 0,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        }
+      ]
+    },
+    {
+      "task": "P1",
+      "condition": "before",
+      "attempt_records": 3,
+      "usage_complete": false,
+      "observed_input_tokens": 1159414,
+      "roles": [
+        {
+          "role": "author",
+          "role_records": 2,
+          "command_count": 14,
+          "returned_chars": 107364,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "context_records": 0,
+          "receipt_context_records": 0,
+          "emitted_lines": 0,
+          "reused_lines": 0,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        },
+        {
+          "role": "reviewer",
+          "role_records": 3,
+          "command_count": 18,
+          "returned_chars": 159015,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "context_records": 0,
+          "receipt_context_records": 0,
+          "emitted_lines": 0,
+          "reused_lines": 0,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        }
+      ]
+    },
+    {
+      "task": "P1",
+      "condition": "after",
+      "attempt_records": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 1360776,
+      "roles": [
+        {
+          "role": "author",
+          "role_records": 2,
+          "command_count": 16,
+          "returned_chars": 150532,
+          "state_command_count": 3,
+          "refresh_command_count": 1,
+          "context_records": 3,
+          "receipt_context_records": 3,
+          "emitted_lines": 613,
+          "reused_lines": 243,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        },
+        {
+          "role": "reviewer",
+          "role_records": 2,
+          "command_count": 19,
+          "returned_chars": 164559,
+          "state_command_count": 3,
+          "refresh_command_count": 0,
+          "context_records": 3,
+          "receipt_context_records": 3,
+          "emitted_lines": 567,
+          "reused_lines": 233,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        }
+      ]
+    },
+    {
+      "task": "U1",
+      "condition": "before",
+      "attempt_records": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 1260319,
+      "roles": [
+        {
+          "role": "author",
+          "role_records": 2,
+          "command_count": 19,
+          "returned_chars": 192823,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "context_records": 0,
+          "receipt_context_records": 0,
+          "emitted_lines": 0,
+          "reused_lines": 0,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        },
+        {
+          "role": "reviewer",
+          "role_records": 2,
+          "command_count": 22,
+          "returned_chars": 168533,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "context_records": 0,
+          "receipt_context_records": 0,
+          "emitted_lines": 0,
+          "reused_lines": 0,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        }
+      ]
+    },
+    {
+      "task": "U1",
+      "condition": "after",
+      "attempt_records": 2,
+      "usage_complete": true,
+      "observed_input_tokens": 1477367,
+      "roles": [
+        {
+          "role": "author",
+          "role_records": 2,
+          "command_count": 16,
+          "returned_chars": 176774,
+          "state_command_count": 5,
+          "refresh_command_count": 0,
+          "context_records": 4,
+          "receipt_context_records": 4,
+          "emitted_lines": 799,
+          "reused_lines": 486,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        },
+        {
+          "role": "reviewer",
+          "role_records": 2,
+          "command_count": 41,
+          "returned_chars": 218011,
+          "state_command_count": 0,
+          "refresh_command_count": 0,
+          "context_records": 0,
+          "receipt_context_records": 0,
+          "emitted_lines": 0,
+          "reused_lines": 0,
+          "input_tokens": null,
+          "read_command_count": null,
+          "metadata_chars": null,
+          "direct_read_overlap_chars": null
+        }
+      ]
+    }
+  ],
+  "single_factor_static_comparison": {
+    "factor": "remove only repeated source-selection/reuse instructions from handoff; retain help guidance",
+    "old": "Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls.",
+    "new": "Avoid unnecessary help calls.",
+    "variants": [
+      {
+        "id": "D1-author",
+        "before_chars": 1083,
+        "after_chars": 996,
+        "removed_chars": 87,
+        "before_sha256": "2eac43f46fe8625af529e9d915d988bfda66192ac5fec036e085b3d6c10dab05",
+        "after_sha256": "6c0638c91959f5bc552ae0c7d18fd74abc042cd8158972e1e403958fa3a989d6",
+        "candidate_text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nTask: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nThe host verifier already ran the pre-edit check; inspect .local/precheck.json and relevant source/tests. The host runs the mandatory post-edit checks after your handoff and before independent review. Do not run Gradle or repeat full verification yourself. Change only docs/evaluation-fixture.md. Optional notes and your own supported instruction-delivery receipt must stay under .local/. Return a brief handoff; do not claim independent review complete."
+      },
+      {
+        "id": "D1-review",
+        "before_chars": 1394,
+        "after_chars": 1307,
+        "removed_chars": 87,
+        "before_sha256": "ab6bdc2365bfe004d6bf01653bf2d4361dbbcbe8199e506dc2151704b0a3780b",
+        "after_sha256": "47d2a17f4583503e68ccecc441a6c614ef0c04812288569e1d0859b772c5ee78",
+        "candidate_text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nIndependent review task: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md. Preserve all other text and its link.\nRead git diff HEAD, .local/evaluation-check.json, relevant source/tests and recorded results directly. The host ran the checks; distinguish its execution from your own inspection. Do not run Gradle or alter tracked sources, verifier files or generated reports. You may create only your own .local/ instruction-delivery receipt when supported; never reuse the author’s receipt. The host checks source and verifier artifact hashes after review. Apply all R01-R30 and return approved/checks/findings JSON, with reasons, evidence and scope in findings. Approve only if this local task has no must-fix issues and local verification is valid. Remote CI, physical devices and E2E are outside these isolated task trials and are not passed by this review."
+      },
+      {
+        "id": "P1-author",
+        "before_chars": 1211,
+        "after_chars": 1124,
+        "removed_chars": 87,
+        "before_sha256": "e7342c99125e7aafc63ccd843a7cf4da4ec4ceef23417d7fbb8bca94d99862a6",
+        "after_sha256": "cab89dd9f43508931ab99864d52bd0540d9374a2960f13a80d1bed2793aaa0db",
+        "candidate_text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nTask: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nThe host verifier already ran the pre-edit check; inspect .local/precheck.json and relevant source/tests. The host runs the mandatory post-edit checks after your handoff and before independent review. Do not run Gradle or repeat full verification yourself. Change only app/src/main/java/dev/orgmobile/reader/OrgParser.kt. Optional notes and your own supported instruction-delivery receipt must stay under .local/. Return a brief handoff; do not claim independent review complete."
+      },
+      {
+        "id": "P1-review",
+        "before_chars": 1497,
+        "after_chars": 1410,
+        "removed_chars": 87,
+        "before_sha256": "4827aeb46f6e9688de2e154d63e67b49eebbda32f4af2a6ab1d0e5a5ae7a48bd",
+        "after_sha256": "311232e17c40a0b4b0eaf697101e38a3a8bd7eb44e0357b6964059f9c7e2e6cc",
+        "candidate_text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nIndependent review task: OrgParser currently fails nested headings such as ** 詳細. Fix heading recognition without changing other parsing behavior. Existing OrgParserTest is the regression oracle. Change only OrgParser.kt.\nRead git diff HEAD, .local/evaluation-check.json, relevant source/tests and recorded results directly. The host ran the checks; distinguish its execution from your own inspection. Do not run Gradle or alter tracked sources, verifier files or generated reports. You may create only your own .local/ instruction-delivery receipt when supported; never reuse the author’s receipt. The host checks source and verifier artifact hashes after review. Apply all R01-R30 and return approved/checks/findings JSON, with reasons, evidence and scope in findings. Approve only if this local task has no must-fix issues and local verification is valid. Remote CI, physical devices and E2E are outside these isolated task trials and are not passed by this review."
+      },
+      {
+        "id": "U1-author",
+        "before_chars": 1338,
+        "after_chars": 1251,
+        "removed_chars": 87,
+        "before_sha256": "2cd857eba6297d3b6a061979ade62650647b1c63e087b3ce82414cc48240544e",
+        "after_sha256": "d306d2f7d8eda01a3910573395b9f884f139557f461d1658997d829a2446c275",
+        "candidate_text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nTask: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nThe host verifier already ran the pre-edit check; inspect .local/precheck.json and relevant source/tests. The host runs the mandatory post-edit checks after your handoff and before independent review. Do not run Gradle or repeat full verification yourself. Change only app/src/test/java/dev/orgmobile/reader/MainActivityTest.kt. Optional notes and your own supported instruction-delivery receipt must stay under .local/. Return a brief handoff; do not claim independent review complete."
+      },
+      {
+        "id": "U1-review",
+        "before_chars": 1617,
+        "after_chars": 1530,
+        "removed_chars": 87,
+        "before_sha256": "13158684c073e3f22a8b840b07d9f00037274dc12a77919ace486da246283be0",
+        "after_sha256": "f142669bf7835a1d2433f99d63d9872e404aca7b32f2b0b42e5277cbb4ab2750",
+        "candidate_text": "Follow this isolated snapshot’s public AGENTS.md and applicable workflow. Use supported public section-retrieval examples where useful. Avoid unnecessary help calls. Do not inspect other evaluation results or anything outside this isolated repository. The existing public-data permission record docs/verification/2026-11-07-instruction-reading.md may be read. Never invoke other models, start agents, commit, publish, or access private data.\nIndependent review task: In the existing test selected content URI is read and displayed and survives rotation and cancellation, add an explicit assertion after the final cancellation that document_title still equals selected.org. Preserve all existing assertions. Change only MainActivityTest.kt; this task changes tests, not production UI.\nRead git diff HEAD, .local/evaluation-check.json, relevant source/tests and recorded results directly. The host ran the checks; distinguish its execution from your own inspection. Do not run Gradle or alter tracked sources, verifier files or generated reports. You may create only your own .local/ instruction-delivery receipt when supported; never reuse the author’s receipt. The host checks source and verifier artifact hashes after review. Apply all R01-R30 and return approved/checks/findings JSON, with reasons, evidence and scope in findings. Approve only if this local task has no must-fix issues and local verification is valid. Remote CI, physical devices and E2E are outside these isolated task trials and are not passed by this review."
+      }
+    ],
+    "before_chars": 8140,
+    "after_chars": 7618,
+    "all_role_input_tokens": null,
+    "completion_seconds": null,
+    "missing_conditions": null,
+    "additional_reads": null,
+    "decision": "defer operational adoption; static text reduction is not measured token or quality improvement"
+  }
+}
