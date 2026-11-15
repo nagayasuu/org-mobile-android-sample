@@ -11,6 +11,7 @@
 | 変更・作業 | 追加で読む範囲 |
 | --- | --- |
 | 文書・skill | 対象文書、変更する規則の正本と参照元、[agent の入力と出力](../guides/agent-tools.md#agent-context)。指示書・skill なら[保守チェックリスト](../maintenance/agent-instructions.md) |
+| Org mode の仕様・構文・動作に関する調査・変更 | [Org mode の参照と判断手順](#org-mode-reference) |
 | アプリ・テスト・ビルド設定 | [アプリ仕様](../project/app-spec.md)、[現在の構造](../project/architecture.md)、[設計の判断基準](design.md)と[検証の基準](verification.md)の関係する節、[Android の手引き](../guides/android.md)の必要な実行方法 |
 | UI・利用経路 | 上記に加え、[アクセシビリティ](design.md#アクセシビリティを設計確認する)、[利用者評価](verification.md#利用者が目的を達成できるかを評価する)、[E2E の実施条件](verification.md#ci-e2e-workflow)と[実行方法](../guides/android.md#自動-e2e-テスト) |
 | Git・フック・CI | [Git 運用規約](git.md)の該当節、対象スクリプト・CI 定義。GitHub 操作には [gh の手引き](../guides/github-cli.md) |
@@ -33,6 +34,17 @@
 5. 小さく変更し、[共通の検証](verification.md#共通の検証)、[agent レビュー](review.md#agent-review)、[完了条件と報告](#completion)に従って結果と未確認事項を残す。
 
 文書の配置と正本の一覧は [開発文書の案内](../README.md)を参照する。
+
+<a id="org-mode-reference"></a>
+
+## Org mode の参照と判断手順
+
+Org mode の仕様・構文・動作に関する判断では、[Org mode の上流リポジトリ](https://https.git.savannah.nongnu.org/git/org-mode.git)を一次資料として参照する。質問・調査、実装、テストの期待値の決定、レビューに適用する。
+
+1. 対象の仕様に関係する文書を上流リポジトリから探し、曖昧な点は関係する実装・テストも確認する。記憶や本アプリの既存実装だけから Org mode の仕様を断定しない。
+2. 参照したタグまたはコミット SHA、ファイル・節と、判断の根拠を作業記録や回答に残す。版による違いがあれば明記する。
+3. Org mode の仕様と[本アプリの対応範囲・制約](../project/app-spec.md)を区別する。未対応の構文や上流との差異は明示し、対応範囲を変える場合は受け入れ条件・テスト・アプリ仕様を合わせて更新する。
+4. 参照先を取得できない場合や根拠が不足する場合は、未確認の点と理由を記録し、推測を仕様として扱わない。必要な資料を確認してから仕様に依存する判断を確定する。
 
 ## 次の小さな機能と受け入れ条件を決める
 
