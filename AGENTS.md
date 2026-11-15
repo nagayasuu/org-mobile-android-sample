@@ -7,6 +7,7 @@ UTF-8 の org ファイルを Android で読む閲覧アプリ。目的と利用
 | 作業 | 読む文書 |
 | --- | --- |
 | 質問・調査のみ | 対象資料と関係する仕様・構造。変更がなければ検証・変更レビューを開始しない |
+| Org mode の仕様・構文・動作に関する判断 | [Org mode の参照と判断手順](docs/workflow/development.md#org-mode-reference) |
 | ファイルの変更 | [開発手順の読み方](docs/workflow/development.md#workflow-reading)から共通事項と作業別の節を選ぶ |
 | レビュー | [レビュー手順](docs/workflow/review.md#agent-review)と[R01〜R30・判定方法](docs/workflow/review.md#review-checklist) |
 | Git・GitHub の操作 | [Git 運用規約](docs/workflow/git.md)の該当節。GitHub の操作は [GitHub CLI の手引き](docs/guides/github-cli.md)に従い `gh` を使う |
