@@ -51,7 +51,7 @@ class MainActivityTest {
 
         Robolectric.buildActivity(MainActivity::class.java).setup().use { controller ->
             var activity = controller.get()
-            shadowOf(Looper.getMainLooper()).idle()
+            awaitStartup(activity)
             activity.findViewById<Button>(R.id.open_file).performClick()
             val request = shadowOf(activity).nextStartedActivityForResult
 
@@ -80,10 +80,10 @@ class MainActivityTest {
         }
     }
 
-    @Test fun `open button launches system document picker and cancellation keeps initial screen`() {
+    @Test fun `open button launches system document picker and cancellation keeps bundled sample`() {
         Robolectric.buildActivity(MainActivity::class.java).setup().use { controller ->
             val activity = controller.get()
-            shadowOf(Looper.getMainLooper()).idle()
+            awaitStartup(activity)
             activity.findViewById<Button>(R.id.open_file).performClick()
 
             val request = shadowOf(activity).nextStartedActivityForResult
@@ -93,8 +93,8 @@ class MainActivityTest {
             activity.activityResultRegistry.dispatchResult(request.requestCode, Activity.RESULT_CANCELED, null)
             shadowOf(Looper.getMainLooper()).idle()
 
-            assertEquals(activity.getString(R.string.initial_message),
-                activity.findViewById<TextView>(R.id.status).text.toString())
+            assertEquals("smoke.org", activity.findViewById<TextView>(R.id.document_title).text.toString())
+            assertEquals(android.view.View.GONE, activity.findViewById<TextView>(R.id.status).visibility)
             assertTrue(activity.findViewById<Button>(R.id.open_file).isEnabled)
         }
     }
@@ -104,6 +104,7 @@ class MainActivityTest {
             val activity = controller.get()
             val view = activity.findViewById<RecyclerView>(R.id.document)
             val adapter = view.adapter as OrgAdapter
+            awaitStartup(activity)
             val source = "* 日本語の見出し\n本文です\n" + (1..1_000).joinToString("\n") { "- 項目 $it" }
 
             adapter.show(OrgParser.parse(source))
@@ -219,8 +220,39 @@ class MainActivityTest {
         }
     }
 
-    private fun openSelectedSample(activity: MainActivity, expectedRows: Int = 1_000) {
+    @Test fun `startup displays bundled sample and keeps it after rotation`() {
+        Robolectric.buildActivity(MainActivity::class.java).setup().use { controller ->
+            awaitStartup(controller.get())
+            controller.recreate()
+            awaitStartup(controller.get())
+        }
+    }
+
+    private fun awaitStartup(activity: MainActivity) {
+        val timeout = System.nanoTime() + 5_000_000_000L
+        while ((activity.findViewById<TextView>(R.id.document_title).text.toString() != "smoke.org" ||
+                !activity.findViewById<Button>(R.id.open_file).isEnabled) && System.nanoTime() < timeout) {
+            shadowOf(Looper.getMainLooper()).idle()
+            Thread.sleep(10)
+        }
+        assertEquals("smoke.org", activity.findViewById<TextView>(R.id.document_title).text.toString())
+        val view = activity.findViewById<RecyclerView>(R.id.document)
+        layoutDocument(view)
+        assertEquals("買い物メモ", (view.findViewHolderForAdapterPosition(0) as OrgAdapter.BlockHolder).text.text.toString())
+        assertTrue(activity.findViewById<Button>(R.id.open_file).isEnabled)
+    }
+
+    private fun awaitReady(activity: MainActivity) {
+        val timeout = System.nanoTime() + 5_000_000_000L
+        while (!activity.findViewById<Button>(R.id.open_file).isEnabled && System.nanoTime() < timeout) {
+            shadowOf(Looper.getMainLooper()).idle()
+            Thread.sleep(10)
+        }
         shadowOf(Looper.getMainLooper()).idle()
+    }
+
+    private fun openSelectedSample(activity: MainActivity, expectedRows: Int = 1_000) {
+        awaitReady(activity)
         activity.findViewById<Button>(R.id.open_file).performClick()
         val request = shadowOf(activity).nextStartedActivityForResult
         activity.activityResultRegistry.dispatchResult(request.requestCode, Activity.RESULT_OK,

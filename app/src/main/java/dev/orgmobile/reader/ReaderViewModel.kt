@@ -33,7 +33,7 @@ class ReaderViewModel(
     private var readJob: Job? = null
 
     init {
-        savedState.get<String>(DOCUMENT_URI)?.let { open(it.toUri()) }
+        open((savedState.get<String>(DOCUMENT_URI) ?: DEFAULT_DOCUMENT_URI).toUri())
     }
 
     fun open(uri: Uri) {
@@ -63,6 +63,7 @@ class ReaderViewModel(
     }
 
     companion object {
+        const val DEFAULT_DOCUMENT_URI = "file:///android_asset/smoke.org"
         const val DOCUMENT_URI = "document_uri"
     }
 }

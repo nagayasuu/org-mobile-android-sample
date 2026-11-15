@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
     private val model: ReaderViewModel by viewModels {
         viewModelFactory {
             initializer {
-                ReaderViewModel(createSavedStateHandle(), ContentDocumentSource(contentResolver))
+                ReaderViewModel(createSavedStateHandle(), ContentDocumentSource(contentResolver, assets))
             }
         }
     }

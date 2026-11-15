@@ -36,7 +36,7 @@ class ContentDocumentSourceTest {
         provider = TrackingProvider(file)
         provider.attachInfo(app, ProviderInfo().apply { authority = uri.authority })
         ShadowContentResolver.registerProviderInternal(uri.authority!!, provider)
-        source = ContentDocumentSource(app.contentResolver)
+        source = ContentDocumentSource(app.contentResolver, app.assets)
     }
 
     @Test fun `successful read closes the stream and metadata cursor`() {
