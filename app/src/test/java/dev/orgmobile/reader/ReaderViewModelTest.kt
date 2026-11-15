@@ -34,6 +34,20 @@ class ReaderViewModelTest {
     @Before fun setUp() = Dispatchers.setMain(dispatcher)
     @After fun tearDown() = Dispatchers.resetMain()
 
+    @Test fun `startup opens bundled sample when there is no saved document`() = runTest(dispatcher) {
+        val handle = SavedStateHandle()
+        val document = OrgDocument("smoke.org", listOf(OrgBlock.Heading(1, "買い物メモ")))
+        var requested: Uri? = null
+        val model = ReaderViewModel(handle, DocumentSource { uri -> requested = uri; document }, dispatcher)
+
+        advanceUntilIdle()
+
+        assertEquals("file:///android_asset/smoke.org", requested.toString())
+        assertEquals(document, model.state.value.document)
+        assertFalse(model.state.value.loading)
+        assertFalse(model.state.value.failed)
+    }
+
     @Test fun `loads selected content and remembers successfully opened URI`() = runTest(dispatcher) {
         val handle = SavedStateHandle()
         val document = OrgDocument("notes.org", listOf(OrgBlock.Heading(1, "予定")))

@@ -10,7 +10,7 @@
 | --- | --- | --- |
 | ファイル選択・画面と操作 | [MainActivity](../../app/src/main/java/dev/orgmobile/reader/MainActivity.kt) | 選択 URI を ViewModel へ渡し、状態を表示する。閲覧位置を保持する |
 | 表示状態・読み込みの制御 | [ReaderViewModel](../../app/src/main/java/dev/orgmobile/reader/ReaderViewModel.kt) | DocumentSource から読み、文書・読み込み中・失敗の状態を公開し、成功した URI を保存する |
-| 読み込みの境界・Android の URI アクセス | [DocumentSource / ContentDocumentSource](../../app/src/main/java/dev/orgmobile/reader/DocumentSource.kt) | URI からストリームと表示名を取得し、文書を返す。ストリームとカーソルを解放する |
+| 読み込みの境界・Android の URI アクセス | [DocumentSource / ContentDocumentSource](../../app/src/main/java/dev/orgmobile/reader/DocumentSource.kt) | 同梱サンプルは assets、それ以外は URI からストリームと表示名を取得し、文書を返す。ストリームとカーソルを解放する |
 | 文字コード変換 | [DocumentDecoder](../../app/src/main/java/dev/orgmobile/reader/DocumentSource.kt) | ストリームを UTF-8 として解釈し、不正な入力を拒否して解析へ渡す |
 | org 解析・表示用の値 | [OrgParser / OrgBlock](../../app/src/main/java/dev/orgmobile/reader/OrgParser.kt) | テキストを見出し・本文・リストなどの値へ変換する |
 | 文書ブロックの表示 | [OrgAdapter](../../app/src/main/java/dev/orgmobile/reader/OrgAdapter.kt) | OrgBlock の一覧を画面の項目へ対応付ける |
@@ -18,6 +18,8 @@
 ## 読み込みと状態の流れ
 
 標準ファイル選択 → MainActivity → ReaderViewModel → DocumentSource → ContentDocumentSource → DocumentDecoder → OrgParser の順で読み込み、結果を状態として画面へ返す。Android OS・文書プロバイダーはアプリの外部依存である。
+
+復元対象の URI がない場合、ReaderViewModel は同梱サンプルの URI を読み込む。`app/src/main/assets/smoke.org` に公開サンプルを同梱する。`examples/smoke.org` を更新したときは同梱版も更新し、E2E で両者のバイト一致を検査する。
 
 ReaderViewModel は IO dispatcher で読み込み、次の読み込み時に前の job をキャンセルする。失敗の状態反映にもキャンセル確認を行う。キャンセル後の古い結果の反映を防ぐことと、同期プロバイダーの読み込み自体が即時停止することは区別する。画面回転とプロセス再作成の保証も同一視せず、保存した URI による再読み込みと閲覧位置の扱いを関係するテストで確認する。
 

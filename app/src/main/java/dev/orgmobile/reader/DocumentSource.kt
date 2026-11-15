@@ -1,6 +1,7 @@
 package dev.orgmobile.reader
 
 import android.content.ContentResolver
+import android.content.res.AssetManager
 import android.net.Uri
 import android.provider.OpenableColumns
 import java.io.IOException
@@ -23,8 +24,14 @@ object DocumentDecoder {
     }
 }
 
-class ContentDocumentSource(private val resolver: ContentResolver) : DocumentSource {
+class ContentDocumentSource(
+    private val resolver: ContentResolver,
+    private val assets: AssetManager,
+) : DocumentSource {
     override fun read(uri: Uri): OrgDocument {
+        if (uri.toString() == ReaderViewModel.DEFAULT_DOCUMENT_URI) {
+            return assets.open("smoke.org").use { OrgDocument("smoke.org", DocumentDecoder.read(it)) }
+        }
         val blocks = resolver.openInputStream(uri)?.use(DocumentDecoder::read)
             ?: throw IOException("No document stream")
         val name = try {

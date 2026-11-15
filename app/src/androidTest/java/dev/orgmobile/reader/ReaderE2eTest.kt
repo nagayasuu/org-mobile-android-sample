@@ -30,6 +30,7 @@ import androidx.test.uiautomator.UiSelector
 import androidx.test.uiautomator.Until
 import org.json.JSONObject
 import org.junit.After
+import org.junit.Assert.assertArrayEquals
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
@@ -82,7 +83,7 @@ class ReaderE2eTest {
         stage(invalid, byteArrayOf(0xc3.toByte(), 0x28))
         stage(empty, byteArrayOf())
         scenario = ActivityScenario.launch(MainActivity::class.java)
-        onView(withId(R.id.status)).check(matches(withText(R.string.initial_message)))
+        awaitDocument("smoke.org")
     }
 
     @After fun tearDown() {
@@ -108,6 +109,22 @@ class ReaderE2eTest {
                 }
             }
         }
+    }
+
+    @Test fun startupShowsBundledSampleAndCancellationKeepsIt() {
+        assertArrayEquals(
+            instrumentation.context.assets.open("smoke.org").use { it.readBytes() },
+            context.assets.open("smoke.org").use { it.readBytes() },
+        )
+        assertRow("買い物メモ")
+        assertRow("最後まで読めたことを確認するための本文です。")
+        openPicker()
+        device.pressBack()
+        awaitDocument("smoke.org")
+        assertRow("買い物メモ")
+        scenario!!.recreate()
+        awaitDocument("smoke.org")
+        assertRow("最後まで読めたことを確認するための本文です。")
     }
 
     @Test fun opensPublicSampleAndScrollsToEndOfLongDocument() {
@@ -251,12 +268,10 @@ class ReaderE2eTest {
         val overrideDensity = Regex("Override density: (\\d+)").find(densityState)?.groupValues?.get(1)
         val uiModeManager = context.getSystemService(UiModeManager::class.java)
         val originalNightValue = uiModeManager.nightMode
-        val originalNightMode = when (originalNightValue) {
-            UiModeManager.MODE_NIGHT_AUTO -> "auto"
-            UiModeManager.MODE_NIGHT_YES -> "yes"
-            UiModeManager.MODE_NIGHT_CUSTOM -> "custom"
-            else -> "no"
-        }
+        // The shell distinguishes custom schedules from bedtime mode.
+        val originalNightMode = device.executeShellCommand("cmd uimode night")
+            .trim().removePrefix("Night mode: ")
+        check(originalNightMode in setOf("auto", "yes", "no", "custom_schedule", "custom_bedtime"))
         scenario!!.close()
         scenario = null
         restoreSettings = {
@@ -267,10 +282,16 @@ class ReaderE2eTest {
                     device.executeShellCommand("wm density ${overrideDensity ?: "reset"}")
                 } finally {
                     device.executeShellCommand("cmd uimode night $originalNightMode")
-                    await("restore emulator settings") {
-                        Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1f) == originalFontScale &&
-                            Regex("Override density: (\\d+)").find(device.executeShellCommand("wm density"))
-                                ?.groupValues?.get(1) == overrideDensity && uiModeManager.nightMode == originalNightValue
+                    await("restore font scale to $originalFontScale") {
+                        Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1f) == originalFontScale
+                    }
+                    await("restore display density to ${overrideDensity ?: "default"}") {
+                        Regex("Override density: (\\d+)").find(device.executeShellCommand("wm density"))
+                            ?.groupValues?.get(1) == overrideDensity
+                    }
+                    await("restore night mode to $originalNightMode") {
+                        uiModeManager.nightMode == originalNightValue &&
+                            device.executeShellCommand("cmd uimode night").trim() == "Night mode: $originalNightMode"
                     }
                 }
             }
@@ -284,6 +305,7 @@ class ReaderE2eTest {
             it.fontScale >= 1.99f && it.densityDpi == enlargedDensity &&
                 (it.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
         }
+        awaitDocument("smoke.org")
         select(smoke)
         awaitDocument(smoke)
         assertRow("買い物メモ")
