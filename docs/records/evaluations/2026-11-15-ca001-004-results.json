@@ -1,0 +1,938 @@
+{
+  "schema_version": 1,
+  "baseline_revision": "33613a4dfac6dd12460e149c250210576c39fa4e",
+  "initial_plan_sha256": "70be604ff59789e0e02ffc9cb50d8e726d8380912ede60a78dc5102e76979963",
+  "plan_sha256": "bcc32cd1fbb2607ae8e55c1511a110c646915eabef7befdac6b9254414952f23",
+  "input_preparation_seconds": 0.10672907199477777,
+  "manual_preparation_seconds": null,
+  "trials": [
+    {
+      "id": "B1",
+      "condition": "before",
+      "roles": [
+        {
+          "role": "author",
+          "attempt": "01",
+          "phase": "agent",
+          "process_exit_code": 1,
+          "capture_complete": true,
+          "wall_seconds": 0.575063297,
+          "usage": null,
+          "observed_usage": {
+            "input_tokens": 0,
+            "cached_input_tokens": 0,
+            "output_tokens": 0
+          },
+          "usage_complete": false,
+          "events": 0,
+          "timeline_lines": 0,
+          "command_counts": {
+            "ordinary_read_or_search": 0,
+            "helper": 0,
+            "refresh": 0,
+            "other": 0
+          },
+          "returned_chars": 0,
+          "source_chars": 0,
+          "source_metadata_chars": 0,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "f86d97a4c8a4a655e74767b59b9c9cbb5fffb2da280f81cbba7c64f8b9c3d0a6",
+            "process.json": "82a270ddd860298fec9358628abc70630d05e2713a93431695b7823944f3dd47",
+            "stdout.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "stderr.log": "32b81500474a609f24b8c9fbd2b512c4842089a0ae0fe399f84513bb6c6e1066",
+            "timeline.jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          }
+        },
+        {
+          "role": "author",
+          "attempt": "02",
+          "phase": "agent",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 32.022161677,
+          "usage": {
+            "input_tokens": 135456,
+            "cached_input_tokens": 101888,
+            "output_tokens": 784
+          },
+          "observed_usage": {
+            "input_tokens": 135456,
+            "cached_input_tokens": 101888,
+            "output_tokens": 784
+          },
+          "usage_complete": true,
+          "events": 15,
+          "timeline_lines": 15,
+          "command_counts": {
+            "ordinary_read_or_search": 4,
+            "helper": 0,
+            "refresh": 0,
+            "other": 1
+          },
+          "returned_chars": 29306,
+          "source_chars": null,
+          "source_metadata_chars": null,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "2c59cdaddab80ebb523d58a0221fc9b73caccc50b95c5cd32df83c7031dece00",
+            "process.json": "93e6bbcfc4aa569db4f8b42a00085074c8441c86fddbc75fcd024a3ab5c001e3",
+            "stdout.log": "2878c9b27f233339bacc09328acd6dcf06c45395abb8e0099de57c20445da4a7",
+            "stderr.log": "4ca547889b1d16c88f9f78f1eb0ed707cced77592a3aa598723d6ffe7c4cc3fc",
+            "timeline.jsonl": "7f7e1d3b02198fe8b26096798eedcaf0abcb8205c8e26d5d4fe6243378fb2758"
+          }
+        },
+        {
+          "role": "review",
+          "attempt": "01",
+          "phase": "review",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 105.629943722,
+          "usage": {
+            "input_tokens": 338657,
+            "cached_input_tokens": 290816,
+            "output_tokens": 4247
+          },
+          "observed_usage": {
+            "input_tokens": 338657,
+            "cached_input_tokens": 290816,
+            "output_tokens": 4247
+          },
+          "usage_complete": true,
+          "events": 33,
+          "timeline_lines": 33,
+          "command_counts": {
+            "ordinary_read_or_search": 9,
+            "helper": 0,
+            "refresh": 0,
+            "other": 4
+          },
+          "returned_chars": 53331,
+          "source_chars": null,
+          "source_metadata_chars": null,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "58db03e902720b484497b4b9731229805a01aabd2351c738bcf8f2848857e442",
+            "process.json": "46297d062d4b775c682c2f82ed76d79aa06b0107dbe59a285a968df573d6c3ce",
+            "stdout.log": "0aacc1925545bd63758f1532cb331185ff7d6a2a026dc60184a91cb096f0904e",
+            "stderr.log": "b90a13ef1c33a22516d780cd1a11001d4c22ba5aa3823dc62fd8e3f26086e8eb",
+            "timeline.jsonl": "c2d16624f94b12e3dc0057a1455a183969ba9054775fd9dcc7733abed813c0ef"
+          }
+        },
+        {
+          "role": "verifier",
+          "attempt": "01",
+          "phase": "tool",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 0.124167476,
+          "usage": null,
+          "observed_usage": null,
+          "usage_complete": null,
+          "events": 1,
+          "timeline_lines": 1,
+          "command_counts": {
+            "ordinary_read_or_search": 0,
+            "helper": 0,
+            "refresh": 0,
+            "other": 0
+          },
+          "returned_chars": 0,
+          "source_chars": 0,
+          "source_metadata_chars": 0,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "32b5faae7d18618fa1934b807dfe39173b9e66108be605cdd0c90af87467354f",
+            "process.json": "6821fb45a237537682e748c83d06bae0567a206f868c034a5b7be46593fbce79",
+            "stdout.log": "7338d14e14fc90f1c286e90ecb68cb957a8e8a9e5dbead6f3f66a8c03e6a029a",
+            "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "timeline.jsonl": "38c5165eca991b8e3715ca2bb24c3cfec1c2b3988300d6abc6616043212c121c"
+          }
+        }
+      ],
+      "exact_result": true,
+      "independent_review": true,
+      "review_check_count": 30,
+      "immutable": true,
+      "unexpected_untracked_count": 0,
+      "resume": {
+        "checkpoint_unchanged": true,
+        "reused_author": true,
+        "reused_verification": true
+      },
+      "success": true,
+      "pending_roles": [],
+      "times": {
+        "scope": "trial",
+        "trial": "B1",
+        "attempts": [
+          {
+            "agent": "author",
+            "attempt": "01",
+            "phase": "agent",
+            "start": 1794725578.4284513,
+            "seconds": 0.575063297,
+            "exit_code": 1,
+            "termination": "exited",
+            "capture_complete": true
+          },
+          {
+            "agent": "author",
+            "attempt": "02",
+            "phase": "agent",
+            "start": 1794725639.8611548,
+            "seconds": 32.022161677,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          },
+          {
+            "agent": "review",
+            "attempt": "01",
+            "phase": "review",
+            "start": 1794725686.2087185,
+            "seconds": 105.629943722,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          },
+          {
+            "agent": "verifier",
+            "attempt": "01",
+            "phase": "tool",
+            "start": 1794725671.9675555,
+            "seconds": 0.124167476,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          }
+        ],
+        "process_time_complete": true,
+        "observed_attempt_seconds": 138.351336172,
+        "attempt_seconds_sum": 138.351336172,
+        "observed_active_seconds": 138.35133600234985,
+        "recorded_window_seconds": 213.41021084785461,
+        "phase_attempt_seconds": {
+          "agent": 32.597224974,
+          "tool": 0.124167476,
+          "environment": null,
+          "review": 105.629943722
+        },
+        "model_wait_seconds": null
+      }
+    },
+    {
+      "id": "A1",
+      "condition": "after",
+      "roles": [
+        {
+          "role": "author",
+          "attempt": "01",
+          "phase": "agent",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 40.135752367,
+          "usage": {
+            "input_tokens": 138250,
+            "cached_input_tokens": 105728,
+            "output_tokens": 1193
+          },
+          "observed_usage": {
+            "input_tokens": 138250,
+            "cached_input_tokens": 105728,
+            "output_tokens": 1193
+          },
+          "usage_complete": true,
+          "events": 16,
+          "timeline_lines": 16,
+          "command_counts": {
+            "ordinary_read_or_search": 2,
+            "helper": 0,
+            "refresh": 0,
+            "other": 3
+          },
+          "returned_chars": 24534,
+          "source_chars": null,
+          "source_metadata_chars": null,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "81b37f5d5e03561b6f00875184b120eb2b65f9de9ca64515dd6aa2b0b105daad",
+            "process.json": "72aaf3e2d830a7c89e0ce74b65995753c4c3d0a6722b9010d9c79d3e372b42ae",
+            "stdout.log": "8b819fd95b80d8309a5e8250be2b2a914209a1b2188c0afaa2ef86cef5b3a273",
+            "stderr.log": "7c8a0c87c345044e16f14a64ab7b4f9039974a347090195b645daf2561a36112",
+            "timeline.jsonl": "fd9300469143cde7d1f64469eda595e21cbb625522f41fb7ee12a11d48b47346"
+          }
+        },
+        {
+          "role": "review",
+          "attempt": "01",
+          "phase": "review",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 105.122212048,
+          "usage": {
+            "input_tokens": 211025,
+            "cached_input_tokens": 182144,
+            "output_tokens": 3917
+          },
+          "observed_usage": {
+            "input_tokens": 211025,
+            "cached_input_tokens": 182144,
+            "output_tokens": 3917
+          },
+          "usage_complete": true,
+          "events": 43,
+          "timeline_lines": 43,
+          "command_counts": {
+            "ordinary_read_or_search": 10,
+            "helper": 0,
+            "refresh": 0,
+            "other": 8
+          },
+          "returned_chars": 46766,
+          "source_chars": null,
+          "source_metadata_chars": null,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "8af982b118ad8d50f94f809442c859d6766f8fd0018134a48f94eecfaf43a8c5",
+            "process.json": "3004535690f599d57cc26dfab379f45ff9d48cc4d39d2da5d295ac0e97fcd2d8",
+            "stdout.log": "94bd2fee5b382bf148ebcb64b2bb1513c6ef7f6f5b2d972b4545cd7ac0964de8",
+            "stderr.log": "b656de1f6acee770e0be3f27b29390cf79039b8fe80b423c0e4a9b6694d078d7",
+            "timeline.jsonl": "c029ce598aca013479dcbfe8cb7a3ac2cc0d1d7f0286fd1465565670d40fd18d"
+          }
+        },
+        {
+          "role": "verifier",
+          "attempt": "01",
+          "phase": "tool",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 0.123152022,
+          "usage": null,
+          "observed_usage": null,
+          "usage_complete": null,
+          "events": 1,
+          "timeline_lines": 1,
+          "command_counts": {
+            "ordinary_read_or_search": 0,
+            "helper": 0,
+            "refresh": 0,
+            "other": 0
+          },
+          "returned_chars": 0,
+          "source_chars": 0,
+          "source_metadata_chars": 0,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "d5ac82b0a14cf9dc96103745ef0ea30c38c92225b076f81bd1030a7e47198db0",
+            "process.json": "50392debd69ccd23ab2b8966207acfa0187a90ea1819854f7def9c3cda64fffc",
+            "stdout.log": "7338d14e14fc90f1c286e90ecb68cb957a8e8a9e5dbead6f3f66a8c03e6a029a",
+            "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "timeline.jsonl": "4d245192d56a4e70c8e7a5d834e82f727ba2886f75609f833853e88c1695f8ad"
+          }
+        }
+      ],
+      "exact_result": true,
+      "independent_review": true,
+      "review_check_count": 30,
+      "immutable": true,
+      "unexpected_untracked_count": 0,
+      "resume": {
+        "checkpoint_unchanged": true,
+        "reused_author": true,
+        "reused_verification": true
+      },
+      "success": true,
+      "pending_roles": [],
+      "times": {
+        "scope": "trial",
+        "trial": "A1",
+        "attempts": [
+          {
+            "agent": "author",
+            "attempt": "01",
+            "phase": "agent",
+            "start": 1794725802.1084197,
+            "seconds": 40.135752367,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          },
+          {
+            "agent": "review",
+            "attempt": "01",
+            "phase": "review",
+            "start": 1794725870.4996836,
+            "seconds": 105.122212048,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          },
+          {
+            "agent": "verifier",
+            "attempt": "01",
+            "phase": "tool",
+            "start": 1794725842.3144107,
+            "seconds": 0.123152022,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          }
+        ],
+        "process_time_complete": true,
+        "observed_attempt_seconds": 145.381116437,
+        "attempt_seconds_sum": 145.381116437,
+        "observed_active_seconds": 145.38111639022827,
+        "recorded_window_seconds": 173.51347589492798,
+        "phase_attempt_seconds": {
+          "agent": 40.135752367,
+          "tool": 0.123152022,
+          "environment": null,
+          "review": 105.122212048
+        },
+        "model_wait_seconds": null
+      }
+    },
+    {
+      "id": "A2",
+      "condition": "after",
+      "roles": [
+        {
+          "role": "author",
+          "attempt": "01",
+          "phase": "agent",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 42.242415739,
+          "usage": {
+            "input_tokens": 147754,
+            "cached_input_tokens": 121728,
+            "output_tokens": 872
+          },
+          "observed_usage": {
+            "input_tokens": 147754,
+            "cached_input_tokens": 121728,
+            "output_tokens": 872
+          },
+          "usage_complete": true,
+          "events": 15,
+          "timeline_lines": 15,
+          "command_counts": {
+            "ordinary_read_or_search": 4,
+            "helper": 0,
+            "refresh": 0,
+            "other": 1
+          },
+          "returned_chars": 23867,
+          "source_chars": null,
+          "source_metadata_chars": null,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "cd129425421eb85a916eccaf8af3a163074aa24adbb8e50b74d307a786857086",
+            "process.json": "6b843f86b82c78f96707e5bbfa3b220dc6280ef43d78f04c56d867ce7aaedb56",
+            "stdout.log": "ea95f5d3d98f2429a02ae75d31a5aebf0695b576c14e6e4555f7cd091a1699a4",
+            "stderr.log": "7d8fe2020b5405fcfb017b5e781e756e6f6b15ff63776e6b986923f7557b1d4b",
+            "timeline.jsonl": "68ff7e12b4b9f6b5c26023913ef28d52615bda68bb76b69c25bc331719b03d35"
+          }
+        },
+        {
+          "role": "review",
+          "attempt": "01",
+          "phase": "review",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 113.765501165,
+          "usage": {
+            "input_tokens": 254698,
+            "cached_input_tokens": 210048,
+            "output_tokens": 4497
+          },
+          "observed_usage": {
+            "input_tokens": 254698,
+            "cached_input_tokens": 210048,
+            "output_tokens": 4497
+          },
+          "usage_complete": true,
+          "events": 51,
+          "timeline_lines": 51,
+          "command_counts": {
+            "ordinary_read_or_search": 8,
+            "helper": 0,
+            "refresh": 0,
+            "other": 14
+          },
+          "returned_chars": 48447,
+          "source_chars": null,
+          "source_metadata_chars": null,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "7574316568bb30c693b1220c776e684330f83e0cb31f3693a94a1fba6ba72fef",
+            "process.json": "58c5febfdb20513addf954e82da940f9d052f91feb4a714e2c94e173508f1c27",
+            "stdout.log": "821e9748eaccc0e142e84d3d6241b4a70b33e9b7d081026e5c5e84412b200568",
+            "stderr.log": "3858fb8736883c427b235a249aec90709e1d984b114e15a7d2721313ec3061c1",
+            "timeline.jsonl": "d83f3918790207c8b1c54cd83c04f55e76d581e3f16250e764e28568a371a677"
+          }
+        },
+        {
+          "role": "verifier",
+          "attempt": "01",
+          "phase": "tool",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 0.121519198,
+          "usage": null,
+          "observed_usage": null,
+          "usage_complete": null,
+          "events": 1,
+          "timeline_lines": 1,
+          "command_counts": {
+            "ordinary_read_or_search": 0,
+            "helper": 0,
+            "refresh": 0,
+            "other": 0
+          },
+          "returned_chars": 0,
+          "source_chars": 0,
+          "source_metadata_chars": 0,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "aabd864667e77108640a9cf6e2a41cb7e766100410a78e4568f3a461f2063bab",
+            "process.json": "8e9abfe999deee3b8c7fcdee9f203969fbad471f5935abe1f535b2e7d1f2d03e",
+            "stdout.log": "7338d14e14fc90f1c286e90ecb68cb957a8e8a9e5dbead6f3f66a8c03e6a029a",
+            "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "timeline.jsonl": "1ec1fbdb714c0569ef9186415ab634990975a51f382bf4de63876e6170d98824"
+          }
+        }
+      ],
+      "exact_result": true,
+      "independent_review": true,
+      "review_check_count": 30,
+      "immutable": true,
+      "unexpected_untracked_count": 0,
+      "resume": {
+        "checkpoint_unchanged": true,
+        "reused_author": true,
+        "reused_verification": true
+      },
+      "success": true,
+      "pending_roles": [],
+      "times": {
+        "scope": "trial",
+        "trial": "A2",
+        "attempts": [
+          {
+            "agent": "author",
+            "attempt": "01",
+            "phase": "agent",
+            "start": 1794725975.7457764,
+            "seconds": 42.242415739,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          },
+          {
+            "agent": "review",
+            "attempt": "01",
+            "phase": "review",
+            "start": 1794726018.3071563,
+            "seconds": 113.765501165,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          },
+          {
+            "agent": "verifier",
+            "attempt": "01",
+            "phase": "tool",
+            "start": 1794726018.0582666,
+            "seconds": 0.121519198,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          }
+        ],
+        "process_time_complete": true,
+        "observed_attempt_seconds": 156.129436102,
+        "attempt_seconds_sum": 156.129436102,
+        "observed_active_seconds": 156.12943601608276,
+        "recorded_window_seconds": 156.32688117027283,
+        "phase_attempt_seconds": {
+          "agent": 42.242415739,
+          "tool": 0.121519198,
+          "environment": null,
+          "review": 113.765501165
+        },
+        "model_wait_seconds": null
+      }
+    },
+    {
+      "id": "B2",
+      "condition": "before",
+      "roles": [
+        {
+          "role": "author",
+          "attempt": "01",
+          "phase": "agent",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 32.417790545,
+          "usage": {
+            "input_tokens": 130435,
+            "cached_input_tokens": 110208,
+            "output_tokens": 710
+          },
+          "observed_usage": {
+            "input_tokens": 130435,
+            "cached_input_tokens": 110208,
+            "output_tokens": 710
+          },
+          "usage_complete": true,
+          "events": 13,
+          "timeline_lines": 13,
+          "command_counts": {
+            "ordinary_read_or_search": 4,
+            "helper": 0,
+            "refresh": 0,
+            "other": 0
+          },
+          "returned_chars": 26237,
+          "source_chars": null,
+          "source_metadata_chars": null,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "3ce5e8f7e79cbab3590acef2a7b466458fdf87651156785302d10fe08a8e72d3",
+            "process.json": "1e1c103fab66d60882cbca4a4aff38ce41b77282203268df11394fc195148712",
+            "stdout.log": "c58bb69a71a145e7e6ed21ced39a3e4653d7c84fe4fd6ff8b38195e651e97ec0",
+            "stderr.log": "a5f0bab795a36c23594a72704d4bccbfe627e97795615fe2fa539f8e3ea215a7",
+            "timeline.jsonl": "7881969fbff5e76c8c8d713fc114e17e6adb447198a2cf084f37b58237a55f5a"
+          }
+        },
+        {
+          "role": "verifier",
+          "attempt": "01",
+          "phase": "tool",
+          "process_exit_code": 0,
+          "capture_complete": true,
+          "wall_seconds": 0.123951057,
+          "usage": null,
+          "observed_usage": null,
+          "usage_complete": null,
+          "events": 1,
+          "timeline_lines": 1,
+          "command_counts": {
+            "ordinary_read_or_search": 0,
+            "helper": 0,
+            "refresh": 0,
+            "other": 0
+          },
+          "returned_chars": 0,
+          "source_chars": 0,
+          "source_metadata_chars": 0,
+          "helper_source_chars": 0,
+          "helper_metadata_chars": 0,
+          "artifacts": {
+            "start.json": "0346b24b55038137e5d2136c81296c3243ddd10d1a38835269732305c5fb813c",
+            "process.json": "4d831c2ecac9eb7f29319404018f1152240e27846231d494135f5963d6667779",
+            "stdout.log": "7338d14e14fc90f1c286e90ecb68cb957a8e8a9e5dbead6f3f66a8c03e6a029a",
+            "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+            "timeline.jsonl": "6f14cb60974e0e462a566340750533a2eddf4696dec6c9fa700d87d4964e7e33"
+          }
+        }
+      ],
+      "exact_result": true,
+      "independent_review": null,
+      "review_check_count": 0,
+      "immutable": true,
+      "unexpected_untracked_count": 0,
+      "resume": null,
+      "success": false,
+      "pending_roles": [
+        "review"
+      ],
+      "times": {
+        "scope": "trial",
+        "trial": "B2",
+        "attempts": [
+          {
+            "agent": "author",
+            "attempt": "01",
+            "phase": "agent",
+            "start": 1794726132.1849597,
+            "seconds": 32.417790545,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          },
+          {
+            "agent": "verifier",
+            "attempt": "01",
+            "phase": "tool",
+            "start": 1794726164.6883428,
+            "seconds": 0.123951057,
+            "exit_code": 0,
+            "termination": "exited",
+            "capture_complete": true
+          }
+        ],
+        "process_time_complete": true,
+        "observed_attempt_seconds": 32.541741602,
+        "attempt_seconds_sum": 32.541741602,
+        "observed_active_seconds": 32.541741609573364,
+        "recorded_window_seconds": 32.627334117889404,
+        "phase_attempt_seconds": {
+          "agent": 32.417790545,
+          "tool": 0.123951057,
+          "environment": null,
+          "review": null
+        },
+        "model_wait_seconds": null
+      }
+    }
+  ],
+  "usage_summary": {
+    "groups": [
+      {
+        "condition": "after",
+        "task_kind": "docs",
+        "revision": "33613a4dfac6dd12460e149c250210576c39fa4e",
+        "environment": "Linux-POSIX codex-cli-0.166.0",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-process",
+        "trials": 2,
+        "successes": 2,
+        "success_rate": 1.0,
+        "usage_complete": true,
+        "observed_tokens": {
+          "input_tokens": 751727,
+          "cached_input_tokens": 619648,
+          "output_tokens": 10479
+        },
+        "uncached_input_tokens": 132079,
+        "cache_ratio": 0.8242992469340599,
+        "input_tokens_per_success": 375863.5,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 2,
+            "missing": 0,
+            "total": 329.8403570652008,
+            "median": 164.9201785326004,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "A1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "A2",
+            "task_id": "D1",
+            "success": true
+          }
+        ]
+      },
+      {
+        "condition": "before",
+        "task_kind": "docs",
+        "revision": "33613a4dfac6dd12460e149c250210576c39fa4e",
+        "environment": "Linux-POSIX codex-cli-0.166.0",
+        "model": "gpt-6.1-sol",
+        "reasoning_effort": "high",
+        "review_mode": "separate-process",
+        "trials": 2,
+        "successes": 1,
+        "success_rate": 0.5,
+        "usage_complete": false,
+        "observed_tokens": {
+          "input_tokens": 604548,
+          "cached_input_tokens": 502912,
+          "output_tokens": 5741
+        },
+        "uncached_input_tokens": null,
+        "cache_ratio": null,
+        "input_tokens_per_success": null,
+        "cost_usd": null,
+        "cost_usd_per_success": null,
+        "measurements": {
+          "completion_seconds": {
+            "observed": 1,
+            "missing": 1,
+            "total": null,
+            "median": null,
+            "p95": null
+          }
+        },
+        "trial_results": [
+          {
+            "id": "B1",
+            "task_id": "D1",
+            "success": true
+          },
+          {
+            "id": "B2",
+            "task_id": "D1",
+            "success": false
+          }
+        ]
+      }
+    ]
+  },
+  "overwrite_check": {
+    "exit_code": 2,
+    "all_artifacts_unchanged": true,
+    "child_started": false
+  },
+  "bad_input_check": {
+    "error": "prompt-final-newline",
+    "model_calls": 0
+  },
+  "outside": {
+    "host_agent_tokens": null,
+    "manual_seconds": null,
+    "model_wait_seconds": null,
+    "compaction_seconds": null,
+    "cost_usd": null
+  },
+  "incomplete_reason": "B1 launch failure has no usage; B2 review is unstarted at the eight-CLI-launch budget",
+  "decision": "do-not-adopt",
+  "input_reduction_percent": null,
+  "ca002_scope": "bounded D1 diagnostic; ordinary mixed-command source/metadata split and request-internal input allocation remain unmeasured",
+  "factor_check": {
+    "author": true,
+    "review": true
+  },
+  "synthetic_prompts_before": {
+    "author": "Follow AGENTS.md and the applicable public workflow. Use section retrieval optionally. Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls. Never read outside this isolated repository or inspect other evaluations. Do not access private data, run other models, start agents, commit or publish. Existing public-data permission: docs/records/evaluations/2026-11-07-instruction-reading.md.\nFix only 確認しましす to 確認します in docs/evaluation-fixture.md; preserve every other character and the link.\nChange only docs/evaluation-fixture.md; your own optional notes belong under .local/. Host runs post-edit exact equality and link checks before a separate independent review. Return a brief handoff; independent review is not your role.\nHost verifier source (existing assertion to preserve):\nfrom pathlib import Path\nassert Path(\"docs/evaluation-fixture.md\").read_text() == \"# 検証\\n結果を確認します。\\n[作業指示](../AGENTS.md)\\n\"\n",
+    "review": "Follow AGENTS.md and the applicable public workflow. Use section retrieval optionally. Acquire only required public instructions and task sources; retain unchanged reads and avoid unnecessary help calls. Never read outside this isolated repository or inspect other evaluations. Do not access private data, run other models, start agents, commit or publish. Existing public-data permission: docs/records/evaluations/2026-11-07-instruction-reading.md.\nIndependent review task: Fix only 確認しましす to 確認します in docs/evaluation-fixture.md; preserve every other character and the link.\nDo not modify the target or verifier. Read actual file, .local/verification.json, git diff HEAD and applicable review rules directly. The fixture is an untracked synthetic file: read it directly too. Distinguish host checks from your own. Return JSON with approved (boolean) and checks (all R01-R30 mapped to status and evidence). No must-fix issue or mandatory local check may be left unresolved for approval. Remote CI, Android and E2E are outside this isolated document trial. Your own notes only under .local/; never reuse author receipts.\nHost verifier source (existing assertion to preserve):\nfrom pathlib import Path\nassert Path(\"docs/evaluation-fixture.md\").read_text() == \"# 検証\\n結果を確認します。\\n[作業指示](../AGENTS.md)\\n\"\n"
+  },
+  "inputs": [
+    {
+      "id": "B1",
+      "condition": "before",
+      "revision": "33613a4dfac6dd12460e149c250210576c39fa4e",
+      "prompts": {
+        "author": "f4fc9bebe0e5ff653d017d1a7bcbdfde3b8f1809b0cc5b6618231ccb47b990c0",
+        "review": "f08d14fe69301b25f844ea67a9d096b05657d457ae96eb8b264ec06da7cb9b1b"
+      },
+      "plans": {
+        "author": "1dbb24f1ed56d360cd887350dca2c97b8f61952af4f9fdffae4f85166520fbe9",
+        "review": "3be37ef16a0dd1b6b5767d89ccc1de5bdcc61a15cb84fc319575f478ba2cbe55"
+      }
+    },
+    {
+      "id": "A1",
+      "condition": "after",
+      "revision": "33613a4dfac6dd12460e149c250210576c39fa4e",
+      "prompts": {
+        "author": "18f590ce084ac987bc0a839464806db836ebb4327fb8d02a59200a54758b7ac7",
+        "review": "257b5422b4713f6ead08103d2b4f6c3a2f3a3c17b51e753334620aeef8749557"
+      },
+      "plans": {
+        "author": "63dc7cd889e8f3107abf6df33c2fe47dd1a5e793b74e5a103e96cb019e1edfc5",
+        "review": "e12ba9bc067e574525aa2fc2675b3f54b001a8514315293482933728fd896cb7"
+      }
+    },
+    {
+      "id": "A2",
+      "condition": "after",
+      "revision": "33613a4dfac6dd12460e149c250210576c39fa4e",
+      "prompts": {
+        "author": "18f590ce084ac987bc0a839464806db836ebb4327fb8d02a59200a54758b7ac7",
+        "review": "257b5422b4713f6ead08103d2b4f6c3a2f3a3c17b51e753334620aeef8749557"
+      },
+      "plans": {
+        "author": "63dc7cd889e8f3107abf6df33c2fe47dd1a5e793b74e5a103e96cb019e1edfc5",
+        "review": "e12ba9bc067e574525aa2fc2675b3f54b001a8514315293482933728fd896cb7"
+      }
+    },
+    {
+      "id": "B2",
+      "condition": "before",
+      "revision": "33613a4dfac6dd12460e149c250210576c39fa4e",
+      "prompts": {
+        "author": "f4fc9bebe0e5ff653d017d1a7bcbdfde3b8f1809b0cc5b6618231ccb47b990c0",
+        "review": "f08d14fe69301b25f844ea67a9d096b05657d457ae96eb8b264ec06da7cb9b1b"
+      },
+      "plans": {
+        "author": "1dbb24f1ed56d360cd887350dca2c97b8f61952af4f9fdffae4f85166520fbe9",
+        "review": "3be37ef16a0dd1b6b5767d89ccc1de5bdcc61a15cb84fc319575f478ba2cbe55"
+      }
+    }
+  ],
+  "outside_validation": [
+    {
+      "agent": "storage",
+      "returncode": 0,
+      "exit_code": 0,
+      "termination": "exited",
+      "wall_seconds": 0.772886749,
+      "capture_errors": []
+    },
+    {
+      "agent": "input",
+      "returncode": 0,
+      "exit_code": 0,
+      "termination": "exited",
+      "wall_seconds": 0.376336171,
+      "capture_errors": []
+    }
+  ],
+  "prechecks": [
+    {
+      "id": "A1-author-precheck-resumed",
+      "ok": true,
+      "seconds": 0.0028373849927447736
+    },
+    {
+      "id": "A1-review-precheck-resumed",
+      "ok": true,
+      "seconds": 0.002677419994142838
+    },
+    {
+      "id": "A2-author-precheck-resumed",
+      "ok": true,
+      "seconds": 0.0017867240094346926
+    },
+    {
+      "id": "A2-review-precheck-resumed",
+      "ok": true,
+      "seconds": 0.0018621640047058463
+    },
+    {
+      "id": "B1-author-precheck-resumed",
+      "ok": true,
+      "seconds": 0.0021314810001058504
+    },
+    {
+      "id": "B1-author-precheck",
+      "ok": true,
+      "seconds": 0.0017713630077196285
+    },
+    {
+      "id": "B1-review-precheck-resumed",
+      "ok": true,
+      "seconds": 0.002546032003010623
+    },
+    {
+      "id": "B2-author-precheck-resumed",
+      "ok": true,
+      "seconds": 0.002052972005913034
+    }
+  ]
+}
