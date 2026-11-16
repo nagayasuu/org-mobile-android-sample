@@ -2,6 +2,12 @@ name: Android E2E
 
 on:
   workflow_dispatch:
+    inputs:
+      base_ref:
+        description: 'Coverage comparison base (SHA or fetched ref)'
+        required: true
+        default: origin/main
+        type: string
 
 permissions:
   contents: read
@@ -12,6 +18,12 @@ jobs:
     timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check build comparison conditions before E2E
+        env:
+          COVERAGE_BASE_REF: ${{ inputs.base_ref }}
+        run: python3 scripts/run_coverage.py --preflight-only --base-ref "$COVERAGE_BASE_REF"
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -29,6 +41,17 @@ jobs:
           test -r /dev/kvm && test -w /dev/kvm
       - name: Install SDK and full Google APIs image
         run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64'
+      - name: Check settings restoration and document readiness
+        run: ./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle '-Pandroid.testInstrumentationRunnerArguments.class=dev.orgmobile.reader.ReaderE2eTest#settingsPreflightRestoresCustomNightModesAndWaitsForDocument'
+      - name: Preserve preflight reports and diagnostics
+        if: always()
+        run: |
+          mkdir -p app/build/reports/e2e/preflight
+          for source in app/build/reports/androidTests app/build/outputs/androidTest-results app/build/outputs/managed_device_android_test_additional_output; do
+            if [ -d "$source" ]; then
+              cp -R "$source" app/build/reports/e2e/preflight/
+            fi
+          done
       - name: Run system-picker E2E scenarios
         run: ./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle
       - name: Record revision and APK identity

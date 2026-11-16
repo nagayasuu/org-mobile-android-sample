@@ -50,7 +50,32 @@ gh pr create --repo "$gh_repo" --base main --head "$gh_branch" \
   --title "$gh_title" --body-file "$gh_body_file"
 ```
 
-コメントや PR 本文の更新にも本文ファイルを使い、投稿前に内容と対象を確認する。その他の PR 操作は `gh pr <操作> --help` で必要なオプションを確認する。
+PR本文は作成時点の結果と根拠の参照先を示す。[Git規約](../workflow/git.md#4-prレビュー統合)に従い、以後の通常の結果追記は次の専用コメントへ集約する。マージ後の本文更新もCI再起動の回避策にはならない。目的・受け入れ条件などの訂正で本文を改訂する場合は、UTF-8の本文ファイルを用意し、対象・内容と必要なCIを確認する。その他の PR 操作は `gh pr <操作> --help` で必要なオプションを確認する。
+
+<a id="pr-results"></a>
+
+### 検証・レビュー結果の専用コメントを更新する
+
+投稿が依頼の範囲内であることを確認し、公開可能な結果・対象SHA・run URL・検証/レビュー記録への参照をUTF-8ファイルへまとめる。Python 3.10以上とGitHub.comのユーザー認証を設定したghを使い、repoとPR番号を明示する。
+
+```sh
+# 読み取り専用の確認。--checkを省略するとコメントを作成・更新する
+python3 scripts/update_pr_results.py --repo "$gh_repo" --pr "$gh_pr" \
+  --body-file "$gh_body_file" --check
+
+python3 scripts/update_pr_results.py --repo "$gh_repo" --pr "$gh_pr" \
+  --body-file "$gh_body_file"
+```
+
+この補助はPRの存在を確認し、認証ユーザー自身が作成した、固定マーカー `<!-- org-mobile-android-sample:verification-results:v1 -->` で始まるコメントだけを更新する。存在しなければ「検証・レビュー結果（更新）」コメントを作成し、本文が同じなら変更しない。ページ分割されたコメントも調べ、他者のコメントや通常の自分のコメントを上書きしない。マーカーと見出しは自動付与するため、入力ファイルへ含めない。専用コメントは同じ認証ユーザーで直列に更新する。
+
+途中経過はChecksと保存した検証記録を参照し、専用コメントの更新はレビュー完了や統合後確認など必要な結果がそろった時点にまとめる。
+
+標準出力は `created` / `updated` / `unchanged` とコメントURL、`--check` では `would-create` / `would-update`（または `unchanged`）。本文・生APIレスポンス・認証情報は返さない。入力不備は終了2、API失敗・不正応答・専用コメントの重複は終了1となり、自動再試行しない。書込み時に通信が失敗した場合は、変更が反映済みの可能性もあるため、まず `--check` で対象の状態を確認する。空入力・不正UTF-8・入力内の予約マーカーを拒否し、確認済み文字列を標準入力からghへ渡す。
+
+PR本文・タイトル・CI設定は変更しない。PRへのこの種のコメントは [issue_comment](https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows#issue_comment) に対応し、現在の [android.yml](../../.github/workflows/android.yml) はこのイベントを購読していない。タイトル変更時の検証と必須 `verify`、統合後CIは維持する。別repoや将来のworkflow変更でコメントをCI起動条件にする場合は、この前提を見直す。コメントに成功と記載することは、対象SHA・必須チェックを直接確認する代わりにならない。
+
+GitHub.comのowner/repo形式だけを扱う。権限の追加・認証方式変更・通知抑止は行わない。コメントの作成・更新は購読者へ通知される場合がある。[実装確認と未確認範囲](../records/evaluations/2026-11-16-pr-result-comments.md)を参照する。
 
 ### CI の状態・失敗箇所の確認
 
@@ -79,9 +104,11 @@ gh run view "$gh_run" --repo "$gh_repo" --log-failed
 ```
 
 手動 E2E の起動を依頼された場合は、`gh_branch` に実行するブランチ名を設定して起動する。その後の run は `e2e.yml` と対象コミットで絞って確認する。起動の成功とテストの成功を区別する。
+`gh_base_ref` は比較元SHAまたはworkflowで取得するrefを指定する（既定値は `origin/main`）。JDK/SDK準備前に構成を検査し、不一致ならE2Eを開始しない。
 
 ```sh
-gh workflow run e2e.yml --repo "$gh_repo" --ref "$gh_branch"
+gh_base_ref=origin/main
+gh workflow run e2e.yml --repo "$gh_repo" --ref "$gh_branch" -f base_ref="$gh_base_ref"
 ```
 
 ### 成果物と保護設定の取得
