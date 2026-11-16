@@ -278,7 +278,7 @@ python3 scripts/run_check.py --output-dir .local/checks/e2e-watch-001 \
 # 許可済みの対象run IDを先に確定してから監視。CI自体は起動しない
 python3 scripts/run_check.py --output-dir .local/checks/ci-watch-001 \
   --progress-interval 60 --timeout 1800 -- \
-  gh run watch "$gh_run" --repo "$gh_repo" --compact --exit-status --interval 30
+  gh run watch "$gh_run" --repo "$gh_repo" --compact --exit-status --interval 5
 ```
 
 実行基盤が途中で制御を返す場合は、同じ実行のセッションID等を使って継続して待つ。別の `sleep`・`tail`・`gh run view` を繰り返し組み立てない。通知間隔に合わせて必要な経過報告を行い、失敗時や情報が不足する場合だけ、保存したサマリーとログの該当範囲を取得する。監視は新規起動・再試行・マージの許可を追加しない。対象SHAとrunの対応、必須チェックの成功確認は[GitHub CLIの手引き](github-cli.md#ci-の状態失敗箇所の確認)に従う。
@@ -288,6 +288,8 @@ python3 scripts/run_check.py --output-dir .local/checks/ci-watch-001 \
 通知・時間上限は有限の正数だけを受け付ける。CI監視の中断はローカルのwatchを止めるだけで、GitHub上のrunをキャンセルしない。強制終了・SIGKILL・ホスト障害、別セッションへ離れた子、端末設定の復元は保証できない。中断後は環境と残存プロセスを確認し、[失敗反復の判定](../workflow/verification.md#retry-diagnosis)に従って、必要な検証だけを新しい保存先で再開する。常駐サービスの管理には使わない。
 
 通知はトークン計測ではなく、実行基盤がモデルを何回再開するかも制御しない。[実装の確認記録](../records/evaluations/2026-11-16-wait-monitor.md)と、通常作業での全担当入力・待機応答数・失敗検出・所要時間の比較を分けて扱う。
+
+CI監視は一度起動したプロセスの終了結果を受け取る。外側で固定sleepと確認を繰り返さない。途中通知の60秒は報告間隔であり、子プロセス終了後の待機時間ではない。CIの確認間隔は上の例では5秒とし、APIアクセス量と完了検知の遅れを区別する。ツールがセッションIDを返す場合は、そのセッションの完了待ちを使い、定期通知に合わせて必要な状況だけを報告する。
 
 保存したログや検索結果は、次のように必要な範囲を取得する。
 

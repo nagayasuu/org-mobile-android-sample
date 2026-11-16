@@ -34,4 +34,4 @@ APK は `app/build/outputs/apk/debug/app-debug.apk` に出力します。詳し�
 
 同じ2クラスへの PIT ミューテーションテストを手動で実行できます。試験で見つかった検証不足を具体例テストで補い、31件すべての検出を確認しました。合否と実行契機は[検証の基準](docs/workflow/verification.md#ミューテーションテストの構成と評価)に従います。コマンドと制約は[ミューテーションテストの手引き](docs/guides/android.md#ミューテーションテスト)、比較結果と判断理由は[導入記録](docs/records/verification/2026-11-04-mutation-tests.md)を参照してください。
 
-標準ファイル選択を通す自動 E2E は `./gradlew :app:pixel2Api37DebugAndroidTest` で手動実行します。API 37 の専用エミュレーターで、起動時のサンプル表示、表示・長文末尾、取り消し・回転後の保持、不正 UTF-8・空文書からの復帰、更新後の再読み込み、1万項目、表示設定・アクセシビリティの計9シナリオを確認します。CI の `Android E2E` も手動実行です。環境・結果の見方は[自動 E2E の手引き](docs/guides/android.md#自動-e2e-テスト)を参照してください。
+標準ファイル選択を通す自動 E2E は `python3 scripts/run_e2e.py --output-dir .local/checks/e2e-001` で手動実行します。API 37 の専用エミュレーターで設定復元の事前テスト1件を通した後、起動時のサンプル表示、表示・長文末尾、取り消し・回転後の保持、不正 UTF-8・空文書からの復帰、更新後の再読み込み、1万項目、表示設定・アクセシビリティの9シナリオを確認します。出力先は未使用のディレクトリを指定します。CI の `Android E2E` も手動実行です。環境・結果の見方は[自動 E2E の手引き](docs/guides/android.md#自動-e2e-テスト)を参照してください。
