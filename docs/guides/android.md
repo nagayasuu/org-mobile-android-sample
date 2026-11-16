@@ -91,9 +91,16 @@ SDK と AVD の両方に十分な空き容量を用意する（今回の AVD の
 シンボリックリンク経由のパスで Managed Device のイメージ検索に失敗した。
 
 ```sh
-sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64'
+coverage_base_ref=origin/main
+python3 scripts/run_coverage.py --preflight-only --base-ref "$coverage_base_ref" &&
+sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64' &&
+python3 scripts/run_coverage.py --base-ref "$coverage_base_ref" &&
+./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle \
+  '-Pandroid.testInstrumentationRunnerArguments.class=dev.orgmobile.reader.ReaderE2eTest#settingsPreflightRestoresCustomNightModesAndWaitsForDocument' &&
 ./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle
 ```
+
+最終E2E前に[構成と比較条件](#build-preflight)を確認する例。比較元は確認したSHAまたは取得済みrefへ置き換える。不一致では後続へ進まず、先に構成を修正する。同じ対象・入力・環境の共通検証が成功済みなら、[既存結果の再利用条件](../workflow/verification.md#検証結果を再利用する条件)を照合してその証跡を使い、不要な全量再実行は増やさない。
 
 JDK 17 と通常のビルド環境を使う。エミュレーターの既定言語は en-US とし、
 Downloads のルート名だけ英語に依存する。本文は日本語で検証する。
@@ -106,9 +113,14 @@ Downloads のルート名だけ英語に依存する。本文は日本語で検�
 CI は [Android E2E](../../.github/workflows/e2e.yml) の `workflow_dispatch` のみ。
 [GitHub CLI の手順](github-cli.md#github-cli)に従い、`gh workflow run` で実行対象のブランチを指定する。新規ワークフローは既定ブランチに
 入った後に手動実行できる。PR の必須 `verify` と通常の `check assembleDebug` は維持する。
+workflow入力 `base_ref` の既定値は `origin/main`。全履歴取得後に比較元を解決し、JDK/SDK/AVD準備前に事前検査する。カバレッジの本検証は必須 `verify` で行い、この事前検査の成功を代用にしない。
 週次実行・PR 必須化は、実行時間と安定性を継続確認してから判断する。
 
 ### 入力・初期化・合否
+
+全件E2Eの前に `settingsPreflightRestoresCustomNightModesAndWaitsForDocument` を単独実行する。[AndroidJUnitRunnerのメソッド指定](https://developer.android.com/studio/test/command-line)を使い、設定保存・変更・復元と文書表示の条件待ちを先に確認する。`custom_schedule` と `custom_bedtime` のそれぞれから文字倍率・密度・夜間設定を変更し、既存表示設定シナリオと共通の復元処理で保存値へ戻ることを検査する。元の設定も後片付けで復元する。全件テストの代替にはしない。
+
+上の `&&` は失敗時に全件へ進まない。ローカルで診断を続ける場合は、次の実行で上書きされる `app/build/reports/androidTests/`、`app/build/outputs/androidTest-results/`、`app/build/outputs/managed_device_android_test_additional_output/` を先に未使用のローカル専用保存先へコピーする。CIは事前検査の診断を `app/build/reports/e2e/preflight/` へ退避して既存成果物に含める。全件実行ではメソッド指定を外し、既存9件と追加1件の結果・件数を確認する。
 
 各テスト前に、新しい Activity を開き、アプリの永続 URI 読み取り権限を解除する。
 アプリ自身が所有する、固定名 `org-reader-e2e-{smoke,long,invalid,empty,large}.org` の前回分だけを削除し、
@@ -360,10 +372,27 @@ python3 scripts/run_coverage.py
 python3 scripts/check_coverage.py
 ```
 
-`run_coverage.py` は毎回 clean で古い実行データ・レポートを消し、共通検証と
+`run_coverage.py` の通常実行は毎回 clean で古い実行データ・レポートを消し、共通検証と
 レポート生成を同じ Gradle 呼び出しで行う。Debug テストを二重には実行しない。
 Release テスト・Lint・APK 生成も維持する。計測はテスト JVM のみに作用し、
 APK に計測エージェントを追加しない。
+
+<a id="build-preflight"></a>
+
+### 最終E2E前の構成確認
+
+```sh
+# Gitと公開設定だけを読む。Gradle・SDK・エミュレーターは起動しない
+python3 scripts/run_coverage.py --preflight-only --base-ref origin/main
+```
+
+既存の比較基準と同じ5入力（root/appのbuild.gradle.kts、settings.gradle.kts、gradle.properties、Gradle wrapper設定）を、比較元と現在の作業ツリーで照合する。空行と既存のcoverage適用行だけを除く正規化は維持する。比較対象は従来どおり変更された既存の追跡済み `.kt` / `.java` で、新規・削除・改名を比較可能な群へ追加しない。比較対象がない場合は `conditions_checked=false` と空の `changed_sources` を返し、構成一致の検査済みとは扱わない。
+
+成功時は終了0のJSONで `mode=preflight`、`coverage=not-run`、head/base、比較対象、設定ハッシュ `input_sha256` を返す。ハッシュは上記5入力と、両版に適用する `gradle/coverage.gradle` の6ファイル分。比較不要時に存在しない入力はnullで記録し、比較が必要な場合の欠落は失敗させる。設定本文は表示しない。比較元を省略した事前検査や、比較元を解決できない場合は不合格。既存のカバレッジレポートは削除・更新せず、80%・低下判定やテスト成功を確認した意味にはならない。
+
+通常のカバレッジ実行にも同じ事前検査を入れ、比較元展開後の既存検査を維持する。設定ハッシュまたは比較対象群が実行中に変わった場合は失敗にし、条件を確定してやり直す。JDK/SDK・環境変数・外部依存の解決、全ビルド入力の網羅、編集の原子的なロックまでは保証しない。
+
+最終E2Eまでソース・assets・設定・比較元を変更せず、出力のSHA/ハッシュとカバレッジ結果・APKハッシュを検証記録へ対応付ける。変更した場合は共通検証やE2Eの再利用可否を見直す。事前検査はレポート再利用や必須検証省略の許可ではない。[実装確認と未確認範囲](../records/evaluations/2026-11-16-build-preflight.md)を参照する。
 
 | 出力 | 場所 |
 | --- | --- |

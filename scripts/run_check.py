@@ -7,7 +7,10 @@ from datetime import datetime, timezone
 import glob
 import hashlib
 import json
+import math
+import os
 from pathlib import Path
+import signal
 import subprocess
 import time
 import xml.etree.ElementTree as ET
@@ -80,16 +83,114 @@ def revision():
             'tracked_diff_sha256': hashlib.sha256(diff.stdout).hexdigest() if diff.returncode == 0 else None}
 
 
+def positive_seconds(value):
+    seconds = float(value)
+    if not math.isfinite(seconds) or seconds <= 0:
+        raise argparse.ArgumentTypeError('seconds must be finite and positive')
+    return seconds
+
+
+def execute(command, log, summary, interval=None, timeout=None):
+    """Wait inside this process; only bounded metadata reaches its caller."""
+    began = time.monotonic()
+    process = None
+    interrupted = []
+    notifications = 0
+
+    def send(sig):
+        try:
+            if os.name == 'posix':
+                os.killpg(process.pid, sig)
+            else:
+                process.send_signal(sig)
+        except ProcessLookupError:
+            pass
+
+    def interrupt(sig, _frame):
+        interrupted.append(sig)
+        if process is not None:
+            send(signal.SIGTERM)
+
+    def stop():
+        send(signal.SIGTERM)
+        try:
+            process.wait(timeout=1)
+        except subprocess.TimeoutExpired:
+            pass
+        finally:
+            # Also terminate descendants still in the command's process group.
+            send(signal.SIGKILL)
+            process.wait()
+
+    def notify(event):
+        nonlocal notifications
+        print(json.dumps({'event': event, 'elapsed_seconds': round(time.monotonic()-began, 3),
+                          'log_bytes': os.fstat(log.fileno()).st_size}), flush=True)
+        notifications += 1
+
+    previous = {sig: signal.signal(sig, interrupt) for sig in (signal.SIGINT, signal.SIGTERM)}
+    try:
+        process = subprocess.Popen(command, stdout=log, stderr=subprocess.STDOUT,
+                                   start_new_session=os.name == 'posix')
+        if interval is not None:
+            notify('started')
+        next_notice = began + interval if interval is not None else float('inf')
+        deadline = began + timeout if timeout is not None else float('inf')
+        termination = 'exited'
+        while True:
+            if interrupted:
+                termination = 'interrupted'
+                stop()
+                break
+            if process.poll() is not None:
+                break
+            now = time.monotonic()
+            if now >= deadline:
+                termination = 'timeout'
+                stop()
+                break
+            if now >= next_notice:
+                notify('running')
+                next_notice = now + interval
+            try:
+                process.wait(timeout=max(0.001, min(1, deadline-now, next_notice-now)))
+            except subprocess.TimeoutExpired:
+                pass
+        raw_code = process.wait()
+        exit_code = (124 if termination == 'timeout' else 128 + interrupted[0]
+                     if termination == 'interrupted' else raw_code if raw_code >= 0 else 128-raw_code)
+        summary.update(command_returncode=raw_code, command_exit_code=exit_code,
+                       termination=termination)
+        if interrupted:
+            summary['interrupted'] = True
+        return exit_code
+    finally:
+        try:
+            if process is not None and process.poll() is None:
+                stop()
+        finally:
+            for sig, handler in previous.items():
+                signal.signal(sig, handler)
+            if interval is not None:
+                summary['progress_notifications'] = notifications
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--output-dir', type=Path, required=True, help='New directory; never overwrites a previous run')
     parser.add_argument('--junit', action='append', default=[], metavar='GLOB', help='Fresh JUnit XML required after command')
     parser.add_argument('--lint', action='append', default=[], metavar='GLOB', help='Fresh Android Lint XML required after command')
+    parser.add_argument('--progress-interval', type=positive_seconds, metavar='SECONDS',
+                        help='Emit metadata-only progress at this interval (POSIX; e.g. 60)')
+    parser.add_argument('--timeout', type=positive_seconds, metavar='SECONDS',
+                        help='Stop the command process group after this limit (POSIX)')
     parser.add_argument('command', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command[1:] if args.command[:1] == ['--'] else args.command
     if not command:
         parser.error('a command after -- is required')
+    if (args.progress_interval is not None or args.timeout is not None) and os.name != 'posix':
+        parser.error('monitoring and time limits require POSIX')
     try:
         args.output_dir.mkdir(parents=True, exist_ok=False)
     except OSError:
@@ -98,15 +199,14 @@ def main():
                'started_utc': datetime.now(timezone.utc).isoformat(),
                'command_exit_code': None, 'command_returncode': None, 'log': str(args.output_dir / 'command.log'),
                'report_errors': []}
+    if args.progress_interval is not None or args.timeout is not None:
+        summary.update(progress_interval_seconds=args.progress_interval, timeout_seconds=args.timeout)
     started = time.time_ns()
     exit_code = 1
     try:
         with (args.output_dir / 'command.log').open('wb') as log:
             try:
-                process = subprocess.run(command, stdout=log, stderr=subprocess.STDOUT, check=False)
-                exit_code = process.returncode if process.returncode >= 0 else 128 - process.returncode
-                summary['command_returncode'] = process.returncode
-                summary['command_exit_code'] = exit_code
+                exit_code = execute(command, log, summary, args.progress_interval, args.timeout)
             except OSError as error:
                 summary['launch_error'] = type(error).__name__
                 exit_code = 127

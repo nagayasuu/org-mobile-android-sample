@@ -261,41 +261,49 @@ class ReaderE2eTest {
         }.toString(2))
     }
 
-    @Test fun enlargedTextAndDisplayRemainUsableInBothNightModesAndLandscape() {
-        val originalFontScale = Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1f)
-        val densityState = device.executeShellCommand("wm density")
-        val originalDensity = context.resources.displayMetrics.densityDpi
-        val overrideDensity = Regex("Override density: (\\d+)").find(densityState)?.groupValues?.get(1)
-        val uiModeManager = context.getSystemService(UiModeManager::class.java)
-        val originalNightValue = uiModeManager.nightMode
-        // The shell distinguishes custom schedules from bedtime mode.
-        val originalNightMode = device.executeShellCommand("cmd uimode night")
-            .trim().removePrefix("Night mode: ")
-        check(originalNightMode in setOf("auto", "yes", "no", "custom_schedule", "custom_bedtime"))
+    @Test fun settingsPreflightRestoresCustomNightModesAndWaitsForDocument() {
+        restoreSettings = captureDisplaySettings()
         scenario!!.close()
         scenario = null
-        restoreSettings = {
+        for (mode in listOf("custom_schedule", "custom_bedtime")) {
+            device.executeShellCommand("cmd uimode night $mode")
+            await("select $mode") {
+                device.executeShellCommand("cmd uimode night").trim() == "Night mode: $mode"
+            }
+            val restoreCustom = captureDisplaySettings()
             try {
-                device.executeShellCommand("settings put system font_scale $originalFontScale")
-            } finally {
-                try {
-                    device.executeShellCommand("wm density ${overrideDensity ?: "reset"}")
-                } finally {
-                    device.executeShellCommand("cmd uimode night $originalNightMode")
-                    await("restore font scale to $originalFontScale") {
-                        Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1f) == originalFontScale
-                    }
-                    await("restore display density to ${overrideDensity ?: "default"}") {
-                        Regex("Override density: (\\d+)").find(device.executeShellCommand("wm density"))
-                            ?.groupValues?.get(1) == overrideDensity
-                    }
-                    await("restore night mode to $originalNightMode") {
-                        uiModeManager.nightMode == originalNightValue &&
-                            device.executeShellCommand("cmd uimode night").trim() == "Night mode: $originalNightMode"
-                    }
+                val font = Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1f)
+                val density = context.resources.displayMetrics.densityDpi
+                device.executeShellCommand("settings put system font_scale ${if (font == 2f) 1f else 2f}")
+                await("change font scale before restoring $mode") {
+                    Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1f) != font &&
+                        context.resources.configuration.fontScale != font
                 }
+                device.executeShellCommand("wm density ${density + 20}")
+                await("change density before restoring $mode") {
+                    context.resources.configuration.densityDpi == density + 20 &&
+                        device.executeShellCommand("wm density").contains("Override density: ${density + 20}")
+                }
+                device.executeShellCommand("cmd uimode night yes")
+                await("change night mode before restoring $mode") {
+                    device.executeShellCommand("cmd uimode night").trim() == "Night mode: yes"
+                }
+            } finally {
+                restoreCustom()
             }
         }
+        restoreSettings!!.invoke()
+        scenario = ActivityScenario.launch(MainActivity::class.java)
+        awaitDocument("smoke.org")
+        assertRow("買い物メモ")
+        assertRow("最後まで読めたことを確認するための本文です。")
+    }
+
+    @Test fun enlargedTextAndDisplayRemainUsableInBothNightModesAndLandscape() {
+        val originalDensity = context.resources.displayMetrics.densityDpi
+        restoreSettings = captureDisplaySettings()
+        scenario!!.close()
+        scenario = null
         val enlargedDensity = (originalDensity * 4 / 3).coerceAtMost(600)
         device.executeShellCommand("settings put system font_scale 2.0")
         device.executeShellCommand("wm density $enlargedDensity")
@@ -340,6 +348,43 @@ class ReaderE2eTest {
             }
         } finally {
             AccessibilityChecks.disable()
+        }
+    }
+
+    private fun captureDisplaySettings(): () -> Unit {
+        val originalFontScale = Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1f)
+        val originalDensity = context.resources.configuration.densityDpi
+        val densityState = device.executeShellCommand("wm density")
+        val overrideDensity = Regex("Override density: (\\d+)").find(densityState)?.groupValues?.get(1)
+        val uiModeManager = context.getSystemService(UiModeManager::class.java)
+        val originalNightValue = uiModeManager.nightMode
+        // The shell distinguishes custom schedules from bedtime mode.
+        val originalNightMode = device.executeShellCommand("cmd uimode night")
+            .trim().removePrefix("Night mode: ")
+        check(originalNightMode in setOf("auto", "yes", "no", "custom_schedule", "custom_bedtime"))
+        return {
+            try {
+                device.executeShellCommand("settings put system font_scale $originalFontScale")
+                await("restore font scale to $originalFontScale") {
+                    Settings.System.getFloat(resolver, Settings.System.FONT_SCALE, 1f) == originalFontScale &&
+                        context.resources.configuration.fontScale == originalFontScale
+                }
+            } finally {
+                try {
+                    device.executeShellCommand("wm density ${overrideDensity ?: "reset"}")
+                    await("restore display density to ${overrideDensity ?: "default"}") {
+                        Regex("Override density: (\\d+)").find(device.executeShellCommand("wm density"))
+                            ?.groupValues?.get(1) == overrideDensity &&
+                            context.resources.configuration.densityDpi == originalDensity
+                    }
+                } finally {
+                    device.executeShellCommand("cmd uimode night $originalNightMode")
+                    await("restore night mode to $originalNightMode") {
+                        uiModeManager.nightMode == originalNightValue &&
+                            device.executeShellCommand("cmd uimode night").trim() == "Night mode: $originalNightMode"
+                    }
+                }
+            }
         }
     }
 
