@@ -12,7 +12,7 @@
 | [レビュー手順](workflow/review.md) | 確認者・R01〜R30・判定・再確認・記録。変更をレビューするとき |
 | [Git 運用規約](workflow/git.md) | 操作の範囲・ブランチ・コミット・統合・履歴・保護条件。Git を操作するとき |
 | [一般配布の開始条件](workflow/release.md) | 一般配布を始めるための準備と保証。配布に着手するとき |
-| [Android の手引き](guides/android.md) | 環境・実行コマンド・レポート。ビルド・テスト・E2E・計測を実行するとき |
+| [Android の手引き](guides/android.md) | 環境・実行コマンド・レポート。ビルド・テスト・計測を実行するとき |
 | [GitHub CLI の手引き](guides/github-cli.md) | gh の認証・操作・結果取得。GitHub を操作するとき |
 | [agent ツールの手引き](guides/agent-tools.md) | 検索・文書取得・ログ・既読記録・使用量計測。必要な補助を使うとき |
 | [指示書の保守](maintenance/agent-instructions.md) | AGENTS.md・参照文書・skills の分担と保守チェックリスト。指示を変更するとき |

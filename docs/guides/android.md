@@ -1,6 +1,6 @@
 # Android の開発環境とビルド・検証
 
-[開発手順](../workflow/development.md)から参照する、環境構築と実行コマンドの手引き。バージョンはリポジトリのビルド設定と CI 定義に合わせて更新する。利用経路の検証は[自動 E2E テスト](#自動-e2e-テスト)に集約する。
+[開発手順](../workflow/development.md)から参照する、環境構築と実行コマンドの手引き。バージョンはリポジトリのビルド設定と CI 定義に合わせて更新する。アプリ内の利用操作は[Robolectric](#robolectric-の検証範囲)で確認する。
 
 ## 開発環境
 
@@ -64,144 +64,28 @@ AGP 9 の既定で Release テストが省略されないよう、`app/build.gra
 
 Kotlin の警告と Lint の警告はビルドを失敗させる。例外として、`app/lint.xml` では依存関係・Gradle の新版通知（`GradleDependency`、`NewerVersionAvailable`、`AndroidGradlePluginVersion`）を情報レベルにする。検証済みの組み合わせを固定し、更新を一つの変更として再検証するためであり、通知自体はレポートに残す。互換性やコードの問題の検出は有効なままとする。
 
-自動テストでは、日本語の解析・UTF-8 読み込み、不正な文字コード、空ファイル、対応外構文の保持、長い文書、読み込み失敗と再試行、URI からの読み込み、ファイル選択の取り消し、画面再作成後の文書と閲覧位置の保持、更新したファイルの再読み込み、一覧の末尾へのスクロールを確認する。Android の画面・ファイルアクセスのテストには Robolectric の API 35 環境とテスト専用の文書プロバイダーを使う。標準ファイル選択を通す検証は下記の E2E で行い、Dropbox 接続は自動化の未対応範囲として記録する。
+自動テストでは、日本語の解析・UTF-8 読み込み、不正な文字コード、空ファイル、対応外構文の保持、長い文書、読み込み失敗と再試行、URI からの読み込み、ファイル選択の取り消し、画面再作成後の文書と閲覧位置の保持、更新したファイルの再読み込み、一覧の末尾へのスクロールを確認する。Android の画面・ファイルアクセスのテストには Robolectric の API 35 環境とテスト専用の文書プロバイダーを使う。標準ファイル選択の実操作とDropbox接続は未検証とし、選択結果の受信後をローカルで検査する。
 
-## 自動 E2E テスト
+## Robolectric の検証範囲
 
-[`ReaderE2eTest`](../../app/src/androidTest/java/dev/orgmobile/reader/ReaderE2eTest.kt) は、
-実際の標準 DocumentsUI で Downloads の文書を選び、アプリの表示を検証する。
-選択結果のスタブやテスト専用プロバイダーは使わない。
-[UI Automator 2.4.0](https://developer.android.com/jetpack/androidx/releases/test-uiautomator)、
-[Espresso 3.7.0 / AndroidX Test 1.7.0 / ext.junit 1.3.0](https://developer.android.com/jetpack/androidx/releases/test)
-をテスト APK のみに追加した。新しい製品依存はない。
+`./gradlew --console=plain check assembleDebug` でJVM・RobolectricテストとLintを実行する。エミュレーター、システムイメージ、KVM、テストAPKは不要。API 35の模擬環境を使い、compileSdk / targetSdkのAPI 37上で動作確認した意味にはならない。
 
-### 環境と実行
+- `MainActivityTest`：同梱サンプルと公開fixtureの一致、起動・選択結果・取消・再作成・閲覧位置、空文書・不正UTF-8からの復帰、更新後の再読み込み、1万項目の末尾、拡大・横画面と明暗設定でのレイアウト・操作。
+- `OrgAdapterTest`：各行種別の48dpタッチ領域、再利用される行の見出し属性。
+- `ReaderViewModelTest`・`ContentDocumentSourceTest`：失敗・権限喪失・競合・状態復元とテスト用プロバイダーからの読み込み。
 
-[Gradle Managed Devices](https://developer.android.com/studio/test/managed-devices) を
-AGP 9.2.1 の `managedDevices.localDevices` で構成する。
-`pixel2Api37` は Pixel 2、API 37、`systemImageSource = "google"`、4 KB ページの通常イメージを使う。
-ABI は x86_64 に固定し、`system-images;android-37.0;google_apis;x86_64` を使う。
-ATD は標準選択画面を省く可能性があるため採用しない。
-初回はネットワーク接続とイメージ用のディスク空き容量が必要。
-Linux では `/dev/kvm` の読み書き権限を確認する。
-CI は使い捨て runner の KVM デバイスに直接読み書き権限を設定し、エミュレーター起動前に検査する。
-SDK と AVD の両方に十分な空き容量を用意する（今回の AVD の userdata は約7.4 GBの空きを要求した）。
-起動失敗時は SDK だけでなく AVD の保存先も確認する。
-`ANDROID_HOME` は SDK の実体パスを指定する。導入時の AGP 9.2.1 では、
-シンボリックリンク経由のパスで Managed Device のイメージ検索に失敗した。
+選択結果はActivity Resultへ直接渡す。実際の標準ピッカー、OSの権限付与、実プロバイダーや端末上の描画・性能は確認しない。48dp・View属性の個別検査は従来のATF全検査の代替保証ではない。[検証の基準](../workflow/verification.md#e2e-gaps)に未検証範囲と再検討条件を記す。
 
-```sh
-coverage_base_ref=origin/main
-python3 scripts/run_coverage.py --preflight-only --base-ref "$coverage_base_ref" &&
-sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64' &&
-python3 scripts/run_coverage.py --base-ref "$coverage_base_ref" &&
-python3 scripts/run_e2e.py --output-dir .local/checks/e2e-001
-```
+<!-- 過去記録からの参照を維持する廃止済み手順のアンカー。 -->
+<a id="自動-e2e-テスト"></a>
+<a id="環境と実行"></a>
+<a id="入力初期化合否"></a>
+<a id="結果と成果物"></a>
+<a id="dropbox-経路の準備未実装"></a>
 
-最終E2E前に[構成と比較条件](#build-preflight)を確認する例。比較元は確認したSHAまたは取得済みrefへ置き換える。不一致では後続へ進まず、先に構成を修正する。同じ対象・入力・環境の共通検証が成功済みなら、[既存結果の再利用条件](../workflow/verification.md#検証結果を再利用する条件)を照合してその証跡を使い、不要な全量再実行は増やさない。
+### 旧E2E手順の廃止
 
-JDK 17 と通常のビルド環境を使う。エミュレーターの既定言語は en-US とし、
-Downloads のルート名だけ英語に依存する。本文は日本語で検証する。
-描画は `swangle`（ANGLE + SwiftShader）を使う。導入環境の Emulator 37.2.13 では
-`swiftshader_indirect` が描画スレッドでクラッシュしたため、上の指定をローカルと CI でそろえる。
-通常 AOSP revision 6 はシステムサービスの起動に失敗したため、Google APIs 版を選んだ。
-個人のファイル・アカウントを含まない専用環境で実行する。
-接続済みの実機を対象にする `connectedAndroidTest` はこの手順には使わない。
-
-CI は [Android E2E](../../.github/workflows/e2e.yml) の `workflow_dispatch` のみ。
-[GitHub CLI の手順](github-cli.md#github-cli)に従い、`gh workflow run` で実行対象のブランチを指定する。新規ワークフローは既定ブランチに
-入った後に手動実行できる。PR の必須 `verify` と通常の `check assembleDebug` は維持する。
-workflow入力 `base_ref` の既定値は `origin/main`。全履歴取得後に比較元を解決し、JDK/SDK/AVD準備前に事前検査する。カバレッジの本検証は必須 `verify` で行い、この事前検査の成功を代用にしない。
-週次実行・PR 必須化は、実行時間と安定性を継続確認してから判断する。
-
-### 入力・初期化・合否
-
-`run_e2e.py` は `settingsPreflightRestoresCustomNightModesAndWaitsForDocument` を単独実行し、成功した場合だけ残り9件へ進む。[AndroidJUnitRunnerのメソッド指定](https://developer.android.com/studio/test/command-line)を使い、設定保存・変更・復元と文書表示の条件待ちを先に確認する。`custom_schedule` と `custom_bedtime` のそれぞれから文字倍率・密度・夜間設定を変更し、既存表示設定シナリオと共通の復元処理で保存値へ戻ることを検査する。元の設定も後片付けで復元する。続く9件も各ケースで初期化・後片付けを行い、表示設定を変えたケースは復元値を検査する。設定事前テストを全件側で繰り返す代わりに、両工程を合わせて全10シナリオの成功を必要とする。
-
-`run_e2e.py` は各工程を一度だけ起動し、失敗・タイムアウトでは次の工程へ進まない。AndroidJUnitRunnerの[メソッド除外](https://developer.android.com/reference/androidx/test/runner/AndroidJUnitRunner)を使い、事前テスト1件・残り9件のJUnit件数、重複・skipなしを検査する。テスト本体やアサーションを削除せず、両工程で同じAPK・専用端末構成を使う。Gradleタスクには `--rerun` を付けてテスト結果の再利用を防ぎ、ビルド依存タスクの再利用は維持する。新しいシナリオを追加した場合は実行器の期待件数も更新する。
-
-保存先には未使用のディレクトリを指定する。`preflight/` と `suite/` ごとにコマンドの全文ログ・終了コード・所要時間・JUnit判定の `summary.json`、HTML/XML・端末診断・Gradle `--profile` のHTMLを残す。端末テストの生成出力だけを各工程前に消し、古い結果の混入を防ぐ。成功した事前テストの証跡は次の工程の開始前に保存する。両工程の成功後に `selection.json` へ重複のない10件を記録する。出力先を端末テストの生成出力内に置くことは禁止する。
-
-CIは保存先を `app/build/reports/e2e/run/` とし、SDK導入にも実行器を使って時間を記録する。ジョブ要約には工程の成否・所要時間とSDKキャッシュ命中を出す。Gradleプロファイルで構成・依存解決・端末準備・テストタスクを分け、テスト側の `*-timing.json` で初期化・本体・文書作成・診断・後片付けを確認する。文書作成の時間は本体時間に含まれるため単純合算しない。計測はDebug・instrumentation込みであり、アプリ単体の性能ではない。
-
-SDKキャッシュはOS・アーキテクチャ・月・workflowの内容で区切り、API 37 platform・Build Tools 37.0.0・Google APIs x86_64イメージだけを保存する。復元後も `sdkmanager` を実行してパッケージ状態を照合する。AVD・userdata・端末設定・アカウントは保存しない。Gradleキャッシュは手動実行ブランチでも書き込み、同じブランチの再実行でAndroidTest固有の依存・ビルド結果を再利用する。別の新規ブランチにも引き継ぐには、統合後の同じworkflowをmainで手動実行してmain側のキャッシュを作る必要がある。キャッシュ保存・復元も時間と容量の評価に含め、CIでの効果は実際のrunで確認する。
-
-各テスト前に、新しい Activity を開き、アプリの永続 URI 読み取り権限を解除する。
-アプリ自身が所有する、固定名 `org-reader-e2e-{smoke,long,invalid,empty,large}.org` の前回分だけを削除し、
-必要な文書だけを初回選択時に MediaStore Downloads へ作る。同じURIを更新して再選択するケースでは、再生成せず更新済み文書を使う。広いストレージ権限やシェルでのファイル書き込みは不要。
-公開 [`examples/smoke.org`](../../examples/smoke.org) はテスト assets からそのままコピーする。
-長文は160項目のリストと末尾の見出し・本文、不正 UTF-8 は `C3 28` の2バイト、空文書は0バイトを生成する。
-1万項目の文書は対象テスト内で生成し、合計10,003ブロックの存在と末尾表示を検査する。
-正常文書にも不正文書にも `application/octet-stream` を付け、配置後の文書名を検査する。
-`text/plain` は MediaStore が `.txt` を追加するため使わない。
-アプリは `*/*` で選択し、実際の内容に応じた文字コードの成否を確認する。
-
-| シナリオ | 期待結果 |
-| --- | --- |
-| 起動時の同梱サンプル | ファイル選択なしで `smoke.org` の見出しと末尾を表示し、選択取り消し・画面再作成後も保持する |
-| 公開サンプルと長文 | 日本語見出し・本文・箇条書き・番号付きリストを表示し、別文書の末尾までスクロールできる |
-| 取り消しと回転 | 途中の行番号と先頭行の上端位置を選択取り消し後・横向き回転後に保持し、文書名と末尾を確認できる |
-| 不正 UTF-8 からの復帰 | エラー案内が出て、正常文書を再選択すると本文を表示し、エラー案内が消える |
-| 空文書 | 前の文書が消え、空の案内を表示し、正常文書の再選択で復帰する |
-| 同じファイルの更新 | 同じ MediaStore URI の内容を更新し、標準選択で開き直すと新しい162ブロックに置き換わり先頭へ戻る |
-| 1万項目 | 10,003ブロックを保持し、最後のリスト項目・見出し・本文を表示する。Debug の時間・メモリの参考値を保存する |
-| 表示設定 | 文字200%・画面密度4/3倍、端末の夜間設定オン／オフ、横向きで操作ボタンと本文末尾へ到達する |
-| アクセシビリティ | 公開サンプルの画面全体を ATF で検査し、見出し／本文のノード属性を照合する |
-
-読み込み完了は文書名、エラーは案内文、回転は横向きの構成と閲覧位置を条件で待つ。
-Downloads のナビゲーションが閉じてからファイルを押す。選択確定ボタンが現れた場合は、要求した1件だけが選択されていることを検査し、一度だけ確定する。選択画面が消え、アプリのルート画面が表示されることを完了条件とする。ウィンドウ変化だけをアプリ復帰とは扱わない。不正UTF-8のケースは長押し選択から確定する経路も明示的に検証し、エラー表示と正常文書への復帰を確認する。
-各条件の上限は15秒。回転の条件は50ms間隔で再確認する。
-Espresso でアプリ内の操作・表示を同期し、Managed Devices でアニメーションを無効化する。
-タイムアウト・アサーション不一致は失敗とし、失敗を隠す自動リトライは追加しない。
-テスト終了時は画面・UI 階層を保存してから Activity を閉じ、権限・作成文書を片付け、表示設定を変更したテストは元の文字倍率・画面密度・夜間設定へ戻して検査し、回転固定を解除する。
-中断時の残存文書も次の開始時にアプリ所有分のみ片付ける。
-
-文字倍率と密度・夜間設定の操作は専用エミュレーター内だけで行う。
-画面のテーマは現在の明るいテーマを維持しており、端末の夜間設定への耐性と、アプリの暗色テーマ対応は別である。
-[Espresso のアクセシビリティ検査](https://developer.android.com/training/testing/espresso/accessibility-checking)には
-`espresso-accessibility:3.7.0`（AndroidX Test、Apache-2.0）をテスト APK のみに追加する。
-検査は対象シナリオ内で有効化し、終了時に解除する。エラーを抑制する matcher は使わない。
-選択可能な本文・リスト行には48dpの最小高さを設定し、小さなタッチ対象を避ける。
-可視ノードの自動検査と見出し属性の成功は、TalkBack の音声・読み順・主観的な使いやすさを保証しない。
-
-1万項目の `large-document-observations.json` は、選択クリック直前から最初の内容検査完了までの時間と、
-末尾表示後のアプリ＋instrumentation プロセスの PSS・Java heap の参考値を保存する。
-システム選択画面の終了待ちやテスト同期を含む Debug の単発観測であり、ピークメモリ・解析時間ではない。
-性能の合否閾値は未設定で、Release 相当の反復計測・基準値・許容値の決定は引き続き未対応である。
-
-### 結果と成果物
-
-| 出力 | 場所 |
-| --- | --- |
-| HTML | `app/build/reports/androidTests/managedDevice/` 以下 |
-| XML・実行ログ | `app/build/outputs/androidTest-results/managedDevice/` 以下 |
-| 各テスト終了時の PNG・UI 階層 XML、工程別時間 JSON と大容量の参考値 JSON | `app/build/outputs/managed_device_android_test_additional_output/` 以下 |
-| テスト APK | `app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk` |
-
-runner の `additionalTestOutputDir` に診断を保存し、未指定の場合のみ端末上の
-アプリ専用 external files の `e2e/` を使う。診断の保存失敗は warning を出し、
-シナリオの成否と区別する。失敗段階はアサーションの文言と `ReaderE2E` のログで追う。
-CI は `android-e2e-reports` に上記結果・コミット SHA・APK SHA-256、
-`org-reader-e2e-apks` に本体とテスト APK を保存する。環境作成の失敗も Gradle ログで確認する。
-収集先は明示したビルド出力だけであり、端末全体のデータを収集しない。
-
-導入時のコマンド・結果・未確認は[検証記録](../records/verification/2026-11-05-e2e-tests.md)を参照する。
-E2E の成功は Dropbox の保存・クラウド接続、Pixel 10a の実機、TalkBack、大容量の性能を保証しない。
-利用経路の検証は E2E で行う。未対応の条件と追加方針は[開発手順](../workflow/verification.md#e2e-gaps)に集約する。既存の JVM・Robolectric・Lint は共通検証として維持する。
-
-### Dropbox 経路の準備（未実装）
-
-2026-11-05 時点で、利用者から専用アカウント・テスト環境は未準備との回答を得た。
-現在のローカル文書 E2E に Dropbox のログイン・保存・通信の検証は含まれない。
-準備する際は次の条件をそろえる。これは自動化の前提を定めるもので、手動の実機確認を開発工程へ戻す手順ではない。
-
-1. 私的な文書を含まない専用 Dropbox アカウントとテスト用フォルダーを用意し、公開サンプルと更新版・空文書だけを配置する。
-2. 公式 Dropbox アプリを導入できる使い捨てエミュレーターと、認証・通信を利用できる専用実行環境を用意する。現在の Google APIs イメージでの導入・動作は未確認である。
-3. 初回の認証環境準備とテスト本体を分け、認証情報・認証済みスナップショットは非公開で管理する。公開 CI 成果物へ含めず、診断取得範囲も別途設計する。
-4. 自動シナリオで Dropbox から端末へ保存し、標準ファイル選択から開いて内容を照合する。更新後の再保存・再選択も検証し、テストごとに保存先と権限を初期化する。
-5. アカウント・実行環境・初期化と診断の扱いが整ってから専用テストと CI を実装する。スタブやローカル成功をクラウド接続の成功に置き換えず、認証・通信・保存のどこで失敗したかを残す。
-
-担当は保守担当者。専用環境が利用可能になった時点で再検討する。現時点では接続テスト・専用 workflow とも未実装で、認証・保存・更新・通信障害時の動作は未確認である。
+2026-11-18に開発効率を優先して、ReaderE2eTest、run_e2e.py、専用workflow、Managed Device構成とinstrumentation依存を削除した。旧手順は現行の作業では実行しない。判断・移行対応は[移行記録](../records/verification/2026-11-18-robolectric-migration.md)、過去の実行内容は[導入記録](../records/verification/2026-11-05-e2e-tests.md)を参照する。Dropbox接続E2Eは導入しない。
 
 ## プロパティベーステスト
 
@@ -383,7 +267,7 @@ APK に計測エージェントを追加しない。
 
 <a id="build-preflight"></a>
 
-### 最終E2E前の構成確認
+### カバレッジ比較前の構成確認
 
 ```sh
 # Gitと公開設定だけを読む。Gradle・SDK・エミュレーターは起動しない
@@ -396,7 +280,7 @@ python3 scripts/run_coverage.py --preflight-only --base-ref origin/main
 
 通常のカバレッジ実行にも同じ事前検査を入れ、比較元展開後の既存検査を維持する。設定ハッシュまたは比較対象群が実行中に変わった場合は失敗にし、条件を確定してやり直す。JDK/SDK・環境変数・外部依存の解決、全ビルド入力の網羅、編集の原子的なロックまでは保証しない。
 
-最終E2Eまでソース・assets・設定・比較元を変更せず、出力のSHA/ハッシュとカバレッジ結果・APKハッシュを検証記録へ対応付ける。変更した場合は共通検証やE2Eの再利用可否を見直す。事前検査はレポート再利用や必須検証省略の許可ではない。[実装確認と未確認範囲](../records/evaluations/2026-11-16-build-preflight.md)を参照する。
+検証対象のソース・assets・設定・比較元と、出力のSHA/ハッシュ・カバレッジ結果・APKハッシュを対応付ける。変更した場合は共通検証の再利用可否を見直す。事前検査はレポート再利用や必須検証省略の許可ではない。[実装確認と未確認範囲](../records/evaluations/2026-11-16-build-preflight.md)を参照する。
 
 | 出力 | 場所 |
 | --- | --- |

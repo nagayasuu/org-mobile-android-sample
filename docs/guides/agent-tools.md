@@ -4,7 +4,7 @@
 
 ## Codex skills
 
-このリポジトリの skill は、正本の手順へ案内して検証・レビュー・E2E を進める入口とする。手順本文と判定基準は [開発文書の案内](../README.md)に示す workflow の各正本に集約する。
+このリポジトリの skill は、正本の手順へ案内して検証・レビュー を進める入口とする。手順本文と判定基準は [開発文書の案内](../README.md)に示す workflow の各正本に集約する。
 
 | skill | 使用する場面 |
 | --- | --- |
@@ -268,12 +268,11 @@ python3 scripts/run_check.py --output-dir .local/checks/android-001 \
 Linux/POSIXでは `--progress-interval 60` で開始時と約60秒ごとの短い通知を有効にできる。途中通知はJSONの `event`（`started` / `running`）、経過秒 `elapsed_seconds`、保存中ログのサイズ `log_bytes` だけで、子コマンドの原文は返さない。バッファリング中はサイズが増えない場合もあり、進捗率や成功を意味しない。最後は従来の結果・JUnit/Lint件数・詳細参照先を返す。省略すると従来どおり最終結果だけを表示する。
 
 ```sh
-# E2Eを一度起動。環境・対象AVD・XML再生成はAndroidの手引きに従う
-python3 scripts/run_check.py --output-dir .local/checks/e2e-watch-001 \
+# JVMテストを一度起動し、今回のJUnit XMLを集約する
+python3 scripts/run_check.py --output-dir .local/checks/jvm-watch-001 \
   --progress-interval 60 --timeout 900 \
-  --junit 'app/build/outputs/androidTest-results/managedDevice/debug/pixel2Api37/TEST-*.xml' -- \
-  ./gradlew --console=plain --rerun-tasks :app:pixel2Api37DebugAndroidTest \
-    -Pandroid.testoptions.manageddevices.emulator.gpu=swangle
+  --junit 'app/build/test-results/testDebugUnitTest/TEST-*.xml' -- \
+  ./gradlew --console=plain --rerun-tasks :app:testDebugUnitTest
 
 # 許可済みの対象run IDを先に確定してから監視。CI自体は起動しない
 python3 scripts/run_check.py --output-dir .local/checks/ci-watch-001 \
@@ -283,7 +282,7 @@ python3 scripts/run_check.py --output-dir .local/checks/ci-watch-001 \
 
 実行基盤が途中で制御を返す場合は、同じ実行のセッションID等を使って継続して待つ。別の `sleep`・`tail`・`gh run view` を繰り返し組み立てない。通知間隔に合わせて必要な経過報告を行い、失敗時や情報が不足する場合だけ、保存したサマリーとログの該当範囲を取得する。監視は新規起動・再試行・マージの許可を追加しない。対象SHAとrunの対応、必須チェックの成功確認は[GitHub CLIの手引き](github-cli.md#ci-の状態失敗箇所の確認)に従う。
 
-`--timeout` は単調時計で測る実行時間上限。上限到達は終了124、SIGINT/SIGTERMによる中断は128＋シグナル番号で終了し、同じプロセス群へSIGTERMを送り、最大約1秒後に残るプロセスをSIGKILLで終了する。元の `command_returncode` と監視の `command_exit_code` を分けて保存し、`termination` は `exited` / `timeout` / `interrupted` を示す。正常終了後のJUnit/Lint検証は従来どおり行い、監視終了0だけでCI全体やE2Eを成功扱いしない。タイムアウト後も指定レポートの検証は行うため、その処理時間は上限の外側となる。
+`--timeout` は単調時計で測る実行時間上限。上限到達は終了124、SIGINT/SIGTERMによる中断は128＋シグナル番号で終了し、同じプロセス群へSIGTERMを送り、最大約1秒後に残るプロセスをSIGKILLで終了する。元の `command_returncode` と監視の `command_exit_code` を分けて保存し、`termination` は `exited` / `timeout` / `interrupted` を示す。正常終了後のJUnit/Lint検証は従来どおり行い、監視終了0だけでCI全体を成功扱いしない。タイムアウト後も指定レポートの検証は行うため、その処理時間は上限の外側となる。
 
 通知・時間上限は有限の正数だけを受け付ける。CI監視の中断はローカルのwatchを止めるだけで、GitHub上のrunをキャンセルしない。強制終了・SIGKILL・ホスト障害、別セッションへ離れた子、端末設定の復元は保証できない。中断後は環境と残存プロセスを確認し、[失敗反復の判定](../workflow/verification.md#retry-diagnosis)に従って、必要な検証だけを新しい保存先で再開する。常駐サービスの管理には使わない。
 

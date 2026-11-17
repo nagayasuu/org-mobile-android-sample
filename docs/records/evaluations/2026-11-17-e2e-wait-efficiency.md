@@ -6,9 +6,9 @@
 
 | 項目 | 実装と維持条件 |
 | --- | --- |
-| 1・工程別計測 | [実行器](../../../scripts/run_e2e.py)で設定事前テストと残りシナリオを一度ずつ実行。[run_check](../../../scripts/run_check.py)のログ・元終了コード・時間・JUnit判定を使用し、工程別に証跡を保存。Gradle `--profile` と各ケースの初期化・本体・文書作成・診断・後片付けの時間を追加。SDK導入の時間とキャッシュ命中もCI要約へ記載 |
-| 2・キャッシュ | [workflow](../../../.github/workflows/e2e.yml)でSDK platform・Build Tools・Google APIsイメージだけをキャッシュ。OS/アーキテクチャ/月/workflow内容で分離し、復元後もsdkmanagerで状態を確認。AVD・userdata・端末設定・アカウントは含めない。Gradleは作業ブランチでも保存し、同じブランチでの再利用を可能にした。新規ブランチへ共有するmain側キャッシュは統合後の手動実行で作る |
-| 4・共通準備 | [E2Eテスト](../../../app/src/androidTest/java/dev/orgmobile/reader/ReaderE2eTest.kt)の公開文書を初回選択時にだけ作成する。同じURIを更新するケースは再選択時に上書きしない。アプリ所有の残存文書の削除、URI権限解除、表示設定復元、各ケースの画像・画面階層保存を維持 |
+| 1・工程別計測 | [実行器](https://github.com/nagayasuu/org-mobile-android-sample/blob/53a0a2eda8dc087eb20ecdd87ebc3d0be3c2ab51/scripts/run_e2e.py)で設定事前テストと残りシナリオを一度ずつ実行。[run_check](../../../scripts/run_check.py)のログ・元終了コード・時間・JUnit判定を使用し、工程別に証跡を保存。Gradle `--profile` と各ケースの初期化・本体・文書作成・診断・後片付けの時間を追加。SDK導入の時間とキャッシュ命中もCI要約へ記載 |
+| 2・キャッシュ | [workflow](https://github.com/nagayasuu/org-mobile-android-sample/blob/53a0a2eda8dc087eb20ecdd87ebc3d0be3c2ab51/.github/workflows/e2e.yml)でSDK platform・Build Tools・Google APIsイメージだけをキャッシュ。OS/アーキテクチャ/月/workflow内容で分離し、復元後もsdkmanagerで状態を確認。AVD・userdata・端末設定・アカウントは含めない。Gradleは作業ブランチでも保存し、同じブランチでの再利用を可能にした。新規ブランチへ共有するmain側キャッシュは統合後の手動実行で作る |
+| 4・共通準備 | [E2Eテスト](https://github.com/nagayasuu/org-mobile-android-sample/blob/53a0a2eda8dc087eb20ecdd87ebc3d0be3c2ab51/app/src/androidTest/java/dev/orgmobile/reader/ReaderE2eTest.kt)の公開文書を初回選択時にだけ作成する。同じURIを更新するケースは再選択時に上書きしない。アプリ所有の残存文書の削除、URI権限解除、表示設定復元、各ケースの画像・画面階層保存を維持 |
 | 5・完了検知 | 2段階E2Eを単一プロセスで待つ。CI監視の手引きは外側の固定sleepをなくし、gh監視間隔を5秒とする。60秒ごとの経過通知は完了待ち間隔ではない。元終了コードと全文ログを維持 |
 | 重複除去 | 同じAPK・端末構成で事前1件の成功後に残り9件を実行。公式のnotClassメソッド除外を使い、JUnit件数・重複・skipを確認する。10シナリオの本体・アサーションは残し、事前テスト失敗では後続を起動しない。両工程の結果を合わせて全件の成否を判断する |
 
