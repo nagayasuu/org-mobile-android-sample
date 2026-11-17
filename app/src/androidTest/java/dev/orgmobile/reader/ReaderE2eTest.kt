@@ -61,8 +61,26 @@ class ReaderE2eTest {
     private val names = listOf(smoke, long, invalid, empty, large)
     private val documentUris = mutableMapOf<String, Uri>()
     private var restoreSettings: (() -> Unit)? = null
+    private val phaseMillis = JSONObject()
+    private var startedAt = 0L
+    private var bodyStartedAt: Long? = null
+
+    private fun <T> timed(phase: String, action: () -> T): T {
+        val start = SystemClock.elapsedRealtime()
+        return try {
+            action()
+        } finally {
+            phaseMillis.put(phase, phaseMillis.optLong(phase) + SystemClock.elapsedRealtime() - start)
+        }
+    }
 
     @Before fun setUp() {
+        startedAt = SystemClock.elapsedRealtime()
+        timed("setup_ms") { prepareApp() }
+        bodyStartedAt = SystemClock.elapsedRealtime()
+    }
+
+    private fun prepareApp() {
         assertEquals("Use the dedicated API 37 emulator", 37, android.os.Build.VERSION.SDK_INT)
         device.wakeUp()
         device.setOrientationNatural()
@@ -74,38 +92,49 @@ class ReaderE2eTest {
                 "${MediaStore.MediaColumns.OWNER_PACKAGE_NAME} = ?",
             (names + context.packageName).toTypedArray(),
         )
-        stage(smoke, instrumentation.context.assets.open("smoke.org").use { it.readBytes() })
-        stage(long, buildString {
-            append("* 長文の確認\n")
-            repeat(160) { append("- 確認行 ${it + 1}\n") }
-            append("* 長文の末尾\n末尾まで読めました。\n")
-        }.toByteArray(Charsets.UTF_8))
-        stage(invalid, byteArrayOf(0xc3.toByte(), 0x28))
-        stage(empty, byteArrayOf())
         scenario = ActivityScenario.launch(MainActivity::class.java)
         awaitDocument("smoke.org")
     }
 
     @After fun tearDown() {
+        bodyStartedAt?.let { phaseMillis.put("body_ms", SystemClock.elapsedRealtime() - it) }
         // Capture before closing the activity so failed picker/display stages remain visible.
         try {
-            val output = outputDirectory()
-            if (!device.takeScreenshot(File(output, "${testName.methodName}.png"))) {
-                Log.w("ReaderE2E", "Could not capture test screenshot")
+            timed("diagnostics_ms") {
+                val output = outputDirectory()
+                if (!device.takeScreenshot(File(output, "${testName.methodName}.png"))) {
+                    Log.w("ReaderE2E", "Could not capture test screenshot")
+                }
+                device.dumpWindowHierarchy(File(output, "${testName.methodName}.xml"))
             }
-            device.dumpWindowHierarchy(File(output, "${testName.methodName}.xml"))
         } catch (_: Exception) {
             Log.w("ReaderE2E", "Could not capture test diagnostics")
         } finally {
             try {
-                scenario?.close()
-                releaseGrants()
-                documents.forEach { resolver.delete(it, null, null) }
+                timed("cleanup_ms") {
+                    try {
+                        scenario?.close()
+                        releaseGrants()
+                        documents.forEach { resolver.delete(it, null, null) }
+                    } finally {
+                        try {
+                            restoreSettings?.invoke()
+                        } finally {
+                            device.unfreezeRotation()
+                        }
+                    }
+                }
             } finally {
                 try {
-                    restoreSettings?.invoke()
-                } finally {
-                    device.unfreezeRotation()
+                    File(outputDirectory(), "${testName.methodName}-timing.json").writeText(JSONObject().apply {
+                        put("test", testName.methodName)
+                        put("elapsed_ms", SystemClock.elapsedRealtime() - startedAt)
+                        put("phases_ms", phaseMillis)
+                        put("fixture_count", documents.size)
+                        put("scope", "fixture_ms is nested in body_ms; device and instrumentation time")
+                    }.toString(2))
+                } catch (_: Exception) {
+                    Log.w("ReaderE2E", "Could not save phase timing")
                 }
             }
         }
@@ -168,7 +197,8 @@ class ReaderE2eTest {
     }
 
     @Test fun invalidUtf8ShowsErrorAndValidSelectionRecovers() {
-        select(invalid)
+        // Exercise DocumentsUI's explicit Select action as well as normal taps.
+        select(invalid, viaSelectionAction = true)
         assertTrue("Timed out waiting for UTF-8 error", device.wait(
             Until.hasObject(By.res(context.packageName, "status").text(context.getString(R.string.error_message))),
             TIMEOUT,
@@ -267,8 +297,14 @@ class ReaderE2eTest {
         scenario = null
         for (mode in listOf("custom_schedule", "custom_bedtime")) {
             device.executeShellCommand("cmd uimode night $mode")
+            var lastObservedMode = ""
             await("select $mode") {
-                device.executeShellCommand("cmd uimode night").trim() == "Night mode: $mode"
+                val observed = device.executeShellCommand("cmd uimode night").trim()
+                if (observed != lastObservedMode) {
+                    Log.i("ReaderE2E", "Request $mode; observed $observed")
+                    lastObservedMode = observed
+                }
+                observed == "Night mode: $mode"
             }
             val restoreCustom = captureDisplaySettings()
             try {
@@ -403,7 +439,7 @@ class ReaderE2eTest {
         return output
     }
 
-    private fun stage(name: String, bytes: ByteArray) {
+    private fun stage(name: String, bytes: ByteArray) = timed("fixture_ms") {
         val values = ContentValues().apply {
             put(MediaStore.MediaColumns.DISPLAY_NAME, name)
             // Unknown MIME preserves .org; text/plain makes MediaStore append .txt.
@@ -442,7 +478,21 @@ class ReaderE2eTest {
         }
     }
 
-    private fun select(name: String): Long {
+    private fun select(name: String, viaSelectionAction: Boolean = false): Long {
+        if (name !in documentUris) {
+            val bytes = when (name) {
+                smoke -> instrumentation.context.assets.open("smoke.org").use { it.readBytes() }
+                long -> buildString {
+                    append("* 長文の確認\n")
+                    repeat(160) { append("- 確認行 ${it + 1}\n") }
+                    append("* 長文の末尾\n末尾まで読めました。\n")
+                }.toByteArray(Charsets.UTF_8)
+                invalid -> byteArrayOf(0xc3.toByte(), 0x28)
+                empty -> byteArrayOf()
+                else -> error("Fixture must be explicitly staged")
+            }
+            stage(name, bytes)
+        }
         openPicker()
         // AOSP DocumentsUI resource selectors avoid depending on the system language.
         val roots = device.wait(Until.findObject(By.res(pickerPackage, "drawer_roots")), 1_000)
@@ -467,9 +517,21 @@ class ReaderE2eTest {
         val file = device.wait(Until.findObject(By.res("android", "title").text(name)), TIMEOUT)
         assertNotNull("Fixture selection missing: $name", file)
         val selectedAt = SystemClock.elapsedRealtime()
-        assertTrue("Selecting the document did not leave the picker: $name",
-            file.clickAndWait(Until.newWindow(), TIMEOUT),
-        )
+        if (viaSelectionAction) file.longClick() else file.click()
+        var confirmed = false
+        await("picker closes and app resumes after selecting $name") {
+            val confirm = device.findObject(By.res(pickerPackage, "action_menu_select").enabled(true))
+            if (!confirmed && confirm != null) {
+                val selected = device.findObjects(By.res("android", "title").selected(true))
+                assertEquals("Only the requested fixture may be selected", listOf(name), selected.map { it.text })
+                confirmed = true
+                Log.i("ReaderE2E", "Confirm explicit file selection")
+                confirm.click()
+            }
+            !device.hasObject(By.pkg(pickerPackage)) &&
+                device.hasObject(By.res(context.packageName, "root"))
+        }
+        if (viaSelectionAction) assertTrue("Explicit Select action was not exercised", confirmed)
         return selectedAt
     }
 

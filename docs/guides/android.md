@@ -95,9 +95,7 @@ coverage_base_ref=origin/main
 python3 scripts/run_coverage.py --preflight-only --base-ref "$coverage_base_ref" &&
 sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64' &&
 python3 scripts/run_coverage.py --base-ref "$coverage_base_ref" &&
-./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle \
-  '-Pandroid.testInstrumentationRunnerArguments.class=dev.orgmobile.reader.ReaderE2eTest#settingsPreflightRestoresCustomNightModesAndWaitsForDocument' &&
-./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle
+python3 scripts/run_e2e.py --output-dir .local/checks/e2e-001
 ```
 
 最終E2E前に[構成と比較条件](#build-preflight)を確認する例。比較元は確認したSHAまたは取得済みrefへ置き換える。不一致では後続へ進まず、先に構成を修正する。同じ対象・入力・環境の共通検証が成功済みなら、[既存結果の再利用条件](../workflow/verification.md#検証結果を再利用する条件)を照合してその証跡を使い、不要な全量再実行は増やさない。
@@ -118,13 +116,19 @@ workflow入力 `base_ref` の既定値は `origin/main`。全履歴取得後に�
 
 ### 入力・初期化・合否
 
-全件E2Eの前に `settingsPreflightRestoresCustomNightModesAndWaitsForDocument` を単独実行する。[AndroidJUnitRunnerのメソッド指定](https://developer.android.com/studio/test/command-line)を使い、設定保存・変更・復元と文書表示の条件待ちを先に確認する。`custom_schedule` と `custom_bedtime` のそれぞれから文字倍率・密度・夜間設定を変更し、既存表示設定シナリオと共通の復元処理で保存値へ戻ることを検査する。元の設定も後片付けで復元する。全件テストの代替にはしない。
+`run_e2e.py` は `settingsPreflightRestoresCustomNightModesAndWaitsForDocument` を単独実行し、成功した場合だけ残り9件へ進む。[AndroidJUnitRunnerのメソッド指定](https://developer.android.com/studio/test/command-line)を使い、設定保存・変更・復元と文書表示の条件待ちを先に確認する。`custom_schedule` と `custom_bedtime` のそれぞれから文字倍率・密度・夜間設定を変更し、既存表示設定シナリオと共通の復元処理で保存値へ戻ることを検査する。元の設定も後片付けで復元する。続く9件も各ケースで初期化・後片付けを行い、表示設定を変えたケースは復元値を検査する。設定事前テストを全件側で繰り返す代わりに、両工程を合わせて全10シナリオの成功を必要とする。
 
-上の `&&` は失敗時に全件へ進まない。ローカルで診断を続ける場合は、次の実行で上書きされる `app/build/reports/androidTests/`、`app/build/outputs/androidTest-results/`、`app/build/outputs/managed_device_android_test_additional_output/` を先に未使用のローカル専用保存先へコピーする。CIは事前検査の診断を `app/build/reports/e2e/preflight/` へ退避して既存成果物に含める。全件実行ではメソッド指定を外し、既存9件と追加1件の結果・件数を確認する。
+`run_e2e.py` は各工程を一度だけ起動し、失敗・タイムアウトでは次の工程へ進まない。AndroidJUnitRunnerの[メソッド除外](https://developer.android.com/reference/androidx/test/runner/AndroidJUnitRunner)を使い、事前テスト1件・残り9件のJUnit件数、重複・skipなしを検査する。テスト本体やアサーションを削除せず、両工程で同じAPK・専用端末構成を使う。Gradleタスクには `--rerun` を付けてテスト結果の再利用を防ぎ、ビルド依存タスクの再利用は維持する。新しいシナリオを追加した場合は実行器の期待件数も更新する。
+
+保存先には未使用のディレクトリを指定する。`preflight/` と `suite/` ごとにコマンドの全文ログ・終了コード・所要時間・JUnit判定の `summary.json`、HTML/XML・端末診断・Gradle `--profile` のHTMLを残す。端末テストの生成出力だけを各工程前に消し、古い結果の混入を防ぐ。成功した事前テストの証跡は次の工程の開始前に保存する。両工程の成功後に `selection.json` へ重複のない10件を記録する。出力先を端末テストの生成出力内に置くことは禁止する。
+
+CIは保存先を `app/build/reports/e2e/run/` とし、SDK導入にも実行器を使って時間を記録する。ジョブ要約には工程の成否・所要時間とSDKキャッシュ命中を出す。Gradleプロファイルで構成・依存解決・端末準備・テストタスクを分け、テスト側の `*-timing.json` で初期化・本体・文書作成・診断・後片付けを確認する。文書作成の時間は本体時間に含まれるため単純合算しない。計測はDebug・instrumentation込みであり、アプリ単体の性能ではない。
+
+SDKキャッシュはOS・アーキテクチャ・月・workflowの内容で区切り、API 37 platform・Build Tools 37.0.0・Google APIs x86_64イメージだけを保存する。復元後も `sdkmanager` を実行してパッケージ状態を照合する。AVD・userdata・端末設定・アカウントは保存しない。Gradleキャッシュは手動実行ブランチでも書き込み、同じブランチの再実行でAndroidTest固有の依存・ビルド結果を再利用する。別の新規ブランチにも引き継ぐには、統合後の同じworkflowをmainで手動実行してmain側のキャッシュを作る必要がある。キャッシュ保存・復元も時間と容量の評価に含め、CIでの効果は実際のrunで確認する。
 
 各テスト前に、新しい Activity を開き、アプリの永続 URI 読み取り権限を解除する。
 アプリ自身が所有する、固定名 `org-reader-e2e-{smoke,long,invalid,empty,large}.org` の前回分だけを削除し、
-MediaStore Downloads に作り直す。広いストレージ権限やシェルでのファイル書き込みは不要。
+必要な文書だけを初回選択時に MediaStore Downloads へ作る。同じURIを更新して再選択するケースでは、再生成せず更新済み文書を使う。広いストレージ権限やシェルでのファイル書き込みは不要。
 公開 [`examples/smoke.org`](../../examples/smoke.org) はテスト assets からそのままコピーする。
 長文は160項目のリストと末尾の見出し・本文、不正 UTF-8 は `C3 28` の2バイト、空文書は0バイトを生成する。
 1万項目の文書は対象テスト内で生成し、合計10,003ブロックの存在と末尾表示を検査する。
@@ -145,7 +149,7 @@ MediaStore Downloads に作り直す。広いストレージ権限やシェル�
 | アクセシビリティ | 公開サンプルの画面全体を ATF で検査し、見出し／本文のノード属性を照合する |
 
 読み込み完了は文書名、エラーは案内文、回転は横向きの構成と閲覧位置を条件で待つ。
-Downloads のナビゲーションが閉じてからファイルを押し、選択による画面遷移も待つ。
+Downloads のナビゲーションが閉じてからファイルを押す。選択確定ボタンが現れた場合は、要求した1件だけが選択されていることを検査し、一度だけ確定する。選択画面が消え、アプリのルート画面が表示されることを完了条件とする。ウィンドウ変化だけをアプリ復帰とは扱わない。不正UTF-8のケースは長押し選択から確定する経路も明示的に検証し、エラー表示と正常文書への復帰を確認する。
 各条件の上限は15秒。回転の条件は50ms間隔で再確認する。
 Espresso でアプリ内の操作・表示を同期し、Managed Devices でアニメーションを無効化する。
 タイムアウト・アサーション不一致は失敗とし、失敗を隠す自動リトライは追加しない。
@@ -171,7 +175,7 @@ Espresso でアプリ内の操作・表示を同期し、Managed Devices でア�
 | --- | --- |
 | HTML | `app/build/reports/androidTests/managedDevice/` 以下 |
 | XML・実行ログ | `app/build/outputs/androidTest-results/managedDevice/` 以下 |
-| 各テスト終了時の PNG・UI 階層 XML と大容量の参考値 JSON | `app/build/outputs/managed_device_android_test_additional_output/` 以下 |
+| 各テスト終了時の PNG・UI 階層 XML、工程別時間 JSON と大容量の参考値 JSON | `app/build/outputs/managed_device_android_test_additional_output/` 以下 |
 | テスト APK | `app/build/outputs/apk/androidTest/debug/app-debug-androidTest.apk` |
 
 runner の `additionalTestOutputDir` に診断を保存し、未指定の場合のみ端末上の

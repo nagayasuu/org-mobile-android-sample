@@ -29,6 +29,10 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+        with:
+          # Manual runs on work branches also retain AndroidTest dependencies.
+          # GitHub scopes these writes to the branch; main can seed later branches.
+          cache-read-only: false
       - uses: android-actions/setup-android@v3
         with:
           cmdline-tools-version: '13114758'
@@ -39,21 +43,40 @@ jobs:
           test -c /dev/kvm || { echo '::error::KVM device is missing'; exit 1; }
           sudo chmod a+rw /dev/kvm
           test -r /dev/kvm && test -w /dev/kvm
+      - name: Select SDK cache generation
+        id: sdk-cache-generation
+        run: echo "month=$(date -u +%Y-%m)" >> "$GITHUB_OUTPUT"
+      - name: Cache immutable SDK packages
+        id: sdk-cache
+        uses: actions/cache@v4
+        with:
+          # Do not cache AVDs, userdata, accounts, or device settings.
+          path: |
+            ${{ env.ANDROID_HOME }}/platforms/android-37.0
+            ${{ env.ANDROID_HOME }}/build-tools/37.0.0
+            ${{ env.ANDROID_HOME }}/system-images/android-37.0/google_apis/x86_64
+          key: e2e-sdk-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.sdk-cache-generation.outputs.month }}-${{ hashFiles('.github/workflows/e2e.yml') }}
       - name: Install SDK and full Google APIs image
-        run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64'
-      - name: Check settings restoration and document readiness
-        run: ./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle '-Pandroid.testInstrumentationRunnerArguments.class=dev.orgmobile.reader.ReaderE2eTest#settingsPreflightRestoresCustomNightModesAndWaitsForDocument'
-      - name: Preserve preflight reports and diagnostics
+        run: python3 scripts/run_check.py --output-dir app/build/reports/e2e/sdk -- sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0' emulator 'system-images;android-37.0;google_apis;x86_64'
+      - name: Run settings gate and E2E scenarios with phase timing
+        run: python3 scripts/run_e2e.py --output-dir app/build/reports/e2e/run
+      - name: Summarize phase timing
         if: always()
         run: |
-          mkdir -p app/build/reports/e2e/preflight
-          for source in app/build/reports/androidTests app/build/outputs/androidTest-results app/build/outputs/managed_device_android_test_additional_output; do
-            if [ -d "$source" ]; then
-              cp -R "$source" app/build/reports/e2e/preflight/
-            fi
-          done
-      - name: Run system-picker E2E scenarios
-        run: ./gradlew --console=plain :app:pixel2Api37DebugAndroidTest -Pandroid.testoptions.manageddevices.emulator.gpu=swangle
+          python3 - <<'PY' >> "$GITHUB_STEP_SUMMARY"
+          import json
+          from pathlib import Path
+          print('| Phase | Status | Wall seconds |')
+          print('| --- | --- | ---: |')
+          for phase in ('sdk', 'run/preflight', 'run/suite'):
+              path = Path('app/build/reports/e2e', phase, 'summary.json')
+              if path.exists():
+                  data = json.loads(path.read_text())
+                  print(f"| {phase} | {data['status']} | {data['wall_seconds']} |")
+              else:
+                  print(f'| {phase} | not run | — |')
+          PY
+          echo 'SDK cache hit: ${{ steps.sdk-cache.outputs.cache-hit }}' >> "$GITHUB_STEP_SUMMARY"
       - name: Record revision and APK identity
         if: always()
         run: |

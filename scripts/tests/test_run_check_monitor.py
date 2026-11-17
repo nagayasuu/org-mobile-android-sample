@@ -58,7 +58,10 @@ class RunCheckMonitorTest(unittest.TestCase):
         running = [event for event in events if event['event'] == 'running']
         self.assertGreaterEqual(len(running), 1)
         self.assertLess(len(running), 20)
-        self.assertTrue(all(event['log_bytes'] > 0 for event in running))
+        # A notification may precede the child's first write under CPU load.
+        # The contract permits zero bytes; the retained log must still be exact.
+        sizes = [event['log_bytes'] for event in events]
+        self.assertEqual(sorted(sizes), sizes)
         self.assertNotIn('日本語の詳細', stdout)
         self.assertEqual('日本語の詳細'*2000+'\n', (self.root/'result/command.log').read_text())
         self.assertEqual('x', (self.root/'launches').read_text())
@@ -66,6 +69,13 @@ class RunCheckMonitorTest(unittest.TestCase):
         self.assertEqual(len(events), self.result()['progress_notifications'])
         self.assertEqual(0.05, self.result()['progress_interval_seconds'])
         self.assertEqual(5, self.result()['timeout_seconds'])
+
+    def test_completion_does_not_wait_for_next_progress_notification(self):
+        result = self.run_command("print('finished')", '--progress-interval', '60', '--timeout', '5')
+        self.assertEqual(0, result.returncode, result.stderr)
+        self.assertEqual('passed', self.result()['status'])
+        self.assertEqual(1, self.result()['progress_notifications'])
+        self.assertEqual('finished\n', (self.root / 'result/command.log').read_text())
 
     def test_monitoring_keeps_report_failure_and_original_nonzero_exit(self):
         code = ("from pathlib import Path; "
