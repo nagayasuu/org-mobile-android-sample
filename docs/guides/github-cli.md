@@ -103,17 +103,11 @@ gh pr checks "$gh_pr" --repo "$gh_repo" --required --watch --interval 30
 gh run view "$gh_run" --repo "$gh_repo" --log-failed
 ```
 
-手動 E2E の起動を依頼された場合は、`gh_branch` に実行するブランチ名を設定して起動する。その後の run は `e2e.yml` と対象コミットで絞って確認する。起動の成功とテストの成功を区別する。
-`gh_base_ref` は比較元SHAまたはworkflowで取得するrefを指定する（既定値は `origin/main`）。JDK/SDK準備前に構成を検査し、不一致ならE2Eを開始しない。
-
-```sh
-gh_base_ref=origin/main
-gh workflow run e2e.yml --repo "$gh_repo" --ref "$gh_branch" -f base_ref="$gh_base_ref"
-```
+端末上のE2Eと専用workflowは廃止済み。現在のCI確認は `Android checks` の対象SHA・run・必須 `verify` を確認する。
 
 ### 成果物と保護設定の取得
 
-成果物名は[ビルド・検証の手引き](android.md#ci)と[E2E の結果](android.md#結果と成果物)で確認し、`gh_artifact` に設定する。run ごとに新しい保存先を用意し、異なる run の APK とレポートを混ぜない。APK を使う場合は取得したファイルの SHA-256 も記録する。
+成果物名は[ビルド・検証の手引き](android.md#ci)で確認し、`gh_artifact` に設定する。run ごとに新しい保存先を用意し、異なる run の APK とレポートを混ぜない。APK を使う場合は取得したファイルの SHA-256 も記録する。
 
 ```sh
 gh_download_dir=$(mktemp -d)

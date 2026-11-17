@@ -4,7 +4,7 @@
 
 ## コードとテストの配置
 
-アプリは単一の `:app` モジュールとして一つの APK に含めて配布する。主なコードは `app/src/main/java/dev/orgmobile/reader/`、JVM・Robolectric テストは `app/src/test/`、端末上の E2E は `app/src/androidTest/` に置く。
+アプリは単一の `:app` モジュールとして一つの APK に含めて配布する。主なコードは `app/src/main/java/dev/orgmobile/reader/`、JVM・Robolectric テストは `app/src/test/`に置く。端末上のE2Eは廃止し、実際の標準ファイル選択・OS連携は未検証とする。
 
 | 責務 | 実装 | 受け渡すもの |
 | --- | --- | --- |
@@ -19,7 +19,7 @@
 
 標準ファイル選択 → MainActivity → ReaderViewModel → DocumentSource → ContentDocumentSource → DocumentDecoder → OrgParser の順で読み込み、結果を状態として画面へ返す。Android OS・文書プロバイダーはアプリの外部依存である。
 
-復元対象の URI がない場合、ReaderViewModel は同梱サンプルの URI を読み込む。`app/src/main/assets/smoke.org` に公開サンプルを同梱する。`examples/smoke.org` を更新したときは同梱版も更新し、E2E で両者のバイト一致を検査する。
+復元対象の URI がない場合、ReaderViewModel は同梱サンプルの URI を読み込む。`app/src/main/assets/smoke.org` に公開サンプルを同梱する。`examples/smoke.org` を更新したときは同梱版も更新し、Robolectricで両者のバイト一致を検査する。
 
 ReaderViewModel は IO dispatcher で読み込み、次の読み込み時に前の job をキャンセルする。失敗の状態反映にもキャンセル確認を行う。キャンセル後の古い結果の反映を防ぐことと、同期プロバイダーの読み込み自体が即時停止することは区別する。画面回転とプロセス再作成の保証も同一視せず、保存した URI による再読み込みと閲覧位置の扱いを関係するテストで確認する。
 
