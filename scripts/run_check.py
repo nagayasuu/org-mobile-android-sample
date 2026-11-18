@@ -16,6 +16,9 @@ import time
 import xml.etree.ElementTree as ET
 
 
+LINT_SEVERITIES = ('Fatal', 'Error', 'Warning', 'Information', 'Informational', 'Hint', 'Ignore')
+
+
 def report_paths(patterns, started):
     paths = set()
     for pattern in patterns:
@@ -69,7 +72,7 @@ def lint_reports(paths):
             raise ValueError('expected Android Lint issues')
         for issue in root.findall('issue'):
             severity = issue.get('severity')
-            if severity not in ('Fatal', 'Error', 'Warning', 'Information', 'Informational', 'Hint', 'Ignore'):
+            if severity not in LINT_SEVERITIES:
                 raise ValueError('unknown Lint severity')
             severities[severity] += 1
         reports.append(str(path))

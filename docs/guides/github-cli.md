@@ -114,7 +114,7 @@ gh run view "$gh_run" --repo "$gh_repo" --log-failed
 | `prepare` | `--repo OWNER/REPO --head SHA` | 作業ツリー、ローカル・リモートの先端、最新mainとの関係、ブランチ保護を照合 |
 | `create` | `--apply --title TITLE --body-file FILE` | 対象の既存PRを再利用するか、確認済み本文で作成 |
 | `wait` | `--run RUN_ID` | 対象PRのCIを待ち、必須のverifyとrun・attemptを照合 |
-| `artifacts` | 追加引数なし | 同じrunのレポートとAPKを取得し、カバレッジ、Lint、テストレポートの存在、APKハッシュ、検証対象コミットを照合 |
+| `artifacts` | 追加引数なし | 同じrun・attemptの検証JSONとAPKを取得し、対象PRと仮マージコミット、テスト件数、Lint、カバレッジ、APKのSHA-256を照合 |
 | `merge` | `--apply --title TITLE --body-file FILE` | レビュー済みSHAを指定してSquash mergeし、統合後の親とツリーを照合 |
 | `main-ci` | `--run RUN_ID` | 統合後のmainで同じSHAのverify成功を確認 |
 | `cleanup` | `--apply` | 統合とmain CI成功を再確認し、先端が変わっていないリモート作業ブランチを削除 |
@@ -130,6 +130,10 @@ python3 scripts/integrate_pr.py wait --state .local/integration/work.json --run 
 完了した段階の再呼び出しは記録を返す。作成やマージの途中で通信が途切れた場合は、同じ記録で再開して既に反映された結果を確認する。反映を確認できない場合はGitHub上の状態を調べてから再開方法を判断する。先端・main・CI attemptが変わった場合は、新しい対象でレビュー・検証をそろえて新しい記録を使う。リモートブランチの削除には、削除直前に先端SHAが一致する場合だけ許可するGitのleaseを使う。 同じPRを操作する担当間では直列に進める。GitHubのマージAPIが更新時に照合するのはPR先端SHAであり、対象ブランチやmainのSHAは直前に照合する。PR作成APIには先端SHAの条件がないため、作成後にも照合する。
 
 記録には成功した段階の秒数と照合結果が残る。モデルの入力・出力と失敗を含む全工程の時間は、比較試行の記録と合わせて評価する。 [比較試行の記録手順](trial-measurement.md)
+
+`artifacts` は、必須 `verify` が示す run・attempt、PR 番号と先端、仮マージコミットの親（main、PR 先端の順）を `verification.json` と照合する。GitHub のコミット情報から実際の親を再確認し、検証されたツリーをレビュー済み先端のツリーと照合する。取得した APK の SHA-256 を再計算し、照合中とマージ前に成果物 ID を確認する。取得・照合に失敗すると統合処理はその段階で停止し、マージは照合成功後に実行できる。原因の確認には、対象の `verify` の失敗ステップや `android-reports` を使う。イベント発生後に main が進んで照合が止まった場合は、最新の main を取り込んだ先端でレビューと CI をやり直し、新しい記録を使う。
+
+旧形式の照合記録でマージを開始する場合は、`verification.json` を出力するワークフローで成功した run を用意し、新しい記録で準備から進める。すでに成立したマージからの再開では、既存の記録とマージ後のコミットを引き続き照合できる。
 
 `wait` / `main-ci` の実行ツールがセッションIDを返した場合は、[セッションを待つツールの待機幅](agent-tools.md#セッションを待つツールの待機幅)に従い、同じ実行の終了を待つ。CIの内部確認間隔と、モデルへ制御を返す待機幅は別に扱う。
 
