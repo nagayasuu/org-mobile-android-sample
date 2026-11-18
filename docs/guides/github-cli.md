@@ -109,6 +109,8 @@ gh run view "$gh_run" --repo "$gh_repo" --log-failed
 
 `main` 向けの通常のPR作成・統合では、この補助を標準手順として使う。Python 3.10以上、POSIX、Git、認証済みのGitHub CLIが必要。リポジトリのルートで、対象ブランチをpushし、独立レビューとローカル検証が終わったコミットの完全SHAを用意する。 [integrate_pr.py](../../scripts/integrate_pr.py)
 
+担当交代や作業再開では、[短い引き継ぎ様式](../templates/handoff.md#integration-handoff)から対象版・完了段階・次の操作を確認する。各段階の開始前に、現在の対象と最後に確認した版の差分、検証・レビュー根拠の有効性、操作の許可範囲を照合する。変更の影響や不足があれば、参照先の原文・実行結果を確かめ、影響する検証・レビューを更新してから進める。完了済みの記録を保持し、照合結果と次の操作を同じメモに反映する。 [検証結果の再利用条件](../workflow/verification.md#検証結果を再利用する条件)・[レビュー根拠の再確認](../workflow/review.md#review-focus)
+
 | 段階 | 引数（共通の `--state` に追加） | 確認・操作 |
 | --- | --- | --- |
 | `prepare` | `--repo OWNER/REPO --head SHA` | 作業ツリー、ローカル・リモートの先端、最新mainとの関係、ブランチ保護を照合 |
