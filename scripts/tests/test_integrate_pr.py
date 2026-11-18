@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from integrate_pr import Integration, STEPS
+from integrate_pr import ARTIFACTS, Integration, STEPS
 
 HEAD, BASE, MERGED = ("a" * 40, "b" * 40, "c" * 40)
 REPO, BRANCH = "example/project", "test/integration"
@@ -116,56 +116,91 @@ class IntegrationTest(unittest.TestCase):
                 self.work.execute()
             command.assert_called_once()
 
-    def test_artifacts_reject_different_tested_tree(self):
+    def collect_artifacts(self, manifest, *, tree="d" * 40, apk=b"apk", after_ids=None):
         self.at("artifacts")
+        ids = dict(zip(ARTIFACTS, (5, 6, 7)))
 
         def download(*args):
-            directory = Path(args[-1])
-            if directory.name == "android-reports":
-                (directory / "coverage").mkdir(parents=True)
-                (directory / "coverage/comparison.json").write_text(
-                    json.dumps(dict(status="passed", base=BASE, head=MERGED)))
-            return "d" * 40
-
-        commit = {"parents": [{"sha": BASE}, {"sha": HEAD}], "tree": {"sha": "e" * 40}}
-        with patch.object(self.work, "live_refs"), patch.object(self.work, "pr"), \
-                patch.object(self.work, "current_evidence"), patch.object(self.work, "artifact_ids"), \
-                patch.object(self.work, "api", return_value=commit), \
-                patch("integrate_pr.command", side_effect=download):
-            with self.assertRaisesRegex(ValueError, "different content"):
-                self.work.execute()
-        self.assertNotIn("artifacts", self.work.state["done"])
-
-    def test_artifacts_record_matching_reports_and_apk(self):
-        self.at("artifacts")
-
-        def download(*args):
+            if args[:2] == ("git", "rev-parse"):
+                return "d" * 40
+            self.assertEqual(args[:4], ("gh", "run", "download", "42"))
             directory = Path(args[-1])
             directory.mkdir()
-            if directory.name == "android-reports":
-                (directory / "coverage").mkdir()
-                (directory / "coverage/comparison.json").write_text(json.dumps(dict(
-                    status="passed", base=BASE, head=HEAD, counters={"LINE": [8, 10], "BRANCH": [0, 0]})))
-                for variant in ("Debug", "Release"):
-                    report = directory / f"tests/test{variant}UnitTest/index.html"
-                    report.parent.mkdir(parents=True)
-                    report.write_text("test report")
-                (directory / "lint-results-debug.xml").write_text("<issues/>")
+            if directory.name == "android-verification":
+                if manifest is not None:
+                    (directory / "verification.json").write_text(json.dumps(manifest))
             else:
-                (directory / "app-debug.apk").write_bytes(b"apk")
+                self.assertEqual(directory.name, "org-reader-debug")
+                (directory / "app-debug.apk").write_bytes(apk)
 
+        commit = {"parents": [{"sha": BASE}, {"sha": HEAD}], "tree": {"sha": tree}}
         with patch.object(self.work, "live_refs"), patch.object(self.work, "pr"), \
                 patch.object(self.work, "current_evidence"), \
-                patch.object(self.work, "artifact_ids", return_value={"android-reports": 5, "org-reader-debug": 6}), \
+                patch.object(self.work, "artifact_ids", side_effect=[ids, after_ids if after_ids is not None else ids]), \
+                patch.object(self.work, "api", return_value=commit), \
                 patch("integrate_pr.command", side_effect=download), patch("sys.stderr"):
-            self.assertEqual(self.work.execute(), "completed")
+            return self.work.execute()
+
+    def manifest(self):
+        counts = dict(tests=10, failures=0, errors=0, skipped=1)
+        return dict(schema_version=1, repository=REPO, run_id=42, run_attempt=1,
+                    event="pull_request", pr_number=7, pr_head_sha=HEAD, tested_sha=MERGED,
+                    parents=[BASE, HEAD], tests={"Debug": counts, "Release": counts.copy()},
+                    lint={"Hint": 2}, coverage=dict(status="passed", base=BASE, regression="passed",
+                                                   counters={"LINE": [8, 10], "BRANCH": [0, 0]}),
+                    apk_sha256="dd37c2d7274f7ea982cb83390c36918fee9ce8889073c44b68cdc00bdb8c3e04")
+
+    def test_artifacts_reject_different_tested_tree(self):
+        with self.assertRaisesRegex(ValueError, "different content"):
+            self.collect_artifacts(self.manifest(), tree="e" * 40)
+        self.assertNotIn("artifacts", self.work.state["done"])
+        self.assertFalse(self.path.exists())
+
+    def test_artifacts_record_matching_manifest_and_apk(self):
+        manifest = self.manifest()
+        self.assertEqual(self.collect_artifacts(manifest), "completed")
         evidence = json.loads(self.path.read_text())["evidence"]
-        self.assertEqual(evidence["tested_sha"], HEAD)
-        self.assertEqual(len(evidence["apk_sha256"]), 64)
+        self.assertEqual(evidence["tested_sha"], MERGED)
+        self.assertEqual(evidence["parents"], [BASE, HEAD])
+        self.assertEqual(evidence["tests"], manifest["tests"])
+        self.assertEqual(evidence["lint"], {"Hint": 2})
+        self.assertEqual(evidence["coverage"]["LINE"], [8, 10])
+        self.assertEqual(evidence["apk_sha256"], manifest["apk_sha256"])
+
+    def test_artifacts_reject_manifest_for_wrong_target(self):
+        for field, value in (("schema_version", True), ("run_id", 43), ("run_attempt", 2),
+                             ("pr_number", 8), ("pr_head_sha", MERGED), ("tested_sha", HEAD),
+                             ("parents", [HEAD, BASE])):
+            with self.subTest(field=field):
+                with self.assertRaises(ValueError):
+                    self.collect_artifacts(self.manifest() | {field: value})
+                self.assertNotIn("artifacts", self.work.state["done"])
+                self.assertFalse(self.path.exists())
+
+    def test_artifacts_reject_missing_manifest_mismatched_apk_and_replacement(self):
+        for manifest, options, message in (
+                (None, {}, "Missing CI verification manifest"),
+                (self.manifest(), {"apk": b"other"}, "APK SHA-256 differs"),
+                (self.manifest(), {"after_ids": {"android-verification": 9}}, "changed during download"),
+        ):
+            with self.subTest(message=message), self.assertRaisesRegex(ValueError, message):
+                self.collect_artifacts(manifest, **options)
+        self.assertNotIn("artifacts", self.work.state["done"])
+        self.assertFalse(self.path.exists())
+
+    def test_merge_rejects_legacy_evidence_before_writing(self):
+        self.at("merge")
+        self.args.apply = True
+        self.work.state["evidence"] = {"artifacts": {"android-reports": 5, "org-reader-debug": 6}}
+        with patch.object(self.work, "pr", return_value=self.pr()), patch.object(self.work, "protection"), \
+                patch.object(self.work, "current_evidence"), patch.object(self.work, "api") as api:
+            with self.assertRaisesRegex(ValueError, "lacks CI verification manifest evidence"):
+                self.work.execute()
+            api.assert_not_called()
 
     def test_stale_artifact_is_rejected(self):
         self.at("artifacts")
-        artifacts = [dict(name="android-reports", id=1, expired=False, created_at="2026-11-18T00:00:00Z")]
+        artifacts = [dict(name="android-verification", id=1, expired=False, created_at="2026-11-18T00:00:00Z")]
         with patch.object(self.work, "api", return_value={"total_count": 1, "artifacts": artifacts}):
             with self.assertRaisesRegex(ValueError, "predates"):
                 self.work.artifact_ids("2026-11-18T00:05:00Z")

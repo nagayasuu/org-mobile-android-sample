@@ -5,7 +5,6 @@ import argparse
 from contextlib import redirect_stdout
 from datetime import datetime
 import fcntl
-import hashlib
 import json
 from pathlib import Path
 import re
@@ -13,16 +12,16 @@ import subprocess
 import sys
 import tempfile
 import time
-import xml.etree.ElementTree as ET
 from urllib.parse import quote
 
-from check_coverage import METRICS, check_minimum
 from check_commit_message import validate
+from ci_verification import APK, MANIFEST, SCHEMA_VERSION, SHA, apk_sha256, validate_results
 
 STEPS = ("prepare", "create", "wait", "artifacts", "merge", "main-ci", "cleanup")
 WRITES = {"create", "merge", "cleanup"}
-ARTIFACTS = ("android-reports", "org-reader-debug")
-SHA = re.compile(r"[0-9a-f]{40}")
+VERIFICATION_ARTIFACT = "android-verification"
+APK_ARTIFACT = "org-reader-debug"
+ARTIFACTS = (VERIFICATION_ARTIFACT, APK_ARTIFACT, "android-reports")
 REPO = re.compile(r"[A-Za-z0-9_-]+/[A-Za-z0-9_.-]+")
 BRANCH = re.compile(r"(feat|fix|docs|refactor|test|build|ci|chore)/[a-z0-9]+(?:-[a-z0-9]+)*")
 
@@ -201,11 +200,11 @@ class Integration:
         ids = {}
         for name in ARTIFACTS:
             matches = [a for a in data["artifacts"] if a["name"] == name and not a["expired"]]
-            require(len(matches) == 1, "Expected one active artifact per name")
+            require(len(matches) == 1, f"Expected one active {name} artifact")
             artifact = matches[0]
             require(datetime.fromisoformat(artifact["created_at"].replace("Z", "+00:00"))
                     >= datetime.fromisoformat(started.replace("Z", "+00:00")),
-                    "Artifact predates the verify job")
+                    f"{name} artifact predates the verify job")
             ids[name] = artifact["id"]
         return ids
 
@@ -216,46 +215,44 @@ class Integration:
         ids = self.artifact_ids(started)
         s = self.state
         with tempfile.TemporaryDirectory(dir=self.path.parent) as directory:
-            for name in ARTIFACTS:
+            for name in (VERIFICATION_ARTIFACT, APK_ARTIFACT):
                 command("gh", "run", "download", str(s["run"]), "--repo", self.qualified_repo,
                         "--name", name, "--dir", str(Path(directory) / name))
             root = Path(directory)
-            report = json.loads((root / "android-reports/coverage/comparison.json").read_text())
-            require(report["status"] == "passed" and report["base"] == s["base"], "Coverage base or status differs")
-            tested = report["head"]
-            require(isinstance(tested, str) and SHA.fullmatch(tested), "Invalid tested SHA")
-            if tested != s["head"]:
-                commit = self.api(f"git/commits/{tested}")
-                require([p["sha"] for p in commit["parents"]] == [s["base"], s["head"]],
-                        "CI merge commit has unexpected parents")
-                require(commit["tree"]["sha"] == command("git", "rev-parse", f"{s['head']}^{{tree}}"),
-                        "CI tested different content")
-            counters = report["counters"]
-            for metric in METRICS:
-                covered, total = counters[metric]
-                require(type(covered) is int and type(total) is int and 0 <= covered <= total,
-                        "Invalid coverage counters")
-            require(counters["LINE"][1] > 0, "Coverage lacks line data")
+            path = root / VERIFICATION_ARTIFACT / MANIFEST
+            require(path.is_file(), "Missing CI verification manifest")
+            report = json.loads(path.read_text(encoding="utf-8"))
+            require(isinstance(report, dict) and type(report.get("schema_version")) is int
+                    and report["schema_version"] == SCHEMA_VERSION, "Unsupported CI verification schema")
+            repo = report.get("repository")
+            require(isinstance(repo, str) and repo.lower() == self.repo.lower()
+                    and report.get("event") == "pull_request",
+                    "CI verification manifest belongs to a different repository or event")
+            for field, expected in (("run_id", s["run"]), ("run_attempt", s["attempt"]), ("pr_number", s["pr"])):
+                require(type(report.get(field)) is int and report[field] == expected,
+                        f"CI verification manifest differs in {field}")
+            require(report.get("pr_head_sha") == s["head"], "CI verification manifest has a different PR head")
+            tested = report.get("tested_sha")
+            require(isinstance(tested, str) and SHA.fullmatch(tested) and tested != s["head"],
+                    "Expected the tested PR merge SHA")
+            parents = [s["base"], s["head"]]
+            require(report.get("parents") == parents, "CI verification manifest has unexpected parents")
             with redirect_stdout(sys.stderr):
-                check_minimum(counters)
-            reports = root / "android-reports"
-            for variant in ("Debug", "Release"):
-                test_report = reports / f"tests/test{variant}UnitTest/index.html"
-                require(test_report.stat().st_size > 0, "Missing JVM test report")
-            lint = ET.parse(reports / "lint-results-debug.xml").getroot()
-            require(lint.tag == "issues" and not any(
-                issue.get("severity") in {"Error", "Fatal", "Warning"} for issue in lint.findall("issue")
-            ), "Lint report did not pass")
-            apk = root / "org-reader-debug/app-debug.apk"
-            size = apk.stat().st_size
-            require(size > 0, "Debug APK is empty")
-            digest = hashlib.sha256()
-            with apk.open("rb") as file:
-                for block in iter(lambda: file.read(1024 * 1024), b""):
-                    digest.update(block)
+                validate_results(report)
+            coverage = report["coverage"]
+            require(coverage.get("base") == s["base"], "CI coverage base differs")
+            commit = self.api(f"git/commits/{tested}")
+            require([p["sha"] for p in commit["parents"]] == parents, "CI merge commit has unexpected parents")
+            require(commit["tree"]["sha"] == command("git", "rev-parse", f"{s['head']}^{{tree}}"),
+                    "CI tested different content")
+            apk = root / APK_ARTIFACT / APK.name
+            require(apk.is_file(), "Missing debug APK")
+            require(apk_sha256(apk) == report["apk_sha256"], "Debug APK SHA-256 differs from CI")
             require(self.artifact_ids(self.current_evidence()) == ids, "Artifacts changed during download")
             self.live_refs()
-            s["evidence"] = dict(tested_sha=tested, apk_sha256=digest.hexdigest(), coverage=counters, artifacts=ids)
+            s["evidence"] = dict(schema_version=SCHEMA_VERSION, tested_sha=tested, parents=parents,
+                                 apk_sha256=report["apk_sha256"], tests=report["tests"], lint=report["lint"],
+                                 coverage=coverage["counters"], regression=coverage["regression"], artifacts=ids)
 
     def merge(self):
         s = self.state
@@ -263,7 +260,11 @@ class Integration:
         if not pr.get("merged"):
             require(not s.get("merge_pending"), "Previous merge is unresolved; inspect the PR before retrying")
             self.protection()
-            require(self.artifact_ids(self.current_evidence()) == s["evidence"]["artifacts"],
+            started = self.current_evidence()
+            evidence = s["evidence"]
+            require(evidence.get("schema_version") == SCHEMA_VERSION,
+                    "Journal lacks CI verification manifest evidence; prepare a new journal for a supported run")
+            require(self.artifact_ids(started) == evidence["artifacts"],
                     "Artifacts changed since verification")
             require(self.args.title and self.args.body_file, "Specify the squash title and body")
             body = self.args.body_file.read_text()
@@ -355,7 +356,7 @@ def main():
                        ("head", "base", "pr", "run", "attempt", "evidence", "merged", "main_run", "done")
                        if key in work.state}
             print(json.dumps(dict(step=args.step, result=result, **summary)))
-    except (ValueError, OSError, KeyError, TypeError, ET.ParseError, subprocess.TimeoutExpired) as error:
+    except (ValueError, OSError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
         # Avoid printing values from untrusted responses and local file paths.
         message = str(error) if type(error) is ValueError else type(error).__name__
         print(f"{args.step} stopped: {message}", file=sys.stderr)
