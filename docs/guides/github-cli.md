@@ -105,6 +105,34 @@ gh run view "$gh_run" --repo "$gh_repo" --log-failed
 
 端末上のE2Eと専用workflowは廃止済み。現在のCI確認は `Android checks` の対象SHA・run・必須 `verify` を確認する。
 
+### 統合の各段階を記録して再開する
+
+`main` 向けの通常のPR作成・統合では、この補助を標準手順として使う。Python 3.10以上、POSIX、Git、認証済みのGitHub CLIが必要。リポジトリのルートで、対象ブランチをpushし、独立レビューとローカル検証が終わったコミットの完全SHAを用意する。 [integrate_pr.py](../../scripts/integrate_pr.py)
+
+| 段階 | 引数（共通の `--state` に追加） | 確認・操作 |
+| --- | --- | --- |
+| `prepare` | `--repo OWNER/REPO --head SHA` | 作業ツリー、ローカル・リモートの先端、最新mainとの関係、ブランチ保護を照合 |
+| `create` | `--apply --title TITLE --body-file FILE` | 対象の既存PRを再利用するか、確認済み本文で作成 |
+| `wait` | `--run RUN_ID` | 対象PRのCIを待ち、必須のverifyとrun・attemptを照合 |
+| `artifacts` | 追加引数なし | 同じrunのレポートとAPKを取得し、カバレッジ、Lint、テストレポートの存在、APKハッシュ、検証対象コミットを照合 |
+| `merge` | `--apply --title TITLE --body-file FILE` | レビュー済みSHAを指定してSquash mergeし、統合後の親とツリーを照合 |
+| `main-ci` | `--run RUN_ID` | 統合後のmainで同じSHAのverify成功を確認 |
+| `cleanup` | `--apply` | 統合とmain CI成功を再確認し、先端が変わっていないリモート作業ブランチを削除 |
+
+```sh
+python3 scripts/integrate_pr.py prepare --state .local/integration/work.json \
+  --repo "$gh_repo" --head "$gh_sha"
+python3 scripts/integrate_pr.py wait --state .local/integration/work.json --run "$gh_run"
+```
+
+表の順に同じ記録を指定する。再開時に `--repo` と `--head` を指定すると記録との一致を照合する。例の `wait` は `create` の後に実行する。書き込み段階ではその操作の許可を確かめてから `--apply` を付ける。PR本文とSquashコミット本文にはそれぞれ確認済みのファイルを指定する。ローカルブランチの切り替え・削除は、利用中の作業ツリーを確認したうえで既存のGit手順に従う。
+
+完了した段階の再呼び出しは記録を返す。作成やマージの途中で通信が途切れた場合は、同じ記録で再開して既に反映された結果を確認する。反映を確認できない場合はGitHub上の状態を調べてから再開方法を判断する。先端・main・CI attemptが変わった場合は、新しい対象でレビュー・検証をそろえて新しい記録を使う。リモートブランチの削除には、削除直前に先端SHAが一致する場合だけ許可するGitのleaseを使う。 同じPRを操作する担当間では直列に進める。GitHubのマージAPIが更新時に照合するのはPR先端SHAであり、対象ブランチやmainのSHAは直前に照合する。PR作成APIには先端SHAの条件がないため、作成後にも照合する。
+
+記録には成功した段階の秒数と照合結果が残る。モデルの入力・出力と失敗を含む全工程の時間は、比較試行の記録と合わせて評価する。 [比較試行の記録手順](trial-measurement.md)
+
+補助を使えない環境や、途中から引き継いだPRで準備記録を作れない場合は、この手引きの個別コマンドで進める。中断した書き込みの結果は、手動操作を始める前にGitHub上で確認する。手動での統合と後片付けはGit運用規約に従い、段階の完了と判断根拠を作業記録へ残す。 [CI の状態・失敗箇所の確認](#ci-の状態失敗箇所の確認)・[Git運用規約](../workflow/git.md#4-prレビュー統合)
+
 ### 成果物と保護設定の取得
 
 成果物名は[ビルド・検証の手引き](android.md#ci)で確認し、`gh_artifact` に設定する。run ごとに新しい保存先を用意し、異なる run の APK とレポートを混ぜない。APK を使う場合は取得したファイルの SHA-256 も記録する。
