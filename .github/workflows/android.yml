@@ -17,14 +17,16 @@ jobs:
         with:
           fetch-depth: 0
       - name: Prepare Kotlin declaration tools
+        if: github.event_name == 'pull_request'
         env:
           GH_TOKEN: ${{ github.token }}
         run: bash scripts/setup-kotlin-tools.sh
       - name: Test Git tooling
+        if: github.event_name == 'pull_request'
         env:
           KOTLIN_GRAMMAR_LIBRARY: ${{ github.workspace }}/.local/kotlin-tools/kotlin.so
         run: .local/kotlin-tools/venv/bin/python -m unittest discover -s scripts/tests -v
-      - name: Check commit messages and PR title
+      - name: Check commit messages and PR title when applicable
         run: python3 scripts/check_commit_message.py --github-event "$GITHUB_EVENT_PATH"
       - uses: actions/setup-java@v4
         with:
@@ -39,16 +41,22 @@ jobs:
       - name: Install Android SDK packages
         run: sdkmanager 'platforms;android-37.0' 'build-tools;37.0.0'
       - name: Build, lint, test and verify coverage
+        if: github.event_name == 'pull_request'
         run: python3 scripts/run_coverage.py --github-event "$GITHUB_EVENT_PATH"
       - name: Write CI verification manifest
+        if: github.event_name == 'pull_request'
         run: python3 scripts/ci_verification.py
       - name: Upload CI verification manifest
+        if: github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: android-verification
           path: app/build/ci-verification/verification.json
           if-no-files-found: error
           overwrite: true
+      - name: Build Debug APK from main
+        if: github.event_name == 'push'
+        run: ./gradlew --no-daemon --console=plain assembleDebug
       - name: Upload debug APK
         uses: actions/upload-artifact@v4
         with:
@@ -57,7 +65,7 @@ jobs:
           if-no-files-found: error
           overwrite: true
       - name: Upload verification reports
-        if: always()
+        if: always() && github.event_name == 'pull_request'
         uses: actions/upload-artifact@v4
         with:
           name: android-reports

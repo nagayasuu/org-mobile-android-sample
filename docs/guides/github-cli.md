@@ -105,6 +105,22 @@ gh run view "$gh_run" --repo "$gh_repo" --log-failed
 
 端末上のE2Eと専用workflowは廃止済み。現在のCI確認は `Android checks` の対象SHA・run・必須 `verify` を確認する。
 
+### main CI 成功のメール通知
+
+`Main CI email` は、同じリポジトリの `main` への push で起動した `Android checks` が成功すると、対象 SHA と run URL を宛先1件へ送信する。送信結果は Actions の `Main CI email` で確認する。CI を再実行して成功すると、その実行結果も通知される。
+
+GitHub のリポジトリ設定にある **Secrets and variables → Actions** に、既存の SMTP サービスの接続情報とメールアドレスを登録する。
+
+| Repository secret | 値 |
+| --- | --- |
+| `MAIN_CI_SMTP_HOST` | SMTP サーバー名 |
+| `MAIN_CI_SMTP_USERNAME` | SMTP の認証ユーザー名 |
+| `MAIN_CI_SMTP_PASSWORD` | SMTP の認証用パスワード |
+| `MAIN_CI_MAIL_FROM` | サービスで送信を許可されたメールアドレス |
+| `MAIN_CI_MAIL_TO` | 通知先メールアドレス |
+
+既定はポート587の STARTTLS。サービスがポート465の暗黙的 TLS を指定している場合は、Repository variable `MAIN_CI_SMTP_PORT` に `465` を設定する。ワークフローが既定ブランチに入った後、対象の CI run が成功した際に、通知ジョブと受信メールの SHA・run URL を確認する。 [GitHub Actions の Secrets 設定](https://docs.github.com/en/actions/how-tos/write-workflows/choose-what-workflows-do/use-secrets)
+
 ### 統合の各段階を記録して再開する
 
 `main` 向けの通常のPR作成・統合では、この補助を標準手順として使う。Python 3.10以上、POSIX、Git、認証済みのGitHub CLIが必要。リポジトリのルートで、対象ブランチをpushし、独立レビューとローカル検証が終わったコミットの完全SHAを用意する。 [integrate_pr.py](../../scripts/integrate_pr.py)
@@ -118,7 +134,7 @@ gh run view "$gh_run" --repo "$gh_repo" --log-failed
 | `wait` | `--run RUN_ID` | 対象PRのCIを待ち、必須のverifyとrun・attemptを照合 |
 | `artifacts` | 追加引数なし | 同じrun・attemptの検証JSONとAPKを取得し、対象PRと仮マージコミット、テスト件数、Lint、カバレッジ、APKのSHA-256を照合 |
 | `merge` | `--apply --title TITLE --body-file FILE` | レビュー済みSHAを指定してSquash mergeし、統合後の親とツリーを照合 |
-| `main-ci` | `--run RUN_ID` | 統合後のmainで同じSHAのverify成功を確認 |
+| `main-ci` | `--run RUN_ID` | 統合後のmainで、同じSHAのコミットメッセージ検査とDebug APKの生成・保存を行うverifyの成功を確認 |
 | `cleanup` | `--apply` | 統合とmain CI成功を再確認し、先端が変わっていないリモート作業ブランチを削除 |
 
 ```sh

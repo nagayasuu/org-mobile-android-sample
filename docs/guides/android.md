@@ -314,14 +314,16 @@ AGP・Gradle・依存・テスト設定などのビルド入力が異なる場�
 
 ## CI
 
-[`.github/workflows/android.yml`](../../.github/workflows/android.yml) は PR と `main` への push で、`scripts/run_coverage.py --github-event` で共通検証とカバレッジの80%・低下判定を実行する。PR は作成・コミット更新・再オープンに加え、タイトルや説明の編集でも実行する。必須ジョブ `verify` は先に Python 3 で Git フック・メッセージ検証のテストと、コミットメッセージ・PR タイトルの検証を行う。対象範囲・ローカル実行・フックの導入は[Git 運用規約](../workflow/git.md#自動検証と-git-フック)に従う。2026-11-02 に正常系、不正コミット・タイトルの拒否、タイトル修正後の再実行と正常復帰を確認した。対象コミットと run は[検証記録](../records/verification/2026-11-02-git-hooks.md)を参照する。
+[`.github/workflows/android.yml`](../../.github/workflows/android.yml) の PR 向け必須ジョブ `verify` は、Python 3 で Git フック・メッセージ検証のテストとコミットメッセージ・PR タイトルの検証を行い、`scripts/run_coverage.py --github-event` で共通検証とカバレッジの80%・低下判定を実行する。PR は作成・コミット更新・再オープンに加え、タイトルや説明の編集でも実行する。対象範囲・ローカル実行・フックの導入は[Git 運用規約](../workflow/git.md#自動検証と-git-フック)に従う。2026-11-02 に正常系、不正コミット・タイトルの拒否、タイトル修正後の再実行と正常復帰を確認した。対象コミットと run は[検証記録](../records/verification/2026-11-02-git-hooks.md)を参照する。
 
-成果物は `org-reader-debug` の Debug APK、`android-verification` の `verification.json`、`android-reports` の `app/build/reports/` に限定する。検証の成功後に、JUnit XML の Debug・Release 別の件数（総数・失敗・エラー・スキップ）、Lint XML の重大度別件数、カバレッジの比較元・判定・行／分岐のカウンター、APK の SHA-256 を JSON に集約する。リポジトリ、run ID、attempt、イベント、実際に検証した SHA と親の順序も記録する。PR では仮マージコミットを検証し、PR 番号と先端 SHA は別フィールドに記録する。
+`main` への push では、`verify` が実際に追加されたコミットのメッセージを検査し、push された SHA を使って `assembleDebug` を実行する。成果物は `org-reader-debug` の Debug APK とし、失敗時は対象 run の失敗ステップを確認する。
 
-失敗時は `verify` の失敗ステップと、生成できた範囲で保存される `android-reports` のテスト・Lint・カバレッジの詳細を使う。照合 JSON は `schema_version: 1` として扱い、レポートから取り込む情報は件数・比較元 SHA・判定に限定する。
+PR の成果物は `org-reader-debug` の Debug APK、`android-verification` の `verification.json`、`android-reports` の `app/build/reports/` に限定する。検証の成功後に、JUnit XML の Debug・Release 別の件数（総数・失敗・エラー・スキップ）、Lint XML の重大度別件数、カバレッジの比較元・判定・行／分岐のカウンター、APK の SHA-256 を JSON に集約する。リポジトリ、run ID、attempt、イベント、検証した仮マージコミットの SHA と親の順序も記録する。PR 番号と先端 SHA は別フィールドに記録する。
+
+PR の失敗時は `verify` の失敗ステップと、生成できた範囲で保存される `android-reports` のテスト・Lint・カバレッジの詳細を使う。照合 JSON は `schema_version: 1` として扱い、レポートから取り込む情報は件数・比較元 SHA・判定に限定する。
 
 GitHub 上での実行結果は、push または PR 作成後に別途確認する。ワークフローの追加やローカル検証の成功だけで CI が成功したとはみなさない。
 
-確認時は対象コミット、run の URL と結果を記録し、同じ run・attempt の JSON と APK を照合する。文書だけの変更でも、実行された CI の結果は実際に確認するまで未確認とする。PR 作成や結果・成果物の取得には `gh` を使い、コマンドと出力の絞り方は[GitHub CLI の手順](github-cli.md#github-cli)に従う。
+確認時は対象コミット、run の URL と結果を記録する。統合前は PR の同じ run・attempt の JSON と APK を照合する。文書だけの変更でも、実行された CI の結果は実際に確認するまで未確認とする。PR 作成や結果・成果物の取得には `gh` を使い、コマンドと出力の絞り方は[GitHub CLI の手順](github-cli.md#github-cli)に従う。
 
 CI 定義を変更した場合は、利用できれば actionlint で静的確認し、GitHub 上の実行結果も確認する。actionlint の成功は、SDK の導入や Gradle タスクの成功を代替しない。
