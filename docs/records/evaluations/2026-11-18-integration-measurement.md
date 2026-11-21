@@ -2,7 +2,7 @@
 
 ## 初回記録
 
-2026-11-18の PR #52 作成依頼を、既存の集約値から転記した。対象はPR作成と成果物照合まで。先端SHA・CI run/attempt・使用クライアントとモデルの情報は、参照した集約値との対応を確認できていない。 [既存の計測記述](../../proposals/codex-adoption-remaining-tasks.md#統合工程の時間トークン削減2026-11-18追加)
+2026-11-18の PR #52 作成依頼を、既存の集約値から転記した。対象はPR作成と成果物照合まで。先端SHA・CI run/attempt・使用クライアントとモデルの情報は、参照した集約値との対応を確認できていない。 [既存の計測記述](https://github.com/nagayasuu/org-mobile-android-sample/blob/31cf3f9cce429f99b0f82993c9c5f682beb05047/docs/proposals/codex-adoption-remaining-tasks.md#統合工程の時間トークン削減2026-11-18追加)
 
 | 工程 | 秒 | モデル応答数 | 入力 | キャッシュ済み入力 | 出力 | 根拠・欠測理由 |
 | --- | ---: | ---: | ---: | ---: | ---: | --- |

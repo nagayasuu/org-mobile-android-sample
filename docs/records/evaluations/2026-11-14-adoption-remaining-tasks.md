@@ -2,7 +2,7 @@
 
 ## 対象と検証
 
-作成者は主担当agent、確認者は作成者と別の `review_remaining_tasks` agent。セルフレビューではない。基準HEADは `27a65a6`、対象は未コミットの [残タスク文書](../../proposals/codex-adoption-remaining-tasks.md) の追加のみ。対象SHA-256は `7d427ee576ca73d4676eab7be85fc785a9e68ca23fcc1bbd5b56e81b995e12b9`。
+作成者は主担当agent、確認者は作成者と別の `review_remaining_tasks` agent。セルフレビューではない。基準HEADは `27a65a6`、対象は未コミットの残タスク文書の追加のみ。対象SHA-256は `7d427ee576ca73d4676eab7be85fc785a9e68ca23fcc1bbd5b56e81b995e12b9`。 [残タスク文書の後続版](https://github.com/nagayasuu/org-mobile-android-sample/blob/31cf3f9cce429f99b0f82993c9c5f682beb05047/docs/proposals/codex-adoption-remaining-tasks.md)
 
 主担当とレビュー担当がそれぞれ次を実行した。
 

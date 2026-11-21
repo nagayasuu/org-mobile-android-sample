@@ -4,7 +4,7 @@
 
 ## 目的・比較条件と受け入れ条件
 
-[CA-002](../../proposals/codex-adoption-remaining-tasks.md)の「新規実行前に既存記録を調べる」に従い、次の順で診断した。
+[CA-002](https://github.com/nagayasuu/org-mobile-android-sample/blob/31cf3f9cce429f99b0f82993c9c5f682beb05047/docs/proposals/codex-adoption-remaining-tasks.md)の「新規実行前に既存記録を調べる」に従い、次の順で診断した。
 
 1. 11月13日と14日の比較群を分け、役割別に取得可能な値と欠測を列挙する。再開・失敗を除外せず、作者の再利用分を二重計上しない。
 2. 総入力、コマンド数、返却文字数、返却記録、メタデータ、通常読取との併用を切り分ける。文字数をトークンに換算せず、コマンド数を読取回数とみなさない。
