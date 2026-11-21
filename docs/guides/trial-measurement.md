@@ -95,7 +95,7 @@ python3 scripts/integrate_pr.py verify-pr --state .local/integration/work.json \
 python3 scripts/integration_timing.py --state .local/integration/work.json
 ```
 
-集計は Markdown を標準出力へ返す。`--format json` も利用できる。成功・失敗・中断と、終了時刻が記録されなかった試行を表示する。時刻を記録する前の台帳からは成功した工程の秒数だけを表示する。観測した試行時間の合計と、重複を除いた UTC 区間の和集合を区別する。終了時刻の欠測、時刻と経過秒数の不一致、台帳にのみ存在する成功工程があれば、完全な区間集計は未計測とする。コマンド外の確認・依頼間の待ち時間・モデル使用量は、この集計とは別に記録する。
+集計は Markdown を標準出力へ返す。`--format json` も利用できる。成功・失敗・中断と、終了時刻が記録されなかった試行を表示する。時刻を記録する前の台帳からは成功した工程の秒数だけを表示する。観測した試行時間の合計と、重複を除いた UTC 区間の和集合を区別する。終了時刻の欠測、時刻と経過秒数の不一致、台帳にのみ存在する成功工程があれば、完全な区間集計は未計測とする。コマンド外の確認と依頼間の待ちは別に記録する。モデル使用量の集計には次の手順を使う。
 
 各行に担当と試行を一つ記す。該当しない工程は「対象外」、予定されているが未実施の工程は「未実施」、取得できない値は `null` とし、理由を添える。取得できたゼロは `0` と記す。
 
@@ -113,6 +113,40 @@ python3 scripts/integration_timing.py --state .local/integration/work.json
 最終報告の使用量（別枠・根拠）：
 原因・採否・根拠・判断者・次の確認条件：
 ```
+
+<a id="integration-token-usage"></a>
+
+### 工程別のモデル使用量を集計する
+
+1. 統合コマンドに `--record-timing` を付ける。コマンドの選択・結果の確認を含めて測る工程では、その作業の前と結果確認の後にも UTC 時刻を残す。例えば `python3 -c 'from datetime import datetime, timezone; print(datetime.now(timezone.utc).isoformat())'` の出力をローカルの計測メモへ記録する。時刻の精度はマイクロ秒まで。失敗・中断・再開ごとに区間を分ける。`verify-pr` 一回で両工程を実行し、モデル応答がどちらの工程か確定できない場合は全担当が取得できたとは判定しない。
+2. アクセスできる担当ごとの Codex セッションログと、必要に応じて集計区間を `.local/measurement/` のマニフェストに記す。`actors` はモデルを使った対象担当を列挙し、取得できないログは `events: null` とする。`id` は集計に表示されるので、`author` など個人名やアカウント情報を含まない役割名を使う。全担当を確定できたときだけ `actors_complete: true` にする。同じスレッドを複数の担当として登録できない。ログは明示したファイルだけを対象とし、パスはマニフェストからの相対か絶対で指定する。
+3. `windows` は `step` と同じ工程内の `attempt`（1から）でタイミング記録の行を指定する。区間は記録されたコマンド実行を含むように取る。ログを確認して、工程の区間と担当の使用量が一致し、全応答をその工程に帰属できると確認した担当だけ `complete_actors` に入れる。対応する時刻やログを照合できなければ空欄のリストにする。
+
+```json
+{
+  "repo": "example/project",
+  "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "actors_complete": true,
+  "actors": [
+    {"id": "author", "events": "./author-session.jsonl"},
+    {"id": "approval", "events": null}
+  ],
+  "windows": [
+    {"step": "wait", "attempt": 1,
+     "start": "2026-11-21T00:00:00Z", "end": "2026-11-21T00:03:00Z",
+     "complete_actors": ["author"]}
+  ]
+}
+```
+
+```sh
+python3 scripts/integration_timing.py --state .local/integration/work.json \
+  --usage-manifest .local/measurement/work-usage.json
+```
+
+`windows` を省略した試行は、台帳で開始・終了を確認できるコマンド区間の観測値を表示する。`--format json` では担当別に応答数、入力、キャッシュ済み・未キャッシュ入力、出力を確認できる。セッションログの `token_usage_record` をスレッドで絞り、開始より後から終了までに記録された一意な応答を集計する。応答の帰属は記録時刻によるため、工程をまたいで処理した応答の帰属に確証がなければ観測値として扱う。複数の区間に入る応答、最初と最後の区間の間にあってどこにも該当しない応答は工程未割当となる。入出力合計にキャッシュ入力は再加算しない。
+
+全担当の合計は、ログが工程の前後を覆い、対象担当とその使用量の完全性を記録者が確認した工程だけに表示する。上の例では承認担当のログを取得できていないため、主担当の実測値と全担当の未計測が併記される。応答単位の使用量が含まれない形式、集計区間が確認できない試行、ログを取得できない担当は未計測とする。担当別の欠測理由は JSON の `missing_reason` を参照できる。入力ログ・パス・応答 ID・マニフェストはローカルに留め、公開する場合は確認済みの集約値を使う。
 
 <a id="workflow-measurement-pilot"></a>
 
