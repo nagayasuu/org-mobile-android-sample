@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <!-- Remove this lint suppression when a new launcher icon is added. -->
     <application
         android:allowBackup="false"
         android:fullBackupContent="@xml/backup_rules"
         android:dataExtractionRules="@xml/data_extraction_rules"
-        android:icon="@drawable/ic_org"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/Theme.OrgMobile">
+        android:theme="@style/Theme.OrgMobile"
+        tools:ignore="MissingApplicationIcon">
         <activity
             android:name=".MainActivity"
             android:exported="true">
