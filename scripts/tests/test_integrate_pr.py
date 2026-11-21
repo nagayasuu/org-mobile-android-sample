@@ -167,6 +167,27 @@ class IntegrationTest(unittest.TestCase):
         self.assertEqual(evidence["coverage"]["LINE"], [8, 10])
         self.assertEqual(evidence["apk_sha256"], manifest["apk_sha256"])
 
+    def test_verify_pr_resumes_after_artifact_failure(self):
+        self.at("wait")
+        self.args.step = "verify-pr"
+        self.args.run = 42
+        with patch.object(self.work, "wait") as wait, \
+                patch.object(self.work, "artifacts", side_effect=ValueError("missing APK")):
+            with self.assertRaisesRegex(ValueError, "artifacts: missing APK"):
+                self.work.execute()
+            wait.assert_called_once()
+        self.assertEqual(list(json.loads(self.path.read_text())["done"]), ["prepare", "create", "wait"])
+
+        resumed = Integration(self.path, self.args)
+        with patch.object(resumed, "wait") as wait, patch.object(resumed, "artifacts") as artifacts:
+            self.assertEqual(resumed.execute(), "completed")
+            self.assertEqual(resumed.execute(), "already completed")
+            self.args.run = 43
+            with self.assertRaisesRegex(ValueError, "--run differs"):
+                resumed.execute()
+            wait.assert_not_called()
+            artifacts.assert_called_once()
+
     def test_artifacts_reject_manifest_for_wrong_target(self):
         for field, value in (("schema_version", True), ("run_id", 43), ("run_attempt", 2),
                              ("pr_number", 8), ("pr_head_sha", MERGED), ("tested_sha", HEAD),

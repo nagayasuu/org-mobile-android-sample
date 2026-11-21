@@ -263,6 +263,55 @@ python3 scripts/run_check.py --output-dir .local/checks/android-001 \
 
 ログ・コマンド引数・レポートにはローカル専用情報や秘密情報を含めない。`.local/` は Git の除外対象であり、ログを CI 成果物や PR へ自動登録しない。公開する場合は確認済みの非機密な集約値だけを既存の検証記録へ記載する。機密情報の自動除去機能はない。
 
+<a id="local-check-profiles"></a>
+
+### 変更種別ごとにローカル検証を実行する
+
+リポジトリのルートから `verify_local.py` に変更種別と未使用の出力先を指定する。どの種別でもステージ済み・未ステージの差分チェックを行い、各コマンドの集約 JSON と原ログを `run_check.py` で保存する。失敗時はその段階で終了する。
+
+```sh
+python3 scripts/verify_local.py docs --output-dir .local/checks/docs-001
+python3 scripts/verify_local.py python --output-dir .local/checks/python-001
+python3 scripts/verify_local.py android --output-dir .local/checks/android-001
+```
+
+`docs` は追跡済み Markdown のリンクなどを検査し、`python` は同じ文書検査と Python テスト、`android` は共通の Gradle 検証を実行する。新規の未追跡公開文書は `--document PATH` で明示する。Kotlin 宣言ツールのテストも実行する場合は、[Kotlin ツールの実行環境](#kotlinの宣言読取と探索量の配分)を準備して同じ Python と環境変数を使う。文書の内容や、変更に固有の検証・必須 CI は[検証の基準](../workflow/verification.md#共通の検証)に従う。
+
+<a id="format-check-results"></a>
+
+### 検証記録から Markdown を生成する
+
+`format_check_results.py` に検証 ID と保存済みの記録を渡す。`--check` は `run_check.py` の集約 JSON、`--ci` は PR の CI と成果物の照合が済んだ統合台帳を指定する。同じ種類の引数は繰り返せる。
+
+```sh
+python3 scripts/format_check_results.py --format pr \
+  --check V1 .local/checks/python-001/summary.json \
+  --ci V2 .local/integration/work.json > .local/pr-results.md
+
+python3 scripts/format_check_results.py --format review \
+  --check V1 .local/checks/python-001/summary.json
+```
+
+`pr` は専用コメントに使える箇条書き、`review` は検証の根拠欄に貼れる表を出す。対象 SHA・成否・件数・時間と、CI では run・attempt、カバレッジ、APK ハッシュを表示する。ローカルパス、実行引数、原ログ、失敗メッセージの原文は出力に含めない。ローカル記録の参照先は検証 ID で対応付け、公開可能な参照先と実行者・環境、未確認事項を必要に応じて補う。投稿する場合は生成結果を確認してから[専用コメント更新](github-cli.md#検証レビュー結果の専用コメントを更新する)へ渡す。
+
+<a id="compare-check-records"></a>
+
+### 実行前に過去の検証記録と照合する
+
+検証時に `--context-file` を指定すると、実行ディレクトリ、HEAD と追跡済み差分、引数、レポート指定、監視・時間制限の指定、条件ファイルの内容をハッシュで記録する。条件ファイルには未追跡の検証入力、依存・ツールの版や環境、比較元など検証結果に影響するものを記録し、変更時に更新する。秘密情報は記載せず、ファイルは `.local/` に置く。内容は集約 JSON に転記されない。記録対象の条件が実行前後で異なる場合、照合用ハッシュは保存されない。
+
+```sh
+python3 scripts/run_check.py --output-dir .local/checks/python-002 \
+  --context-file .local/checks/python-context.txt -- \
+  python3 -m unittest discover -s scripts/tests -q
+
+python3 scripts/run_check.py --compare-only .local/checks/python-002/summary.json \
+  --context-file .local/checks/python-context.txt -- \
+  python3 -m unittest discover -s scripts/tests -q
+```
+
+`--compare-only` は複数の集約 JSON に対して繰り返せる。検証コマンドは起動せず、条件が合う成功を `reuse-candidate`、失敗を `previous-failure`、未確認を `previous-unconfirmed` として、元ログへの参照とともに表示する。条件が違う、照合用ハッシュがない、ログがない場合も区別する。不正・読取不能な記録があれば結果に示し終了2を返す。その他の終了0は照合処理の成功を示す。再利用や再試行の可否は[検証結果の再利用条件](../workflow/verification.md#検証結果を再利用する条件)と[失敗反復の判定](../workflow/verification.md#retry-diagnosis)に従い、根拠と失敗原因を確認して決める。
+
 ### 長い検証とCIを一度起動して待つ
 
 Linux/POSIXでは `--progress-interval 60` で開始時と約60秒ごとの短い通知を有効にできる。途中通知はJSONの `event`（`started` / `running`）、経過秒 `elapsed_seconds`、保存中ログのサイズ `log_bytes` だけで、子コマンドの原文は返さない。バッファリング中はサイズが増えない場合もあり、進捗率や成功を意味しない。最後は従来の結果・JUnit/Lint件数・詳細参照先を返す。省略すると従来どおり最終結果だけを表示する。

@@ -87,6 +87,16 @@ python3 scripts/record_trial.py summarize .local/measurement/D1-author-01 \
 
 ### 統合計測の記録様式
 
+統合コマンドに `--record-timing` を付けると、既存の台帳と同じ場所の `*.timing.json` に、実行した段階の開始・終了 UTC、経過秒数と成否を記録する。`verify-pr` を使う場合も `wait` と `artifacts` は別に記録される。中断から同じ台帳でやり直した場合は試行を追加し、完了済み工程を再表示するだけの呼び出しは新しい試行に含めない。
+
+```sh
+python3 scripts/integrate_pr.py verify-pr --state .local/integration/work.json \
+  --head "$gh_sha" --run "$gh_run" --record-timing
+python3 scripts/integration_timing.py --state .local/integration/work.json
+```
+
+集計は Markdown を標準出力へ返す。`--format json` も利用できる。成功・失敗・中断と、終了時刻が記録されなかった試行を表示する。時刻を記録する前の台帳からは成功した工程の秒数だけを表示する。観測した試行時間の合計と、重複を除いた UTC 区間の和集合を区別する。終了時刻の欠測、時刻と経過秒数の不一致、台帳にのみ存在する成功工程があれば、完全な区間集計は未計測とする。コマンド外の確認・依頼間の待ち時間・モデル使用量は、この集計とは別に記録する。
+
 各行に担当と試行を一つ記す。該当しない工程は「対象外」、予定されているが未実施の工程は「未実施」、取得できない値は `null` とし、理由を添える。取得できたゼロは `0` と記す。
 
 ```markdown
