@@ -104,7 +104,7 @@ class Integration:
         timing = json.loads(path.read_text(encoding="utf-8")) if path.exists() else dict(identity, attempts=[])
         require(isinstance(timing, dict) and all(timing.get(key) == value for key, value in identity.items())
                 and isinstance(timing.get("attempts"), list), "Timing records differ from the current repo or SHA")
-        timing["attempts"].append(dict(step=step, status="unfinished",
+        timing["attempts"].append(dict(step=step, invoked_step=self.args.step, status="unfinished",
                                        started_utc=datetime.now(timezone.utc).isoformat(),
                                        ended_utc=None, elapsed_seconds=None))
         save_json(path, timing)

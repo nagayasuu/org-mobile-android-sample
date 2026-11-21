@@ -145,6 +145,8 @@ class IntegrationTimingTest(unittest.TestCase):
         self.assertEqual(result["observed_active_seconds"], 7)
         self.assertEqual(result["observed_attempt_seconds"], 15)
         self.assertIsNone(result["window_seconds"])
+        recorded = next(row for row in result["rows"] if row["step"] == "create")
+        self.assertIsNone(recorded["invoked_step"])
         self.assertIn(dict(step="prepare", status="unmeasured", elapsed=0.1), result["rows"])
 
     def test_step_records_failure_and_success_without_repeating_completed_step(self):
@@ -169,4 +171,7 @@ class IntegrationTimingTest(unittest.TestCase):
                 self.assertEqual(work.execute(), "already completed")
             records = json.loads(timing_path(path).read_text())["attempts"]
             self.assertEqual([row["status"] for row in records], ["failed", "completed"])
+            self.assertEqual([row["invoked_step"] for row in records], ["prepare", "prepare"])
             self.assertTrue(all(row["ended_utc"] for row in records))
+            report = integration_timing.summarize(work.state["done"], records)
+            self.assertEqual(report["rows"][0]["invoked_step"], "prepare")

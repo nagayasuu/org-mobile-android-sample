@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from integrate_pr import ARTIFACTS, Integration, STEPS
+from integrate_pr import ARTIFACTS, Integration, STEPS, timing_path
 
 HEAD, BASE, MERGED = ("a" * 40, "b" * 40, "c" * 40)
 REPO, BRANCH = "example/project", "test/integration"
@@ -171,6 +171,7 @@ class IntegrationTest(unittest.TestCase):
         self.at("wait")
         self.args.step = "verify-pr"
         self.args.run = 42
+        self.args.record_timing = True
         with patch.object(self.work, "wait") as wait, \
                 patch.object(self.work, "artifacts", side_effect=ValueError("missing APK")):
             with self.assertRaisesRegex(ValueError, "artifacts: missing APK"):
@@ -187,6 +188,13 @@ class IntegrationTest(unittest.TestCase):
                 resumed.execute()
             wait.assert_not_called()
             artifacts.assert_called_once()
+
+        records = json.loads(timing_path(self.path).read_text())["attempts"]
+        self.assertEqual([(row["step"], row["invoked_step"], row["status"]) for row in records], [
+            ("wait", "verify-pr", "completed"),
+            ("artifacts", "verify-pr", "failed"),
+            ("artifacts", "verify-pr", "completed"),
+        ])
 
     def test_artifacts_reject_manifest_for_wrong_target(self):
         for field, value in (("schema_version", True), ("run_id", 43), ("run_attempt", 2),
