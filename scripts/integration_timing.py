@@ -2,26 +2,19 @@
 """Report integration step timings from the local journal and recorded attempts."""
 
 import argparse
-from datetime import datetime, timedelta
 import json
 import math
 from pathlib import Path
 
 from ci_verification import SHA
 from integrate_pr import REPO, STEPS, timing_path
+from integration_usage import summarize_usage, utc
 
 
 def seconds(value):
     if type(value) not in (float, int) or not math.isfinite(value) or value < 0:
         raise ValueError("Invalid elapsed seconds")
     return value
-
-
-def utc(value):
-    timestamp = datetime.fromisoformat(value.replace("Z", "+00:00"))
-    if timestamp.utcoffset() != timedelta(0):
-        raise ValueError("Timestamps must be UTC")
-    return timestamp
 
 
 def summarize(done, attempts):
@@ -108,17 +101,42 @@ def markdown(report):
                        ("全記録の区間の和集合", "active_seconds"), ("全記録の経過窓", "window_seconds")):
         value = report[key]
         print(f"- {label}　{'未計測' if value is None else f'{value} 秒'}")
+    if "usage" in report:
+        print_usage(report)
+
+
+def print_usage(report):
+    print("\n| 工程・試行 | 区間 | 完全性確認済み／対象担当 | 観測応答数 | 観測入力 | うちキャッシュ | 観測出力 | 観測入出力計 | 全担当の入出力計 |")
+    print("| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |")
+    for row in report["rows"]:
+        usage = row.get("usage")
+        if usage is None:
+            continue
+        observed, total = usage["observed"] or {}, usage["total"] or {}
+        coverage = f"{usage['complete_actors']}/{usage['expected_actors']}"
+        values = [f"{row['step']} #{row['attempt']}", usage["scope"], coverage,
+                  observed.get("responses"), observed.get("input_tokens"),
+                  observed.get("cached_input_tokens"), observed.get("output_tokens"),
+                  observed.get("total_tokens"), total.get("total_tokens")]
+        print("| " + " | ".join("—" if value is None else str(value) for value in values) + " |")
+    if not report["usage"]["actors_complete"]:
+        print("\n- 対象担当の一覧は未確定。")
+    unassigned = report["usage"]["unassigned"]
+    if unassigned:
+        print(f"\n- 工程未割当の観測値　{unassigned['responses']} 応答、{unassigned['total_tokens']} トークン")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--state", type=Path, required=True, help="Integration journal")
+    parser.add_argument("--usage-manifest", type=Path, help="Local actor logs and optional phase boundaries")
     parser.add_argument("--format", choices=("markdown", "json"), default="markdown")
     args = parser.parse_args()
     timing = timing_path(args.state)
     try:
         exists = args.state.exists()
         journal = json.loads(args.state.read_text(encoding="utf-8")) if exists else {}
+        identity = journal
         attempts = []
         if timing.exists():
             data = json.loads(timing.read_text(encoding="utf-8"))
@@ -127,11 +145,21 @@ def main():
                     or (exists and (journal["repo"].lower() != repo.lower() or journal["head"] != head))):
                 raise ValueError("Timing records differ from the journal")
             attempts = data["attempts"]
+            identity = data
         elif not exists:
             raise ValueError("No integration journal or timing records")
         report = summarize(journal.get("done", {}), attempts)
     except (AttributeError, KeyError, OSError, OverflowError, TypeError, ValueError):
         parser.exit(2, "Cannot read integration timing records\n")
+    if args.usage_manifest:
+        try:
+            manifest = json.loads(args.usage_manifest.read_text(encoding="utf-8"))
+            if (manifest["head"] != identity["head"]
+                    or manifest["repo"].lower() != identity["repo"].lower()):
+                raise ValueError("Usage manifest differs from the journal")
+            report["usage"] = summarize_usage(report["rows"], manifest, args.usage_manifest.parent)
+        except (AttributeError, KeyError, OSError, OverflowError, TypeError, ValueError):
+            parser.exit(2, "Cannot read integration usage; check the manifest and local session logs\n")
     if args.format == "markdown":
         markdown(report)
     else:
