@@ -65,6 +65,48 @@ python3 scripts/record_trial.py summarize .local/measurement/D1-author-01 \
 
 [保存方式の検証記録](../records/evaluations/2026-11-15-ca001-measurement.md)はモデルを呼ばない合成検証であり、モデル待ちや実費の取得、実作業での削減効果を実証していない。保守担当が次の実比較で使用クライアント・版の stdout 形式を照合し、実環境で保存を確認する。過去の復元不能な null は変更しない。
 
+<a id="codex-request-trace"></a>
+
+### Codex の要求ごとに入力とツール返却を照合する
+
+入力が増えた箇所を調べる比較では、対象担当ごとに Codex CLI のローカルトレースを有効にする。主担当・独立レビューなどを既存の台帳の試行 ID・担当・attempt に対応付け、CLI 版、モデル、推論強度、依頼した `model_verbosity` を固定計画に記録する。比較を行う場合は両条件で同じトレース設定を使う。通常の `codex exec --json` だけを保存した過去の試行は、要求単位の内訳を復元できない。
+
+Codex CLI 0.166.0 で、次の手順を認証なしのループバック模擬応答と合成入力で確認した。トレースには利用者の依頼・指示・コマンド・返却本文・パスが入るため、公開資料・合成入力だけを扱う隔離コピーで実行し、権限を絞った Git 除外先に保存する。環境変数は対象起動だけへ渡す。収集したバンドルと縮約した `state.json` はローカルに留める。 [Codex 0.166.0 のトレース仕様](https://github.com/openai/codex/blob/rust-v0.166.0/codex-rs/rollout-trace/README.md)
+
+```sh
+umask 077
+mkdir -p .local
+trial_trace=$(mktemp -d "$PWD/.local/codex-trace.XXXXXXXX")
+mkdir "$trial_trace/bundles"
+python3 scripts/record_trial.py run \
+  --output-dir "$trial_trace/author-01" \
+  --trial U1-low-1 --agent author --attempt 01 --scope trial --phase agent --timeout 180 -- \
+  env CODEX_ROLLOUT_TRACE_ROOT="$trial_trace/bundles" \
+  codex exec --json --ephemeral -c 'model_verbosity="low"' '<照合済みの固定プロンプト>'
+```
+
+終了後に、記録時と同じ Codex 実行ファイルで対象バンドルを縮約する。終了コードと中断の有無は保存器で先に確認し、バンドルがない担当や縮約に失敗したバンドルも試行台帳へ登録する。
+
+```sh
+(
+  set -C
+  for bundle in "$trial_trace"/bundles/*; do
+    codex debug trace-reduce "$bundle" || exit 1
+  done
+  python3 scripts/trace_trial_requests.py "$trial_trace"/bundles/* > "$trial_trace/request-summary.json"
+)
+```
+
+`trace_trial_requests.py` は縮約スキーマ2のバンドルを明示的に受け取り、引数順に `traces` を並べてローカル JSON に出す。一部のバンドルだけを縮約できた場合は、そのバンドルを明示して集計し、失敗または欠測した範囲を併記する。別の CLI 版では縮約スキーマを確認する。複数条件や担当のハッシュを比較する場合は、台帳の順に対象バンドルを同じ集計コマンドに渡す。
+
+| 項目 | 集計結果の読み方 |
+| --- | --- |
+| `requests` | トレース順の要求番号、縮約トレースに記録された入力・キャッシュ済み入力・出力、送信本文に含まれた出力指定を記録する。縮約トレースで取得できない使用量や、送信本文で確認できない出力指定は null。固定計画の指定と照合する。CLI が上流のキャッシュ内訳の欠落を 0 として記録する場合がある。非キャッシュ入力は縮約値の差で、0 の由来は集計から判別できない。 |
+| `wire` と `logical_input_items` | 送信 JSON の指示・ツール定義・順序付き入力項目と、CLI が復元した入力履歴を照合する。継続要求の `previous_response_id` 参照があれば、送信 JSON の `input` は差分だけになる場合がある。履歴に同じ返却が続くケースと、新しい返却が追加されたケースを項目の指紋で確認する。 |
+| `tools` と `tool_outputs` | トレースに対応関係がある場合、ツールを開始した応答と、その返却が入力に含まれた要求をツールの連番で結びつける。端末操作は返却の長さ・指紋、明示的な切り詰め表示、一部の `sed`・`nl` から `sed` へのパイプ・`cat`・`rg` の対象と要求行を集計する。対象は指紋で記録し、行範囲は実際の返却範囲を保証しない。未知のコマンドや複雑なシェル構文、コードモードの外側の `exec` と内部ツールの対応は、必要に応じてローカルの原イベントで確認する。 |
+
+集計には本文・コマンド文字列・実パス・実セッション ID を出さない。長さは正規化 JSON の UTF-8 バイト数。指紋は集計するたびに生成した鍵で HMAC-SHA-256 を計算するので、同じ集計内で比較できる。パスの指紋は作業ディレクトリを含まないため、相対パスの一致は作業ディレクトリも照合して判断する。項目のバイト数から項目別トークンは推定しない。応答単位で観測できた使用量を既存の担当別集計と照合し、欠測や圧縮要求がある場合は対象範囲を記録する。広い検索や確認の分割が増加要因かを検証する場合は、出力指定を固定し、対象の操作だけを変える。
+
 <a id="integration-measurement"></a>
 
 ## 通常のPR統合を工程別に計測する
