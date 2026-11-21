@@ -87,7 +87,7 @@ python3 scripts/record_trial.py summarize .local/measurement/D1-author-01 \
 
 ### 統合計測の記録様式
 
-統合コマンドに `--record-timing` を付けると、既存の台帳と同じ場所の `*.timing.json` に、実行した段階の開始・終了 UTC、経過秒数と成否を記録する。`verify-pr` を使う場合も `wait` と `artifacts` は別に記録される。中断から同じ台帳でやり直した場合は試行を追加し、完了済み工程を再表示するだけの呼び出しは新しい試行に含めない。
+統合コマンドに `--record-timing` を付けると、既存の台帳と同じ場所の `*.timing.json` に、呼び出したサブコマンド（`invoked_step`）、実行した工程の開始・終了 UTC、経過秒数と成否を記録する。`verify-pr` では `wait` と `artifacts` の各試行に同じサブコマンド名を残す。過去の記録にサブコマンド名がなければ未計測とする。中断から同じ台帳でやり直した場合は試行を追加し、完了済み工程を再表示するだけの呼び出しは新しい試行に含めない。
 
 ```sh
 python3 scripts/integrate_pr.py verify-pr --state .local/integration/work.json \
@@ -113,3 +113,46 @@ python3 scripts/integration_timing.py --state .local/integration/work.json
 最終報告の使用量（別枠・根拠）：
 原因・採否・根拠・判断者・次の確認条件：
 ```
+
+<a id="workflow-measurement-pilot"></a>
+
+### 定型工程の改善を計測する
+
+次の同種 PR 3件を目安に、通常の統合に合わせて `verify-pr` の実行経路、CI 時間、計測範囲を既存の `.local/measurement/` の記録へ追記する。ローカル検証・結果整形・再検証も同じ依頼に含まれた場合は、該当する項目を記録する。既存の台帳・ログで取得できる欄は参照で済ませる。
+
+1. **実行経路と LLM なしの完了率。** 着手時に、既存手順で結果確認まで完結可能な工程と完了条件を特定する。各工程の実際の経路（実行したコマンド名、人または agent が担当した操作、途中切替の理由）を残す。分母は着手時に対象とした工程数、分子は結果確認までに当該工程の操作や判断でモデルを呼ばずに完了した工程数。モデルがコマンドを選択・実行指示した場合や結果を判定した場合は分子に含めない。失敗・中断・切替も分母に残す。経路の欠測件数も併記し、分母がゼロか LLM の関与が不明な工程がある場合、完全な率は `null` とする。
+2. **結果確認までの時間と追加操作。** コマンド起動・終了・完了条件を確かめた時刻を残す。終了から確認までの秒数、終了後に確認に使った追加コマンド数と一意なモデル応答数を記録する。コマンドが完了条件を機械判定し、終了時点で証拠も確定する場合は同じ時刻を使える。人や agent の確認が必要なら、その完了時刻を使う。`run_check.py` の集約 JSON はレポート処理込みの内訳時間に使える。終了時刻は計測対象のコマンドが戻った時点で別途取得し、取得できなければ `null` とする。最初の起動から最終確認までを測る場合、並行する内訳時間は加算しない。 [ローカル検証](agent-tools.md#local-check-profiles) [結果の整形](agent-tools.md#format-check-results)
+3. **CI の時間と応答。** PR 側・main 側の run と attempt ごとに、キューへ入った時刻、`verify` の開始・終了時刻、結果を初めて検知した時刻を記録する。各時刻の差から、キュー待ち、ジョブ実行、検知遅延を求める。`--record-timing` の待機工程終了を検知の近似値に使う場合は、台帳保存までの時間も含むことを記し、通知・目視で検知した時刻とは区別する。`verify` の開始より後、終了時刻までに完了した一意なモデル応答を数える。時刻の根拠がない場合や、GitHub と計測側で時計が照合できない場合は、該当する差分・応答数を `null` とする。
+4. **再利用・再実行。** 過去記録の照合結果に、実際に選んだ操作を添える。条件が一致して成功記録を再利用した件数、原因に関係する条件変更後に再実行した件数、変更なしで再実行した件数と秒数を集計する。一時障害と判断した場合は理由を残す。再利用候補の表示だけは再利用の実績に含めない。 [過去の検証記録との照合](agent-tools.md#compare-check-records)と[再試行の判断](../workflow/verification.md#retry-diagnosis)
+5. **計測範囲。** 工程ごとに時間と使用量の開始・終了がそれぞれ同じ境界かを確認し、使用量を全区間取得できた担当数と測定対象の担当数を残す。時間と使用量の境界が異なる場合や担当の使用量が欠ける場合は、確認できた値と区間・理由を記録し、その工程の完全な使用量と削減率は `null` とする。LLM 不使用を確認できた場合は `0` と記す。
+
+#### CI 時刻の取得
+
+[CI の状態確認](github-cli.md#ci-の状態失敗箇所の確認)で特定した `gh_repo`、`gh_run`、`gh_attempt` を使い、同じ attempt のジョブを読み取る。`verify` が一つで、台帳の対象と run・attempt が一致する場合に開始と終了を採用する。
+
+```sh
+gh api --hostname github.com --paginate \
+  "repos/$gh_repo/actions/runs/$gh_run/attempts/$gh_attempt/jobs" \
+  --jq '.jobs[] | select(.name == "verify") | {id, run_id, started_at, completed_at}'
+
+# 初回 attempt の近似値に使う場合
+gh api --hostname github.com "repos/$gh_repo/actions/runs/$gh_run" \
+  --jq '{id, created_at}'
+```
+
+初回 attempt でキュー入りの時刻が得られない場合は、run の `created_at` から `verify` 開始までを近似値として、取得元とともに残せる。再実行時は当該 attempt のキュー入りを確認できる場合だけ算出する。初回 run の作成時刻を再実行の始点に使わない。 [GitHub のジョブ API](https://docs.github.com/en/rest/actions/workflow-jobs#list-jobs-for-a-workflow-run-attempt) [GitHub の run API](https://docs.github.com/en/rest/actions/workflow-runs#get-a-workflow-run)
+
+#### 既存の記録への追記欄
+
+```markdown
+| 工程・試行 | 着手時の対象判定と完了条件 | 実行経路・LLM関与・切替理由 | コマンド開始／終了／確認 UTC | 確認までの秒数・追加コマンド／応答数 | 時間と使用量の開始／終了一致・取得済み担当数／対象担当数 | 根拠・欠測理由 |
+| --- | --- | --- | --- | --- | --- | --- |
+
+| CI側・run・attempt | キュー入り／ジョブ開始／ジョブ終了／検知 UTC | キュー／実行／検知 秒 | verify 実行中の応答数 | 取得元・欠測理由 |
+| --- | --- | --- | --- | --- |
+
+LLMなしで完了した工程数／着手時に対象とした工程数・経路の欠測件数：
+再利用件数／条件変更後の再実行件数／無変更での再実行件数と秒数（検証ID・理由）：
+```
+
+3件を見直す際は、時間または応答数の大きい工程を一つ選ぶ。効果を比較するときは、同じ入力・完了条件で実際に異なる経路を使った試行をそろえ、失敗・再試行と必須検証の成否も含めて判断する。 [評価手順](../maintenance/evaluation.md#codex-adoption-evaluation)

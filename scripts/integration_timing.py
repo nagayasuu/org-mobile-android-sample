@@ -33,6 +33,10 @@ def summarize(done, attempts):
     closed = []
     for item in attempts:
         step, status = item["step"], item["status"]
+        invoked_step = item.get("invoked_step")
+        valid_commands = (step, "verify-pr") if step in ("wait", "artifacts") else (step,)
+        if invoked_step is not None and invoked_step not in valid_commands:
+            raise ValueError("Invalid invocation for timing step")
         if status not in ("completed", "failed", "interrupted", "unfinished"):
             raise ValueError("Invalid attempt status")
         start = utc(item["started_utc"])
@@ -50,7 +54,7 @@ def summarize(done, attempts):
             clock_matches = span >= 0 and abs(span - elapsed) <= 1
             if clock_matches:
                 intervals.append((start, end))
-        groups[step].append(dict(status=status, start=start.isoformat(),
+        groups[step].append(dict(invoked_step=invoked_step, status=status, start=start.isoformat(),
                                  end=end.isoformat() if end else None, elapsed=elapsed,
                                  clock_matches=clock_matches))
 
@@ -86,15 +90,15 @@ def summarize(done, attempts):
 
 
 def markdown(report):
-    print("| 工程 | 試行 | 結果 | 開始 UTC | 終了 UTC | 秒 | 台帳の成功秒数 |")
-    print("| --- | ---: | --- | --- | --- | ---: | ---: |")
+    print("| 工程 | 実行コマンド | 試行 | 結果 | 開始 UTC | 終了 UTC | 秒 | 台帳の成功秒数 |")
+    print("| --- | --- | ---: | --- | --- | --- | ---: | ---: |")
     for row in report["rows"]:
         step = row["step"]
         status = row["status"] + ("（時計不一致）" if row.get("clock_matches") is False else "")
         journal_seconds = report["journal_completed_seconds"].get(step) if row["status"] in (
             "completed", "unmeasured"
         ) else None
-        values = [step, row.get("attempt"), status, row.get("start"), row.get("end"),
+        values = [step, row.get("invoked_step"), row.get("attempt"), status, row.get("start"), row.get("end"),
                   row.get("elapsed"), journal_seconds]
         print("| " + " | ".join("—" if value is None else str(value) for value in values) + " |")
     print()
