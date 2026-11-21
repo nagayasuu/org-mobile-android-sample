@@ -2,7 +2,7 @@
 
 ## 計測範囲
 
-通常開発で完了した Robolectric 移行の実装・検証と PR 統合、CI の検証 JSON 変更の統合を振り返った。低再利用時の診断可否も確認するため、CA-008 の評価文書作業を別枠で観測した。モデル・指示・ツール構成は変更せず、既存のローカルイベントを集計した。追加のモデル試行・CI 起動は各0回。 [CA-010](../../proposals/codex-adoption-remaining-tasks.md#残タスクのチェックリストca-009優先度低を除く) · [項目3の時間・使用量の定義](../../guides/trial-measurement.md#指標の取得範囲と欠測)
+通常開発で完了した Robolectric 移行の実装・検証と PR 統合、CI の検証 JSON 変更の統合を振り返った。低再利用時の診断可否も確認するため、CA-008 の評価文書作業を別枠で観測した。モデル・指示・ツール構成は変更せず、既存のローカルイベントを集計した。追加のモデル試行・CI 起動は各0回。 [CA-010](https://github.com/nagayasuu/org-mobile-android-sample/blob/31cf3f9cce429f99b0f82993c9c5f682beb05047/docs/proposals/codex-adoption-remaining-tasks.md#残タスクのチェックリストca-009優先度低を除く) · [項目3の時間・使用量の定義](../../guides/trial-measurement.md#指標の取得範囲と欠測)
 
 | 対象の完了ターン | 開始時の版と確認範囲 | 主担当モデル・推論設定 |
 | --- | --- | --- |

@@ -2,7 +2,7 @@
 
 ## 目的と変更範囲
 
-[追加候補](../../proposals/codex-adoption-remaining-tasks.md#cie2e-の完了待ちを短縮する追加案2026-11-17)のうち、利用者が除外した3（2端末並列化）以外を順に実装した。対象は工程別計測、キャッシュ、共通準備、完了検知、重複ケースの除去。アプリ本体・必須CI・ブランチ保護・アサーションは変更していない。コミット・push・GitHub Actionsの起動は行っていない。
+[追加候補](https://github.com/nagayasuu/org-mobile-android-sample/blob/31cf3f9cce429f99b0f82993c9c5f682beb05047/docs/proposals/codex-adoption-remaining-tasks.md#cie2e-の完了待ちを短縮する追加案2026-11-17)のうち、利用者が除外した3（2端末並列化）以外を順に実装した。対象は工程別計測、キャッシュ、共通準備、完了検知、重複ケースの除去。アプリ本体・必須CI・ブランチ保護・アサーションは変更していない。コミット・push・GitHub Actionsの起動は行っていない。
 
 | 項目 | 実装と維持条件 |
 | --- | --- |
