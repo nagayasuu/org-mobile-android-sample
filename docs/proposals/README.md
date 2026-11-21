@@ -3,3 +3,5 @@
 未採用案・下書き・その時点の課題を置く。現在の作業指示は [AGENTS.md](../../AGENTS.md)と[正本の一覧](../README.md)に従い、検討資料を現行の必須要件として扱わない。
 
 採用した指示は正本へ反映し、保守の確認は [指示書のチェックリスト](../maintenance/agent-instructions.md)を使う。導入提案や残タスクは、過去の判断と現行の状態を照合して利用する。
+
+- [Org Reader のメモ機能バックログ](org-reader-backlog.md)
