@@ -316,4 +316,6 @@ CA-022は[待機・監視の集約](../records/evaluations/2026-11-16-wait-monit
 
 ## 更新時の扱い
 
+2026-11-21に、CA-022・CA-004の追加対応として PR の待機と成果物照合を [`verify-pr`](../guides/github-cli.md#統合の各段階を記録して再開する) にまとめた。CA-007の定型報告は[保存済み検証記録からの Markdown 生成](../guides/agent-tools.md#format-check-results)を追加した。CA-023の失敗反復の判定には[実行前の記録照合](../guides/agent-tools.md#compare-check-records)を追加した。これらの端末操作はモデル呼び出しを必要としない。新しい入口を使った通常の PR での所要時間・手作業の変化と、通常検証での照合の効果は未計測。
+
 評価方法は[開発手順の正本](../maintenance/evaluation.md#codex-adoption-evaluation)に従い、結果の参照先・判断者・次の確認条件を追記して状態を更新する。元の導入改善メモで優先度「低」とした未導入の6項目はK〜Pとして追跡し、必要性の確認まで実施を保留する。既存補助の評価である項目4、標準圧縮の再評価であるEとは状態・完了条件を分ける。

@@ -58,6 +58,8 @@ PR本文は作成時点の結果と根拠の参照先を示す。[Git規約](../
 
 投稿が依頼の範囲内であることを確認し、公開可能な結果・対象SHA・run URL・検証/レビュー記録への参照をUTF-8ファイルへまとめる。Python 3.10以上とGitHub.comのユーザー認証を設定したghを使い、repoとPR番号を明示する。
 
+検証結果の定型欄は、ローカルの検証集約 JSON や成果物照合済みの統合台帳から生成できる。出力を確認し、レビュー結果や未確認事項を補ってから本文ファイルを使う。 [検証記録から Markdown を生成する](agent-tools.md#format-check-results)
+
 ```sh
 # 読み取り専用の確認。--checkを省略するとコメントを作成・更新する
 python3 scripts/update_pr_results.py --repo "$gh_repo" --pr "$gh_pr" \
@@ -78,6 +80,21 @@ PR本文・タイトル・CI設定は変更しない。PRへのこの種のコ�
 GitHub.comのowner/repo形式だけを扱う。権限の追加・認証方式変更・通知抑止は行わない。コメントの作成・更新は購読者へ通知される場合がある。[実装確認と未確認範囲](../records/evaluations/2026-11-16-pr-result-comments.md)を参照する。
 
 ### CI の状態・失敗箇所の確認
+
+PR 番号または `main` の完全なコミット SHA から、対象の `verify` を読み取り専用で照会できる。
+
+```sh
+python3 scripts/ci_status.py --repo "$gh_repo" --pr "$gh_pr"
+python3 scripts/ci_status.py --repo "$gh_repo" --main-sha "$gh_sha"
+python3 scripts/ci_status.py --repo "$gh_repo" --pr "$gh_pr" --diagnose \
+  --log-file .local/failed-verify.log
+```
+
+PR は同一リポジトリの `main` 向けが対象。必須 `verify` のリンクから run を特定し、workflow、イベント、ブランチ、SHA、attempt を照合する。main は同じ SHA の push run を調べる。対象なし、複数候補、照会中の対象変更を区別し、別の run で代用しない。特定できた run ID は、対象を確認したうえで `verify-pr` や `main-ci` に渡せる。 [GitHub の workflow run API](https://docs.github.com/en/rest/actions/workflow-runs)
+
+出力は JSON。終了0は対象の `verify` 成功、1は未完了・失敗・対象未確定、2は入力・取得エラーを示す。APK は現 attempt のジョブ開始時刻と成果物を照合し、取得可能、欠落、期限切れ、複数、未確認を区別する。成果物の内容やハッシュの確認は統合時の照合を使う。
+
+`--diagnose` は最初の失敗ステップと診断レポートの取得可否を加える。`--log-file` を指定すると、同じ attempt の `verify` の失敗ログを新しいローカルファイルへ保存する。ファイルの上書きは行わず、取得できなければ `unavailable` を返す。保存したログはローカルで確認する。
 
 ```sh
 gh pr checks "$gh_pr" --repo "$gh_repo" --required --json name,bucket,link
@@ -115,6 +132,7 @@ gh run view "$gh_run" --repo "$gh_repo" --log-failed
 | --- | --- | --- |
 | `prepare` | `--repo OWNER/REPO --head SHA` | 作業ツリー、ローカル・リモートの先端、最新mainとの関係、ブランチ保護を照合 |
 | `create` | `--apply --title TITLE --body-file FILE` | 対象の既存PRを再利用するか、確認済み本文で作成 |
+| `verify-pr` | `--run RUN_ID` | PR の必須 CI を待ち、成果物を照合する。`wait` と `artifacts` を順に実行 |
 | `wait` | `--run RUN_ID` | 対象PRのCIを待ち、必須のverifyとrun・attemptを照合 |
 | `artifacts` | 追加引数なし | 同じrun・attemptの検証JSONとAPKを取得し、対象PRと仮マージコミット、テスト件数、Lint、カバレッジ、APKのSHA-256を照合 |
 | `merge` | `--apply --title TITLE --body-file FILE` | レビュー済みSHAを指定してSquash mergeし、統合後の親とツリーを照合 |
@@ -124,10 +142,13 @@ gh run view "$gh_run" --repo "$gh_repo" --log-failed
 ```sh
 python3 scripts/integrate_pr.py prepare --state .local/integration/work.json \
   --repo "$gh_repo" --head "$gh_sha"
-python3 scripts/integrate_pr.py wait --state .local/integration/work.json --run "$gh_run"
+python3 scripts/integrate_pr.py verify-pr --state .local/integration/work.json \
+  --head "$gh_sha" --run "$gh_run"
 ```
 
-表の順に同じ記録を指定する。再開時に `--repo` と `--head` を指定すると記録との一致を照合する。例の `wait` は `create` の後に実行する。書き込み段階ではその操作の許可を確かめてから `--apply` を付ける。PR本文とSquashコミット本文にはそれぞれ確認済みのファイルを指定する。ローカルブランチの切り替え・削除は、利用中の作業ツリーを確認したうえで既存のGit手順に従う。
+表の順に同じ記録を指定する。`create` の後は `verify-pr`、または個別に `wait` と `artifacts` を使う。`verify-pr` は GitHub から状態と成果物を読み取り、ローカルの台帳へ段階ごとに保存する。成功時は必須 `verify` の成否、run・attempt、APK の SHA-256 と検証結果を JSON で出力する。失敗時は停止した段階を標準エラーに示し、非ゼロで終了する。成果物の照合から再開するときは、同じ台帳と run ID を指定する。両段階の完了後に同じコマンドを呼ぶと、台帳に保存した結果を表示する。
+
+再開時に `--repo` と `--head` を指定すると記録との一致を照合する。書き込み段階ではその操作の許可を確かめてから `--apply` を付ける。PR本文とSquashコミット本文にはそれぞれ確認済みのファイルを指定する。ローカルブランチの切り替え・削除は、利用中の作業ツリーを確認したうえで既存のGit手順に従う。
 
 完了した段階の再呼び出しは記録を返す。作成やマージの途中で通信が途切れた場合は、同じ記録で再開して既に反映された結果を確認する。反映を確認できない場合はGitHub上の状態を調べてから再開方法を判断する。先端・main・CI attemptが変わった場合は、新しい対象でレビュー・検証をそろえて新しい記録を使う。リモートブランチの削除には、削除直前に先端SHAが一致する場合だけ許可するGitのleaseを使う。 同じPRを操作する担当間では直列に進める。GitHubのマージAPIが更新時に照合するのはPR先端SHAであり、対象ブランチやmainのSHAは直前に照合する。PR作成APIには先端SHAの条件がないため、作成後にも照合する。
 

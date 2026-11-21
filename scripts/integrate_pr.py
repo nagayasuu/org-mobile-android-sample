@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Run one explicitly selected PR integration step and keep its evidence locally."""
+"""Run PR integration steps and keep their evidence locally."""
 
 import argparse
 from contextlib import redirect_stdout
-from datetime import datetime
+from datetime import datetime, timezone
 import fcntl
 import json
 from pathlib import Path
@@ -39,6 +39,40 @@ def command(*args, timeout=90, stdin=None):
     return result.stdout.strip()
 
 
+def github_api(repo, path, *options, payload=None):
+    return json.loads(command("gh", "api", "--hostname", "github.com",
+                              f"repos/{repo}/{path}", *options,
+                              stdin=json.dumps(payload) if payload is not None else None))
+
+
+def check_run_ids(repo, url):
+    match = re.fullmatch(rf"https://github\.com/{re.escape(repo)}/actions/runs/([1-9][0-9]*)(?:/job/([1-9][0-9]*))?",
+                         url, re.I)
+    require(match, "Unexpected verify check URL")
+    return int(match[1]), int(match[2]) if match[2] else None
+
+
+def run_matches(data, repo, workflow, event, branch, sha):
+    return (data["workflow_id"] == workflow and data["event"] == event
+            and data["head_branch"] == branch and data["head_sha"] == sha
+            and data["head_repository"]["full_name"].lower() == repo.lower())
+
+
+def timing_path(path):
+    return path.with_suffix(path.suffix + ".timing.json")
+
+
+def save_json(path, value):
+    with tempfile.NamedTemporaryFile(mode="w", dir=path.parent, delete=False) as file:
+        temporary = Path(file.name)
+        try:
+            json.dump(value, file, indent=2, allow_nan=False)
+            file.flush()
+            temporary.replace(path)
+        finally:
+            temporary.unlink(missing_ok=True)
+
+
 class Integration:
     def __init__(self, path, args):
         self.path = path
@@ -55,19 +89,26 @@ class Integration:
         self.qualified_repo = f"github.com/{repo}"
 
     def api(self, path, *options, payload=None):
-        return json.loads(command("gh", "api", "--hostname", "github.com",
-                                  f"repos/{self.repo}/{path}", *options,
-                                  stdin=json.dumps(payload) if payload is not None else None))
+        return github_api(self.repo, path, *options, payload=payload)
 
     def save(self):
-        with tempfile.NamedTemporaryFile(mode="w", dir=self.path.parent, delete=False) as file:
-            temporary = Path(file.name)
-            try:
-                json.dump(self.state, file, indent=2)
-                file.flush()
-                temporary.replace(self.path)
-            finally:
-                temporary.unlink(missing_ok=True)
+        save_json(self.path, self.state)
+
+    def start_timing(self, step):
+        if not getattr(self.args, "record_timing", False):
+            return None
+        path = timing_path(self.path)
+        head = self.state.get("head", self.args.head)
+        require(head and SHA.fullmatch(head), "Specify the full reviewed --head SHA")
+        identity = dict(repo=self.repo.lower(), head=head)
+        timing = json.loads(path.read_text(encoding="utf-8")) if path.exists() else dict(identity, attempts=[])
+        require(isinstance(timing, dict) and all(timing.get(key) == value for key, value in identity.items())
+                and isinstance(timing.get("attempts"), list), "Timing records differ from the current repo or SHA")
+        timing["attempts"].append(dict(step=step, status="unfinished",
+                                       started_utc=datetime.now(timezone.utc).isoformat(),
+                                       ended_utc=None, elapsed_seconds=None))
+        save_json(path, timing)
+        return timing
 
     def branch_sha(self, branch):
         return self.api(f"branches/{quote(branch, safe='')}")["commit"]["sha"]
@@ -142,19 +183,14 @@ class Integration:
         require(checks and all(c["bucket"] == "pass" for c in checks), "Required PR checks are incomplete")
         verify = [c for c in checks if c["name"] == "verify"]
         require(len(verify) == 1, "Expected one required verify check")
-        match = re.fullmatch(rf"https://github\.com/{re.escape(self.repo)}/actions/runs/(\d+)(?:/job/(\d+))?",
-                             verify[0]["link"], re.I)
-        require(match, "Unexpected verify check URL")
-        return int(match[1]), int(match[2]) if match[2] else None
+        return check_run_ids(self.repo, verify[0]["link"])
 
     def run(self, run_id, main=False):
         data = self.api(f"actions/runs/{run_id}")
         s = self.state
-        require(data["id"] == run_id and data["workflow_id"] == s["workflow"]
-                and data["event"] == ("push" if main else "pull_request")
-                and data["head_branch"] == ("main" if main else s["branch"])
-                and data["head_sha"] == (s["merged"] if main else s["head"])
-                and data["head_repository"]["full_name"].lower() == self.repo.lower(),
+        require(data["id"] == run_id and run_matches(
+                    data, self.repo, s["workflow"], "push" if main else "pull_request",
+                    "main" if main else s["branch"], s["merged"] if main else s["head"]),
                 "CI run belongs to a different workflow, branch or SHA")
         return data
 
@@ -313,27 +349,59 @@ class Integration:
 
     def execute(self):
         step = self.args.step
-        done = self.state.get("done", {})
         if self.args.run is not None:
-            require(step in {"wait", "main-ci"}, "--run is only used by wait and main-ci")
-            if step in done:
-                key = "run" if step == "wait" else "main_run"
+            require(step in {"wait", "verify-pr", "main-ci"}, "--run is only used by wait, verify-pr and main-ci")
+            wait_step = "wait" if step == "verify-pr" else step
+            if wait_step in self.state.get("done", {}):
+                key = "main_run" if step == "main-ci" else "run"
                 require(self.args.run == self.state[key], "--run differs from journal")
+        if step != "verify-pr":
+            return self.execute_step(step)
+
+        require(self.args.run and self.args.run > 0, "Specify the target --run ID")
+        result = "already completed"
+        for stage in ("wait", "artifacts"):
+            try:
+                if self.execute_step(stage) == "completed":
+                    result = "completed"
+            except (ValueError, OSError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
+                message = str(error) if type(error) is ValueError else type(error).__name__
+                raise ValueError(f"{stage}: {message}") from error
+        return result
+
+    def execute_step(self, step):
+        done = self.state.get("done", {})
         if step in done:
             return "already completed"
         require(tuple(done) == STEPS[:STEPS.index(step)], "Complete the previous journal step first")
         if step in WRITES:
             require(self.args.apply, "This step needs --apply after authorization")
+        timing_start = time.monotonic()
+        timing = self.start_timing(step)
         start = time.monotonic()
-        getattr(self, step.replace("-", "_"))()
-        self.state["done"][step] = round(time.monotonic() - start, 3)
-        self.save()
+        outcome = "failed"
+        try:
+            getattr(self, step.replace("-", "_"))()
+            self.state["done"][step] = round(time.monotonic() - start, 3)
+            self.save()
+            outcome = "completed"
+        except KeyboardInterrupt:
+            outcome = "interrupted"
+            raise
+        finally:
+            if timing is not None:
+                timing["attempts"][-1].update(status=outcome, ended_utc=datetime.now(timezone.utc).isoformat(),
+                                              elapsed_seconds=round(time.monotonic() - timing_start, 3))
+                try:
+                    save_json(timing_path(self.path), timing)
+                except OSError:
+                    print("Timing could not be finalized; inspect the integration journal", file=sys.stderr)
         return "completed"
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("step", choices=STEPS)
+    parser.add_argument("step", choices=(*STEPS, "verify-pr"))
     parser.add_argument("--state", type=Path, required=True)
     parser.add_argument("--repo")
     parser.add_argument("--head")
@@ -342,6 +410,8 @@ def main():
     parser.add_argument("--body-file", type=Path)
     parser.add_argument("--timeout", type=int, default=900)
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--record-timing", action="store_true",
+                        help="Keep UTC intervals and elapsed time for each attempted step")
     args = parser.parse_args()
     try:
         require(args.timeout > 0, "Timeout must be positive")
@@ -355,6 +425,8 @@ def main():
             summary = {key: work.state[key] for key in
                        ("head", "base", "pr", "run", "attempt", "evidence", "merged", "main_run", "done")
                        if key in work.state}
+            if args.step == "verify-pr":
+                summary["verify"] = "success"
             print(json.dumps(dict(step=args.step, result=result, **summary)))
     except (ValueError, OSError, KeyError, TypeError, subprocess.TimeoutExpired) as error:
         # Avoid printing values from untrusted responses and local file paths.

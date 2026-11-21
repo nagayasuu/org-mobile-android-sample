@@ -10,6 +10,7 @@ import json
 import math
 import os
 from pathlib import Path
+import re
 import signal
 import subprocess
 import time
@@ -84,6 +85,55 @@ def revision():
     diff = subprocess.run(['git', 'diff', 'HEAD', '--binary'], capture_output=True)
     return {'head': head.stdout.decode().strip() if head.returncode == 0 else None,
             'tracked_diff_sha256': hashlib.sha256(diff.stdout).hexdigest() if diff.returncode == 0 else None}
+
+
+def comparison_key(args, command, revision_info):
+    if not all(revision_info.values()):
+        raise ValueError('comparison needs a Git HEAD and tracked diff')
+    context = args.context_file.read_bytes()
+    if not context.strip():
+        raise ValueError('comparison needs a nonempty context file')
+    conditions = {
+        'version': 1,
+        'cwd': str(Path.cwd()),
+        'revision': revision_info,
+        'command': command,
+        'context_sha256': hashlib.sha256(context).hexdigest(),
+        'junit': args.junit,
+        'lint': args.lint,
+        'timeout_seconds': args.timeout,
+        'progress_interval_seconds': args.progress_interval,
+    }
+    return hashlib.sha256(json.dumps(conditions, sort_keys=True).encode('ascii')).hexdigest()
+
+
+def compare_records(paths, key):
+    records = []
+    for path in paths:
+        entry = {'summary': str(path)}
+        try:
+            summary = json.loads(path.read_text(encoding='utf-8'))
+            status = summary['status']
+            if status not in ('passed', 'failed', 'unconfirmed'):
+                raise ValueError
+            prior_key = summary.get('comparison_sha256')
+            if prior_key is None:
+                entry['status'] = 'insufficient-record'
+            elif not re.fullmatch(r'[0-9a-f]{64}', prior_key):
+                raise ValueError
+            elif prior_key != key:
+                entry['status'] = 'different-conditions'
+            elif not path.with_name('command.log').is_file():
+                entry['status'] = 'missing-log'
+            else:
+                entry['status'] = {'passed': 'reuse-candidate', 'failed': 'previous-failure',
+                                   'unconfirmed': 'previous-unconfirmed'}[status]
+                entry['log'] = str(path.with_name('command.log'))
+        except (KeyError, OSError, TypeError, ValueError):
+            entry['status'] = 'invalid-record'
+        records.append(entry)
+    print(json.dumps({'records': records}, ensure_ascii=False))
+    return 2 if any(entry['status'] == 'invalid-record' for entry in records) else 0
 
 
 def positive_seconds(value):
@@ -180,7 +230,12 @@ def execute(command, log, summary, interval=None, timeout=None):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--output-dir', type=Path, required=True, help='New directory; never overwrites a previous run')
+    mode = parser.add_mutually_exclusive_group(required=True)
+    mode.add_argument('--output-dir', type=Path, help='New directory; never overwrites a previous run')
+    mode.add_argument('--compare-only', action='append', type=Path, metavar='SUMMARY',
+                      help='Compare a saved summary without running the command; repeat for multiple records')
+    parser.add_argument('--context-file', type=Path, metavar='FILE',
+                        help='Record declared inputs and environment by file hash; required for comparison')
     parser.add_argument('--junit', action='append', default=[], metavar='GLOB', help='Fresh JUnit XML required after command')
     parser.add_argument('--lint', action='append', default=[], metavar='GLOB', help='Fresh Android Lint XML required after command')
     parser.add_argument('--progress-interval', type=positive_seconds, metavar='SECONDS',
@@ -194,11 +249,24 @@ def main():
         parser.error('a command after -- is required')
     if (args.progress_interval is not None or args.timeout is not None) and os.name != 'posix':
         parser.error('monitoring and time limits require POSIX')
+    if args.compare_only and args.context_file is None:
+        parser.error('--compare-only requires --context-file')
+    revision_info = revision()
+    key = None
+    if args.context_file is not None:
+        try:
+            key = comparison_key(args, command, revision_info)
+        except OSError:
+            parser.error('cannot read the comparison context')
+        except ValueError as error:
+            parser.error(str(error))
+    if args.compare_only:
+        return compare_records(args.compare_only, key)
     try:
         args.output_dir.mkdir(parents=True, exist_ok=False)
     except OSError:
         parser.exit(2, 'cannot create a new output directory; choose an unused path\n')
-    summary = {'status': 'unconfirmed', 'command': command, 'revision': revision(),
+    summary = {'status': 'unconfirmed', 'command': command, 'revision': revision_info,
                'started_utc': datetime.now(timezone.utc).isoformat(),
                'command_exit_code': None, 'command_returncode': None, 'log': str(args.output_dir / 'command.log'),
                'report_errors': []}
@@ -234,6 +302,13 @@ def main():
             exit_code = 1
     finally:
         summary['wall_seconds'] = round((time.time_ns() - started) / 1e9, 3)
+        if key is not None:
+            try:
+                if key == comparison_key(args, command, revision()):
+                    summary['comparison_sha256'] = key
+            except (OSError, ValueError):
+                # Keep the run record even when its comparison context is unavailable.
+                pass
         summary_path = args.output_dir / 'summary.json'
         summary_path.write_text(json.dumps(summary, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
     print(f"{summary['status'].upper()}: command_exit_code={summary['command_exit_code']}; summary={summary_path}; log={summary['log']}")
